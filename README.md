@@ -1,5 +1,5 @@
-# telegram-download
-Easy (and accelerated) download and install on unix systems. Tested on Ubuntu.
+# Telegram Download
+Accelerated download and automatic install on unix systems. Tested on Ubuntu.
 
 Just paste on your console (`ctrl+alt+t`):
 
