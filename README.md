@@ -6,6 +6,10 @@ Just paste on your console (`ctrl+alt+t`):
 ## Install Telegram
 
     sh -c "$(curl -sL https://raw.github.com/insign/devOS/master/telegram.sh)"
+
+## Install Popcorn Time
+
+    sh -c "$(curl -sL https://raw.github.com/insign/devOS/master/popcorn.sh)"
     
 Feel free to contribute or just see the code.
 The acceleration is made by `aria2`.
