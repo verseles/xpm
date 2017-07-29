@@ -40,7 +40,7 @@ if [ -s $telegram_file ]; then
 	sudo ln -sf /opt/telegram/Telegram /usr/bin/telegram
 
 	# Creates desktop entry
-	echo -e '[Desktop Entry]\n Version=1.0\n Exec=/opt/telegram/Telegram\n Icon=Telegram\n Type=Application\n Categories=Application;Network;' | sudo tee /usr/share/applications/telegram.desktop
+	echo '[Desktop Entry]\nVersion=1.0\nExec=/opt/telegram/Telegram\nIcon=Telegram\nType=Application\nCategories=Application;Network;' | sudo tee /usr/share/applications/telegram.desktop
 	sudo chmod +x /usr/share/applications/telegram.desktop
 
 	printf "${CYAN}Telegram installed! Since Telegram has built-in update, you never should run this command again.${NC}\n"
