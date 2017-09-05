@@ -7,9 +7,9 @@ Just paste on your console (`ctrl+alt+t`):
 
     sh -c "$(curl -sL https://raw.github.com/insign/devOS/master/gmail.sh)"
 
-## Install Popcorn Time
+## Install Telegram
 
-    sh -c "$(curl -sL https://raw.github.com/insign/devOS/master/popcorn.sh)"
+    sh -c "$(curl -sL https://raw.github.com/insign/devOS/master/telegram.sh)"
     
 ## Install Popcorn Time
 
