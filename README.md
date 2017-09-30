@@ -1,5 +1,5 @@
 # Automated installations
-Accelerated download and automatic install on unix systems. Tested on Ubuntu.
+Accelerated download and automatic install on debian based systems. Tested on Ubuntu and his derivates.
 
 Just paste on your console (`ctrl+alt+t`):
 
