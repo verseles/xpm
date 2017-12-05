@@ -20,7 +20,7 @@ if [ $OS_ARCH != 'x86_64' ]; then
 	telegram_url="${telegram_url}32"
 fi
 
-aria2c --max-concurrent-downloads=5 --max-connection-per-server=5 --min-split-size="2M" --allow-overwrite=true --out="$telegram_file" $telegram_url
+aria2c --check-certificate=false --max-concurrent-downloads=5 --max-connection-per-server=5 --min-split-size="2M" --allow-overwrite=true --out="$telegram_file" $telegram_url
 
 
 if [ -s $telegram_file ]; then
