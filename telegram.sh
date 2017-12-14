@@ -31,7 +31,7 @@ if [ -s $telegram_file ]; then
 	sudo rm -rf /usr/share/applications/telegram.desktop
 
 	# unzip in right folder
-	sudo tar Jxf $telegram_file -C /opt/
+	sudo tar xf $telegram_file -C /opt/
 
 	# move if necessary
 	sudo mv /opt/Telegram*/ /opt/telegram

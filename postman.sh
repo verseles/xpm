@@ -5,9 +5,9 @@ GREEN='\033[0;32m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-app_name="PopCorn Time"
-app_slug="Popcorn-Time"
-app_zip="${app_slug}.tar.xz"
+app_name="Postman"
+app_slug="Postman"
+app_zip="${app_slug}.tar.gz"
 app_base="/opt/${app_slug}"
 app_exec="${app_base}/${app_slug}"
 app_bin_path="/usr/bin/${app_slug}"
@@ -20,7 +20,7 @@ if [ $OS_ARCH != 'x86_64' ]
 then
 	app_url="https://get.popcorntime.sh/repo/build/Popcorn-Time-0.3.10-Linux-32.tar.xz"
 else
-	app_url="https://get.popcorntime.sh/repo/build/Popcorn-Time-0.3.10-Linux-64.tar.xz"
+	app_url="https://dl.pstmn.io/download/latest/linux64"
 fi
 
 printf "Starting ${app_name} installation, ${RED}please give admin privilegies${NC}\n"
