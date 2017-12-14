@@ -11,6 +11,10 @@ Just paste on your console (`ctrl+alt+t`):
 ## Install Popcorn Time
 
     sh -c "$(curl -sL https://raw.github.com/insign/devOS/master/popcorn.sh)"
+        
+## Install Postman
+
+    sh -c "$(curl -sL https://raw.github.com/insign/devOS/master/postman.sh)"
     
     
 ## Install Spotify
