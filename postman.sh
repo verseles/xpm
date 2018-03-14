@@ -9,7 +9,7 @@ app_name="Postman"
 app_slug="Postman"
 app_zip="${app_slug}.tar.gz"
 app_base="/opt/${app_slug}"
-app_exec="${app_base}/${app_base}/${app_slug}"
+app_exec="${app_base}/${app_slug}/${app_slug}"
 app_bin_path="/usr/bin/${app_slug}"
 app_desktop="/usr/share/applications/${app_slug}.desktop"
 
@@ -45,7 +45,7 @@ if [ -s $app_zip ]; then
 	sudo ln -sf $app_exec $app_bin_path
 
 	# Creates desktop entry
-	echo "[Desktop Entry]\nVersion=1.0\nName=${app_name}\nExec=${app_exec}\nIcon=${app_base}/src/app/images/icon.png\nType=Application\nCategories=Application;Network;" | sudo tee $app_desktop
+	echo "[Desktop Entry]\nVersion=1.0\nName=${app_name}\nExec=${app_exec}\nIcon=${app_base}/${app_slug}/src/app/images/icon.png\nType=Application\nCategories=Application;Network;" | sudo tee $app_desktop
 	sudo chmod +x $app_desktop
 
     if [ -s $app_exec ];
