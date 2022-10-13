@@ -16,6 +16,6 @@
     
 ## Architecture
 ## License
-[GNU Affero General Public License v3.0](LICENSE.md)
+[BSD 4-Clause “Original” or “Old” License](LICENSE.md)
 ## Contribute
 > For now, you can just make a PR.
