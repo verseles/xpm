@@ -33,15 +33,15 @@
     },
     {
       "name": "collection",
-      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/collection-1.16.0",
+      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/collection-1.17.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
     {
       "name": "convert",
-      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/convert-3.0.2",
+      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/convert-3.1.1",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.18"
     },
     {
       "name": "coverage",
@@ -63,7 +63,7 @@
     },
     {
       "name": "frontend_server_client",
-      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/frontend_server_client-3.0.0",
+      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/frontend_server_client-3.1.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -81,7 +81,7 @@
     },
     {
       "name": "http_parser",
-      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/http_parser-4.0.1",
+      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/http_parser-4.0.2",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -93,13 +93,13 @@
     },
     {
       "name": "js",
-      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/js-0.6.4",
+      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/js-0.6.5",
       "packageUri": "lib/",
       "languageVersion": "2.16"
     },
     {
       "name": "lints",
-      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/lints-2.0.0",
+      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/lints-2.0.1",
       "packageUri": "lib/",
       "languageVersion": "2.17"
     },
@@ -153,7 +153,7 @@
     },
     {
       "name": "pub_semver",
-      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/pub_semver-2.1.1",
+      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/pub_semver-2.1.2",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -183,15 +183,15 @@
     },
     {
       "name": "source_map_stack_trace",
-      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/source_map_stack_trace-2.1.0",
+      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/source_map_stack_trace-2.1.1",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
     {
       "name": "source_maps",
-      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/source_maps-0.10.10",
+      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/source_maps-0.10.11",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.18"
     },
     {
       "name": "source_span",
@@ -201,9 +201,9 @@
     },
     {
       "name": "stack_trace",
-      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/stack_trace-1.10.0",
+      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/stack_trace-1.11.0",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.18"
     },
     {
       "name": "stream_channel",
@@ -255,7 +255,7 @@
     },
     {
       "name": "watcher",
-      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/watcher-1.0.1",
+      "rootUri": "file:///home/helio/.pub-cache/hosted/pub.dartlang.org/watcher-1.0.2",
       "packageUri": "lib/",
       "languageVersion": "2.14"
     },
@@ -284,7 +284,7 @@
       "languageVersion": "2.18"
     }
   ],
-  "generated": "2022-10-10T19:29:47.830220Z",
+  "generated": "2022-10-23T18:01:48.351349Z",
   "generator": "pub",
-  "generatorVersion": "2.18.2"
+  "generatorVersion": "2.18.3"
 }
