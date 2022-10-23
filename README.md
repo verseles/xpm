@@ -1,6 +1,6 @@
 # xpm - uniX Package Manager
 
-### Package manager that aims to make easier to install software in any distro unix-like.
+### Universal package manager for any unix-like distro.
 ## Our key values
 - Easy to install, update, remove and search (and filter)
 - Easy to create new installers
@@ -8,12 +8,13 @@
   - Make some post-install for easier common use
 - Include all popular distros
 - Use containers for builds
-- Fallbacks for (or prefer) native pm way
+- Prefer native pm way and falls back to xpm way
 ## Installation
 
 ## Usage
 
-    
+## How it works
+
 ## Architecture
 ## License
 [BSD 4-Clause “Original” or “Old” License](LICENSE.md)
