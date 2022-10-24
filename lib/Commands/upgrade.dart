@@ -2,9 +2,9 @@ import 'package:args/command_runner.dart';
 
 class UpgradeCommand extends Command {
   @override
-  final name = "install";
+  final name = "upgrade";
   @override
-  final description = "Updates a package";
+  final description = "Upgrade all installed packages via XPM";
 
  UpgradeCommand() {
     // argParser.addFlag('all', abbr: 'a');

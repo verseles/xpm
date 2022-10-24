@@ -2,7 +2,7 @@ import 'package:args/command_runner.dart';
 
 class UpdateCommand extends Command {
   @override
-  final name = "install";
+  final name = "update";
   @override
   final description = "Updates a package";
 

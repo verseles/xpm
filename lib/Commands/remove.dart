@@ -2,9 +2,9 @@ import 'package:args/command_runner.dart';
 
 class RemoveCommand extends Command {
   @override
-  final name = "install";
+  final name = "remove";
   @override
-  final description = "Updates a package";
+  final description = "Removes a package";
 
  RemoveCommand() {
     // argParser.addFlag('all', abbr: 'a');
