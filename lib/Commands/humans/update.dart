@@ -5,8 +5,9 @@ class UpdateCommand extends Command {
   final name = "update";
   @override
   final description = "Updates a package";
+  final category = "For humans";
 
- UpdateCommand() {
+  UpdateCommand() {
     // argParser.addFlag('all', abbr: 'a');
   }
 

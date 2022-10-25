@@ -1,12 +1,14 @@
 import 'package:args/command_runner.dart';
 
-class UpgradeCommand extends Command {
+class CheckCommand extends Command {
   @override
-  final name = "upgrade";
+  final name = "check";
   @override
-  final description = "Upgrade all installed packages via XPM";
+  final description = "Checks the build.sh package file specified";
+  @override
+  final category = "For developers";
 
- UpgradeCommand() {
+  CheckCommand() {
     // argParser.addFlag('all', abbr: 'a');
   }
 

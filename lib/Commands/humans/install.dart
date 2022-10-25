@@ -5,8 +5,10 @@ class InstallCommand extends Command {
   final name = "install";
   @override
   final description = "Install a package";
+  @override
+  final category = "For humans";
 
- InstallCommand() {
+  InstallCommand() {
     argParser.addFlag('all', abbr: 'a');
   }
 

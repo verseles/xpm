@@ -1,12 +1,13 @@
 import 'package:args/command_runner.dart';
 
-class RemoveCommand extends Command {
+class UpgradeCommand extends Command {
   @override
-  final name = "remove";
+  final name = "upgrade";
   @override
-  final description = "Removes a package";
+  final description = "Upgrade all installed packages via XPM";
+  final category = "For humans";
 
- RemoveCommand() {
+  UpgradeCommand() {
     // argParser.addFlag('all', abbr: 'a');
   }
 
