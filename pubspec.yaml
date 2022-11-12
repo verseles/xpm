@@ -1,7 +1,7 @@
 name: xpm
 description: A sample command-line application.
 version: 0.0.1
-# homepage: https://xpm.link
+homepage: https://xpm.link
 
 environment:
   sdk: '>=2.18.2 <3.0.0'
@@ -14,3 +14,4 @@ dev_dependencies:
   test: ^1.16.0
 dependencies:
   args: ^2.3.1
+  process_run: ^0.12.3+2

@@ -1,16 +1,17 @@
 import 'package:args/command_runner.dart';
 
-class RemoveCommand extends Command {
+class SearchCommand extends Command {
   @override
-  final name = "remove";
+  final name = "search";
   @override
-  final aliases = ['rm', 'uninstall', 'un', 'r'];
+  final aliases = ['s', 'find'];
   @override
-  final description = "Removes a package";
+  final description = "Search for a package";
   @override
   final category = "For humans";
 
-  RemoveCommand() {
+
+  SearchCommand() {
     // argParser.addFlag('all', abbr: 'a');
   }
 

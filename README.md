@@ -7,7 +7,7 @@
 - Be agnostic, following unix standards
   - Make some post-install for easier common use
 - Include all popular distros
-- Use containers for builds
+- Use containers (or fake root?) for builds
 - Prefer native pm way and falls back to xpm way
 ## Installation
 
@@ -17,6 +17,8 @@
 
 ## Architecture
 ## License
-[BSD 4-Clause “Original” or “Old” License](LICENSE.md)
+Our code uses [BSD 4-Clause “Original” or “Old” License](LICENSE.md)
+
+Dart SDK and his own packages are licensed under the [BSD 3-Clause "New" or "Revised" License](https://github.com/dart-lang/sdk/blob/main/LICENSE)
 ## Contribute
 > For now, you can just make a PR.

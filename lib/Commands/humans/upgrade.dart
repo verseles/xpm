@@ -4,7 +4,10 @@ class UpgradeCommand extends Command {
   @override
   final name = "upgrade";
   @override
-  final description = "Upgrade all installed packages via XPM";
+  final aliases = ['full', 'full-upgrade', 'fu'];
+  @override
+  final description = "Upgrades all installed packages via XPM";
+  @override
   final category = "For humans";
 
   UpgradeCommand() {

@@ -1,16 +1,16 @@
 import 'package:args/command_runner.dart';
 
-class RemoveCommand extends Command {
+class RepoCommand extends Command {
   @override
-  final name = "remove";
+  final name = "repo";
   @override
-  final aliases = ['rm', 'uninstall', 'un', 'r'];
+  final aliases = ['repositories', 'repos', 'repository'];
   @override
-  final description = "Removes a package";
+  final description = "Manage registered repositories";
   @override
-  final category = "For humans";
+  final category = "For developers";
 
-  RemoveCommand() {
+  RepoCommand() {
     // argParser.addFlag('all', abbr: 'a');
   }
 
