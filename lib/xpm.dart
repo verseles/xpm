@@ -8,6 +8,19 @@ import 'package:xpm/OS/run.dart';
 class XPM {
   static String get name => "xpm";
 
+  static final installMethods = {
+    'auto': 'Automatically choose the best method or fallsback to [any].',
+    'any': 'Use the generic method. Sometimes this is the best method.',
+    'apt': 'Use apt or apt-like package manager.',
+    'pack': 'Use snap, flatpak or appimage.',
+    'brew': 'Use brew or brew-like package manager.',
+    'choco': 'Use choco or choco-like package manager.',
+    'dnf': 'Use dnf or dnf-like package manager.',
+    'pacman': 'Use pacman or pacman-like package manager.',
+    'yum': 'Use yum or yum-like package manager.',
+    'zypper': 'Use zypper or zypper-like package manager.',
+  };
+
   /// Returns the path to the git executable.
   /// @TODO cache this.
   static Future<Executable> git([List<String>? arguments]) async {
@@ -47,7 +60,6 @@ class XPM {
   static Future<String> bash() async {
     final bash = Executable('bash');
     if (!await bash.exists()) {
-      // @FIXME: Add instructions for installing bash.
       throw Exception("Bash is not installed.");
     }
     String bashPath = (await bash.find())!;

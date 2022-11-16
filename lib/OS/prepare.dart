@@ -5,6 +5,7 @@ import 'package:xpm/OS/executable.dart';
 import 'package:xpm/OS/os_release.dart';
 import 'package:xpm/OS/repositories.dart';
 import 'package:xpm/xpm.dart';
+import 'package:xpm/utils/leave.dart';
 
 class Prepare {
   String repo, package;
@@ -32,35 +33,29 @@ class Prepare {
     packageScript = File('$packageDirPath/$package.bash');
 
     if (!await packageScript.exists()) {
-      leave(message: 'Script for $packageScript does not exist.', exitCode: 127);
+      leave(message: 'Script for "$package" does not exist.', exitCode: 127);
     }
 
     booted = true;
   }
 
-  // @FIXME make this global
-  Never leave({String? message, int exitCode = 1}) {
-    if (message != null) {
-      print(message);
-    }
-    exit(exitCode);
-  }
-
   Future<File> writeThisBeast(String script) async {
+    await boot();
+
     return File('${(await cacheRepoDir).path}/together.bash').writeAsString(script.trim());
   }
 
   Future<String> best({to = 'install'}) async {
     await boot();
 
-    final String preferedMethod = args?['prefer'] ?? 'auto';
-    final bool forceMethod = args!['force-prefer'];
+    final String preferedMethod = args?['method'] ?? 'auto';
+    final bool forceMethod = args!['force-method'];
 
     // @FIXME on any "best" function, check if the method is available on the package script
 
     if (forceMethod) {
       if (preferedMethod == 'auto') {
-        leave(message: 'Use --force-prefer with --prefer=', exitCode: 64);
+        leave(message: 'Use --force-method with --method=', exitCode: 64);
       }
       switch (preferedMethod) {
         case 'any':
@@ -131,8 +126,7 @@ class Prepare {
 
     final String? bestApt = apt ?? aptGet;
 
-    // @FIXME stop using specific names like debian or archlinux
-    return bestApt != null ? '${to}_debian "$bestApt"' : await bestForAny(to: to);
+    return bestApt != null ? '${to}_apt "$bestApt"' : await bestForAny(to: to);
   }
 
   Future<String> bestForArch({String to = 'install'}) async {
@@ -141,7 +135,7 @@ class Prepare {
     final pacman = await Executable('pacman').find();
     String? bestArchLinux = paru ?? yay ?? pacman;
 
-    return bestArchLinux != null ? '${to}_archlinux "$bestArchLinux"' : await bestForAny(to: to);
+    return bestArchLinux != null ? '${to}_pacman "$bestArchLinux"' : await bestForAny(to: to);
   }
 
   Future<String> bestForFedora({String to = 'install'}) async {
@@ -150,7 +144,7 @@ class Prepare {
 
     String? bestFedora = dnf ?? yum;
 
-    return bestFedora != null ? '${to}_fedora "$bestFedora"' : await bestForAny(to: to);
+    return bestFedora != null ? '${to}_dnf "$bestFedora"' : await bestForAny(to: to);
   }
 
   Future<String> bestForCentOS({String to = 'install'}) async {
@@ -159,7 +153,7 @@ class Prepare {
 
     String? bestCentOS = dnf ?? yum;
 
-    return bestCentOS != null ? '${to}_centos "$bestCentOS"' : await bestForAny(to: to);
+    return bestCentOS != null ? '${to}_yum "$bestCentOS"' : await bestForAny(to: to);
   }
 
   Future<String> bestForMacOS({String to = 'install'}) async {
@@ -171,7 +165,7 @@ class Prepare {
   Future<String> bestForOpenSUSE({String to = 'install'}) async {
     final zypper = await Executable('zypper').find();
 
-    return zypper != null ? '${to}_opensuse "$zypper"' : await bestForAny(to: to);
+    return zypper != null ? '${to}_zypper "$zypper"' : await bestForAny(to: to);
   }
 
   Future<String> bestForAndroid({String to = 'install'}) async {

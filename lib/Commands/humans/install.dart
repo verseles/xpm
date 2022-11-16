@@ -21,36 +21,20 @@ class InstallCommand extends Command {
   final category = 'For humans';
 
   InstallCommand() {
-    /// @FIXME convert this list to a Map<String, String> and use it to generate the help.
-    argParser.addOption('prefer', help: 'The method to use to install the package.', valueHelp: 'auto', allowed: [
-      'auto',
-      'any',
-      'apt',
-      'snap',
-      'appimage',
-      'flatpak',
-      'brew',
-      'choco',
-      'dnf',
-      'pacman',
-      'yum',
-      'zypper',
-    ], allowedHelp: {
-      'auto': 'Automatically choose the best method or fallsback to [any].',
-      'any': 'Use the generic method. Sometimes this is the best method.',
-      'apt': 'Use apt or apt-like package manager.',
-      'pack': 'Use snap, flatpak or appimage.',
-      'brew': 'Use brew or brew-like package manager.',
-      'choco': 'Use choco or choco-like package manager.',
-      'dnf': 'Use dnf or dnf-like package manager.',
-      'pacman': 'Use pacman or pacman-like package manager.',
-      'yum': 'Use yum or yum-like package manager.',
-      'zypper': 'Use zypper or zypper-like package manager.',
-    });
-    argParser.addFlag('force-prefer',
+    argParser.addOption('method',
+        abbr: 'm',
+        help: 'The method to use to install the package.',
+        valueHelp: 'auto',
+        allowed: XPM.installMethods.keys,
+        allowedHelp: XPM.installMethods);
+
+    argParser.addFlag('force-method',
         negatable: false,
         help: 'Force the selected method set by --prefer.'
             '\nIf not set, the selected method can fallsback to another method or finally to [any].');
+
+    // add verbose flag
+    argParser.addFlag('verbose', negatable: false, abbr: 'v', help: 'Show more information about what is going on.');
   }
 
   // [run] may also return a Future.
