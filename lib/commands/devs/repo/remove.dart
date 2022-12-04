@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:isar/isar.dart';
 import 'package:xpm/database/db.dart';
 import 'package:xpm/database/models/repo.dart';
 import 'package:xpm/os/repositories.dart';
@@ -8,17 +9,17 @@ import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/slugify.dart';
 import 'package:xpm/xpm.dart';
 
-class RepoAddCommand extends Command {
+class RepoRemoveCommand extends Command {
   @override
-  final name = "add";
-  @override
-  final aliases = ['a'];
+  final name = "remove";
   @override
   String get invocation => '${runner!.executableName} $name <repository url>';
   @override
-  final description = "Add a new git repository to the list of repositories";
+  final aliases = ['rm', 'r'];
+  @override
+  final description = "Remove git repository from the list of repositories";
 
-  RepoAddCommand() {
+  RepoRemoveCommand() {
     // argParser.addFlag('all', abbr: 'a');
   }
 
@@ -34,21 +35,20 @@ class RepoAddCommand extends Command {
 
     final remote = args[0];
     final slug = remote.slugify();
-    final localDirectory = await Repositories.dir(slug);
-    final localPath = localDirectory.path;
+    final localDirectory = await Repositories.dir(slug, create: false);
+
+    // @LOG Removing this repo to the list of repos
 
     if (await XPM.isGit(localDirectory)) {
-      out("{@yellow}This repo is already in the list of repos, refreshing it{@end}");
-      await XPM.git(['-C', localPath, 'pull']);
-    } else {
-      await XPM.git(['clone', remote, localPath]);
+      await localDirectory.delete(recursive: true);
     }
 
     final db = await DB.instance();
-    final repo = Repo()..url = remote;
 
-    await db.writeTxn(() async => await db.repos.putByUrl(repo));
+    await db.writeTxn(() async {
+      return await db.repos.where().urlEqualTo(remote).deleteAll();
+    });
 
-    out("{@green}Repo added to the list of repos{@end}");
+    out("{@green}Repo removed from the list of repos{@end}");
   }
 }

@@ -28,7 +28,21 @@ const RepoSchema = CollectionSchema(
   deserialize: _repoDeserialize,
   deserializeProp: _repoDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'url': IndexSchema(
+      id: -5756857009679432345,
+      name: r'url',
+      unique: true,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'url',
+          type: IndexType.hash,
+          caseSensitive: false,
+        )
+      ],
+    )
+  },
   links: {
     r'package': LinkSchema(
       id: 6778027224369853469,
@@ -103,6 +117,60 @@ void _repoAttach(IsarCollection<dynamic> col, Id id, Repo object) {
   object.package.attach(col, col.isar.collection<Package>(), r'package', id);
 }
 
+extension RepoByIndex on IsarCollection<Repo> {
+  Future<Repo?> getByUrl(String url) {
+    return getByIndex(r'url', [url]);
+  }
+
+  Repo? getByUrlSync(String url) {
+    return getByIndexSync(r'url', [url]);
+  }
+
+  Future<bool> deleteByUrl(String url) {
+    return deleteByIndex(r'url', [url]);
+  }
+
+  bool deleteByUrlSync(String url) {
+    return deleteByIndexSync(r'url', [url]);
+  }
+
+  Future<List<Repo?>> getAllByUrl(List<String> urlValues) {
+    final values = urlValues.map((e) => [e]).toList();
+    return getAllByIndex(r'url', values);
+  }
+
+  List<Repo?> getAllByUrlSync(List<String> urlValues) {
+    final values = urlValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'url', values);
+  }
+
+  Future<int> deleteAllByUrl(List<String> urlValues) {
+    final values = urlValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'url', values);
+  }
+
+  int deleteAllByUrlSync(List<String> urlValues) {
+    final values = urlValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'url', values);
+  }
+
+  Future<Id> putByUrl(Repo object) {
+    return putByIndex(r'url', object);
+  }
+
+  Id putByUrlSync(Repo object, {bool saveLinks = true}) {
+    return putByIndexSync(r'url', object, saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllByUrl(List<Repo> objects) {
+    return putAllByIndex(r'url', objects);
+  }
+
+  List<Id> putAllByUrlSync(List<Repo> objects, {bool saveLinks = true}) {
+    return putAllByIndexSync(r'url', objects, saveLinks: saveLinks);
+  }
+}
+
 extension RepoQueryWhereSort on QueryBuilder<Repo, Repo, QWhere> {
   QueryBuilder<Repo, Repo, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
@@ -174,6 +242,49 @@ extension RepoQueryWhere on QueryBuilder<Repo, Repo, QWhereClause> {
         upper: upperId,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<Repo, Repo, QAfterWhereClause> urlEqualTo(String url) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'url',
+        value: [url],
+      ));
+    });
+  }
+
+  QueryBuilder<Repo, Repo, QAfterWhereClause> urlNotEqualTo(String url) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'url',
+              lower: [],
+              upper: [url],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'url',
+              lower: [url],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'url',
+              lower: [url],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'url',
+              lower: [],
+              upper: [url],
+              includeUpper: false,
+            ));
+      }
     });
   }
 }

@@ -1,6 +1,6 @@
-import 'package:xpm/os/repositories.dart';
+import 'package:xpm/utils/out.dart';
 
-main() {
-  final repos = Repositories();
-  repos.index();
+void main() {
+  final message = 'Hello, World!';
+  out('fuck {message}', error: true, replace: {'message': message});
 }

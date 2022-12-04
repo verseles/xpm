@@ -10,11 +10,16 @@ class Repositories {
   /// Returns working directory
   static final Map<String, Future<Directory>> __dirs = {};
 
-  static Future<Directory> dir(String? repo, {package = ''}) async {
+  static Future<Directory> dir(String? repo,
+      {package = '', create = true}) async {
     final reposDir = await getReposDir();
 
     final dir = Directory("${reposDir.path}/$repo/$package");
-    return dir.create(recursive: true);
+    if (create) {
+      return dir.create(recursive: true);
+    }
+
+    return dir;
   }
 
   static Future<Directory> getReposDir() async {
@@ -25,8 +30,8 @@ class Repositories {
   addRepo(String url) async {
     final db = await DB.instance();
     final repo = Repo()..url = url;
-    await db.writeTxn((isar) async {
-      await isar.repos.put(repo);
+    await db.writeTxn(() async {
+      await db.repos.put(repo);
     });
   }
 

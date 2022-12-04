@@ -1,5 +1,6 @@
 import 'package:args/command_runner.dart';
 import 'package:xpm/commands/devs/repo/add.dart';
+import 'package:xpm/commands/devs/repo/remove.dart';
 
 class RepoCommand extends Command {
   @override
@@ -14,6 +15,7 @@ class RepoCommand extends Command {
   RepoCommand() {
     // argParser.addFlag('all', abbr: 'a');
     addSubcommand(RepoAddCommand());
+    addSubcommand(RepoRemoveCommand());
   }
 
   // [run] may also return a Future.

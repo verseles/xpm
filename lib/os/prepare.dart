@@ -42,7 +42,8 @@ class Prepare {
   Future<File> writeThisBeast(String script) async {
     await boot();
 
-    return File('${(await cacheRepoDir).path}/together.bash').writeAsString(script.trim());
+    return File('${(await cacheRepoDir).path}/together.bash')
+        .writeAsString(script.trim());
   }
 
   Future<String> best({to = 'install'}) async {
@@ -85,25 +86,36 @@ class Prepare {
 
     if (preferedMethod == 'any') return bestForAny(to: to);
 
-    if (preferedMethod == 'apt' || distro == 'debian' || distroLike == 'debian') return bestForApt(to: to);
+    if (preferedMethod == 'apt' || distro == 'debian' || distroLike == 'debian')
+      return bestForApt(to: to);
 
-    if (preferedMethod == 'pacman' || distroLike == 'arch') return bestForArch(to: to);
+    if (preferedMethod == 'pacman' || distroLike == 'arch')
+      return bestForArch(to: to);
 
-    if (preferedMethod == 'dnf' || distro == 'fedora') return bestForFedora(to: to);
+    if (preferedMethod == 'dnf' || distro == 'fedora')
+      return bestForFedora(to: to);
 
-    if (preferedMethod == 'android' || distro == 'android') return bestForAndroid(to: to);
+    if (preferedMethod == 'android' || distro == 'android')
+      return bestForAndroid(to: to);
 
-    if (preferedMethod == 'yum' || distro == 'centos' || distro == 'rhel' || distroLike == 'rhel fedora') {
+    if (preferedMethod == 'yum' ||
+        distro == 'centos' ||
+        distro == 'rhel' ||
+        distroLike == 'rhel fedora') {
       return bestForCentOS(to: to);
     }
 
-    if (preferedMethod == 'zypper' || distro == 'opensuse' || distro == 'sles') {
+    if (preferedMethod == 'zypper' ||
+        distro == 'opensuse' ||
+        distro == 'sles') {
       return bestForOpenSUSE(to: to);
     }
 
-    if (preferedMethod == 'brew' || distro == 'macos') return bestForMacOS(to: to);
+    if (preferedMethod == 'brew' || distro == 'macos')
+      return bestForMacOS(to: to);
 
-    if (preferedMethod == 'choco' || distro == 'windows') return bestForWindows(to: to);
+    if (preferedMethod == 'choco' || distro == 'windows')
+      return bestForWindows(to: to);
 
     return bestForAny(to: to);
   }
@@ -117,7 +129,9 @@ class Prepare {
 
     final String? bestPack = snap ?? flatpak ?? appimage;
 
-    return bestPack != null ? '${to}_pack "$bestPack"' : await bestForAny(to: to);
+    return bestPack != null
+        ? '${to}_pack "$bestPack"'
+        : await bestForAny(to: to);
   }
 
   Future<String> bestForApt({String to = 'install'}) async {
@@ -135,7 +149,9 @@ class Prepare {
     final pacman = await Executable('pacman').find();
     String? bestArchLinux = paru ?? yay ?? pacman;
 
-    return bestArchLinux != null ? '${to}_pacman "$bestArchLinux"' : await bestForAny(to: to);
+    return bestArchLinux != null
+        ? '${to}_pacman "$bestArchLinux"'
+        : await bestForAny(to: to);
   }
 
   Future<String> bestForFedora({String to = 'install'}) async {
@@ -144,7 +160,9 @@ class Prepare {
 
     String? bestFedora = dnf ?? yum;
 
-    return bestFedora != null ? '${to}_dnf "$bestFedora"' : await bestForAny(to: to);
+    return bestFedora != null
+        ? '${to}_dnf "$bestFedora"'
+        : await bestForAny(to: to);
   }
 
   Future<String> bestForCentOS({String to = 'install'}) async {
@@ -153,7 +171,9 @@ class Prepare {
 
     String? bestCentOS = dnf ?? yum;
 
-    return bestCentOS != null ? '${to}_yum "$bestCentOS"' : await bestForAny(to: to);
+    return bestCentOS != null
+        ? '${to}_yum "$bestCentOS"'
+        : await bestForAny(to: to);
   }
 
   Future<String> bestForMacOS({String to = 'install'}) async {
@@ -180,7 +200,9 @@ class Prepare {
 
     String? bestWindows = choco ?? scoop;
 
-    return bestWindows != null ? '${to}_windows "bestWindows"' : await bestForAny(to: to);
+    return bestWindows != null
+        ? '${to}_windows "bestWindows"'
+        : await bestForAny(to: to);
   }
 
   Future<String> toInstall() async {

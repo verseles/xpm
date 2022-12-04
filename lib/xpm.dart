@@ -40,7 +40,7 @@ class XPM {
 
     String gitPath = (await git.find())!;
     if (arguments != null) {
-      await runExecutableArguments(gitPath, arguments, verbose: true);
+      await runExecutableArguments(gitPath, arguments, verbose: false);
     }
 
     return git;

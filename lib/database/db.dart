@@ -5,11 +5,12 @@ import 'models/package.dart';
 import 'models/repo.dart';
 
 class DB {
-  static instance() async {
-    final dbDir = await XPM.dataDir(null);
-    final isar = Isar.open([RepoSchema, PackageSchema],
-        directory: dbDir.path, relaxedDurability: true, name: 'index');
+  static Future<Isar> instance() async {
+    await Isar.initializeIsarCore(download: true);
 
-    return isar;
+    final dbDir = await XPM.dataDir('');
+
+    return await Isar.open([RepoSchema, PackageSchema],
+        directory: dbDir.path, relaxedDurability: true, name: 'index');
   }
 }
