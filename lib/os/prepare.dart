@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:xpm/OS/executable.dart';
-import 'package:xpm/OS/os_release.dart';
-import 'package:xpm/OS/repositories.dart';
+import 'package:xpm/os/executable.dart';
+import 'package:xpm/os/os_release.dart';
+import 'package:xpm/os/repositories.dart';
 import 'package:xpm/xpm.dart';
 import 'package:xpm/utils/leave.dart';
 

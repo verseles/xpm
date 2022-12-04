@@ -1,5 +1,5 @@
 import 'package:args/command_runner.dart';
-import 'package:xpm/OS/repositories.dart';
+import 'package:xpm/os/repositories.dart';
 
 class RefreshCommand extends Command {
   @override

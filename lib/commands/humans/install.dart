@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:process_run/shell.dart';
-import 'package:xpm/OS/prepare.dart';
-import 'package:xpm/OS/repositories.dart';
-import 'package:xpm/OS/run.dart';
+import 'package:xpm/os/prepare.dart';
+import 'package:xpm/os/repositories.dart';
+import 'package:xpm/os/run.dart';
 import 'package:xpm/xpm.dart';
 
 class InstallCommand extends Command {

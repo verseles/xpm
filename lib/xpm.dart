@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
-import 'package:xpm/OS/executable.dart';
-import 'package:xpm/OS/run.dart';
+import 'package:xpm/os/executable.dart';
+import 'package:xpm/os/run.dart';
 
 class XPM {
   static String get name => "xpm";

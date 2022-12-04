@@ -1,5 +1,6 @@
-import 'package:xpm/OS/os_release.dart';
+import 'package:xpm/os/repositories.dart';
 
 main() {
-  print(osRelease('ID_LIKE'));
+  final repos = Repositories();
+  repos.index();
 }
