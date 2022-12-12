@@ -18,8 +18,7 @@ class RefreshCommand extends Command {
   // [run] may also return a Future.
   @override
   void run() async {
-    final repos = Repositories();
-    repos.getPopular();
+    Repositories.index();
 
   }
 }

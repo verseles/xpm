@@ -6,6 +6,7 @@ import 'package:xpm/database/db.dart';
 import 'package:xpm/database/models/repo.dart';
 import 'package:xpm/os/repositories.dart';
 import 'package:xpm/utils/out.dart';
+import 'package:xpm/utils/show_usage.dart';
 import 'package:xpm/utils/slugify.dart';
 import 'package:xpm/xpm.dart';
 
@@ -28,10 +29,7 @@ class RepoRemoveCommand extends Command {
   void run() async {
     List<String> args = argResults!.rest;
 
-    if (args.isEmpty) {
-      printUsage();
-      exit(64);
-    }
+    showUsage(args.isEmpty, () => printUsage());
 
     final remote = args[0];
     final slug = remote.slugify();

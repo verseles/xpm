@@ -10,7 +10,9 @@ class DB {
 
     final dbDir = await XPM.dataDir('');
 
-    return await Isar.open([RepoSchema, PackageSchema],
+// Check if isar is open
+    return Isar.getInstance('index') ??
+        await Isar.open([RepoSchema, PackageSchema],
         directory: dbDir.path, relaxedDurability: true, name: 'index');
   }
 }

@@ -10,7 +10,6 @@ import 'package:xpm/commands/humans/refresh.dart';
 import 'package:xpm/commands/humans/remove.dart';
 import 'package:xpm/commands/humans/search.dart';
 import 'package:xpm/commands/humans/update.dart';
-import 'package:xpm/commands/humans/upgrade.dart';
 
 void main(List<String> args) {
   CommandRunner('xpm', 'Universal package manager for any unix-like distro')
@@ -19,7 +18,6 @@ void main(List<String> args) {
     ..addCommand(InstallCommand())
     ..addCommand(UpdateCommand())
     ..addCommand(RemoveCommand())
-    ..addCommand(UpgradeCommand())
     ..addCommand(MakeCommand())
     ..addCommand(CheckCommand())
     ..addCommand(RepoCommand())

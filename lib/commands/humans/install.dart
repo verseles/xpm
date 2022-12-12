@@ -5,6 +5,7 @@ import 'package:process_run/shell.dart';
 import 'package:xpm/os/prepare.dart';
 import 'package:xpm/os/repositories.dart';
 import 'package:xpm/os/run.dart';
+import 'package:xpm/utils/show_usage.dart';
 import 'package:xpm/xpm.dart';
 
 class InstallCommand extends Command {
@@ -34,7 +35,10 @@ class InstallCommand extends Command {
             '\nIf not set, the selected method can fallsback to another method or finally to [any].');
 
     // add verbose flag
-    argParser.addFlag('verbose', negatable: false, abbr: 'v', help: 'Show more information about what is going on.');
+    argParser.addFlag('verbose',
+        negatable: false,
+        abbr: 'v',
+        help: 'Show more information about what is going on.');
   }
 
   // [run] may also return a Future.
@@ -42,40 +46,39 @@ class InstallCommand extends Command {
   void run() async {
     List<String> packages = argResults!.rest;
 
-    if (packages.isEmpty) {
-      printUsage();
-      exit(64);
-    } else {
-      // @FIXME find repo
-      Directory repoDir = await Repositories.dir('xpm-popular');
+    showUsage(packages.isEmpty, () => printUsage());
 
-      final bash = await XPM.bash();
+    // @FIXME find repo
+    Directory repoDir = await Repositories.dir('xpm-popular');
 
-      for (String package in packages) {
-        // @TODO Find package or warn then continue
-        // @TODO Check if package is already installed
-        final prepare = Prepare('xpm-popular', package, args: argResults);
-        print('Installing $package...');
+    final bash = await XPM.bash();
 
-        final runner = Run();
-        try {
-          await runner.simple(bash, ['-c', 'source ${await prepare.toInstall()}']);
-        } on ShellException catch (_) {
-          print('Failed to install $package: ${_.message}');
-          exit(_.result?.exitCode ?? 1);
-        }
+    for (String package in packages) {
+      // @TODO Find package or warn then continue
+      // @TODO Check if package is already installed
+      final prepare = Prepare('xpm-popular', package, args: argResults);
+      print('Installing $package...');
 
-        print('Checking installation of $package...');
-        try {
-          await runner.simple(bash, ['-c', 'source ${await prepare.toValidate()}']);
-        } on ShellException catch (_) {
-          print('$package installed with errors: $package: ${_.message}');
-          exit(_.result?.exitCode ?? 1);
-        }
-
-        print('Successfully installed $package.');
-        await sharedStdIn.terminate();
+      final runner = Run();
+      try {
+        await runner
+            .simple(bash, ['-c', 'source ${await prepare.toInstall()}']);
+      } on ShellException catch (_) {
+        print('Failed to install $package: ${_.message}');
+        exit(_.result?.exitCode ?? 1);
       }
+
+      print('Checking installation of $package...');
+      try {
+        await runner
+            .simple(bash, ['-c', 'source ${await prepare.toValidate()}']);
+      } on ShellException catch (_) {
+        print('$package installed with errors: $package: ${_.message}');
+        exit(_.result?.exitCode ?? 1);
+      }
+
+      print('Successfully installed $package.');
+      await sharedStdIn.terminate();
     }
   }
 }

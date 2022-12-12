@@ -21,3 +21,4 @@ dependencies:
   logger: ^1.1.0
   path: ^1.8.2
   process_run: ^0.12.3+2
+  slug: ^1.0.1

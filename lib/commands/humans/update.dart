@@ -6,7 +6,7 @@ class UpdateCommand extends Command {
   @override
   final aliases = ['up'];
   @override
-  final description = "Updates a package";
+  final description = "Updates one or all packages";
   @override
   final category = "For humans";
 
