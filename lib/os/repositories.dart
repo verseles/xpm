@@ -6,7 +6,6 @@ import 'package:slug/slug.dart';
 import 'package:xpm/database/db.dart';
 import 'package:xpm/database/models/package.dart';
 import 'package:xpm/database/models/repo.dart';
-import 'package:xpm/utils/leave.dart';
 import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/slugify.dart';
 
@@ -87,7 +86,7 @@ class Repositories {
       } else {
         await XPM.git(['clone', remote, local]);
       }
-      progress.finish(message: "OK");
+      progress.finish(showTiming: true);
     }
   }
 
@@ -121,8 +120,8 @@ class Repositories {
         final package = Package()
           ..name = packageBasename
           ..repo.value = repo;
-        await db.writeTxn(() async {
-          await db.packages.put(package);
+        db.writeTxnSync(() async {
+          db.packages.putSync(package);
         });
       }
     }

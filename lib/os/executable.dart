@@ -1,16 +1,14 @@
 import 'package:process_run/which.dart';
 
+final _whichResults = <String, Future<String?>>{};
+
 class Executable {
   final String cmd;
 
-  static final Map<String, Executable> __instance = {};
-  static final Map<String, Future<String?>> __which = {};
+  const Executable(this.cmd);
 
-  Executable._internal(this.cmd);
-
-  factory Executable(String cmd) => __instance.putIfAbsent(cmd, () => Executable._internal(cmd));
-
-  Future<String?> find() async => __which.putIfAbsent(cmd, () async => await which(cmd));
+  Future<String?> find() async =>
+      _whichResults.putIfAbsent(cmd, () async => await which(cmd));
 
   Future<bool> exists() async => await find() != null;
 }
