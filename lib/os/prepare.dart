@@ -4,6 +4,7 @@ import 'package:args/args.dart';
 import 'package:xpm/os/executable.dart';
 import 'package:xpm/os/os_release.dart';
 import 'package:xpm/os/repositories.dart';
+import 'package:xpm/utils/slugify.dart';
 import 'package:xpm/xpm.dart';
 import 'package:xpm/utils/leave.dart';
 
@@ -14,6 +15,7 @@ class Prepare {
   static final String distro = osRelease('ID') ?? Platform.operatingSystem;
   static final String distroLike = osRelease('ID_LIKE') ?? '';
 
+  late final String repoSlug;
   late final Future<Directory> cacheRepoDir;
   late final Future<Directory> packageDir;
   late final File baseScript;
@@ -24,16 +26,19 @@ class Prepare {
 
   Future<void> boot() async {
     if (booted) return;
-
-    cacheRepoDir = XPM.cacheDir("repos/$repo/$package");
+    repoSlug = repo.slugify();
+    cacheRepoDir = XPM.cacheDir("repos/$repoSlug/$package");
     packageDir = Repositories.dir(repo, package: package);
 
     final String packageDirPath = (await packageDir).path;
     baseScript = File('$packageDirPath/../base.bash');
+
     packageScript = File('$packageDirPath/$package.bash');
 
     if (!await packageScript.exists()) {
-      leave(message: 'Script for "$package" does not exist.', exitCode: 127);
+      leave(
+          message: 'Script for "{@blue}$package{@end}" does not exist.',
+          exitCode: 127);
     }
 
     booted = true;
@@ -86,17 +91,23 @@ class Prepare {
 
     if (preferedMethod == 'any') return bestForAny(to: to);
 
-    if (preferedMethod == 'apt' || distro == 'debian' || distroLike == 'debian')
+    if (preferedMethod == 'apt' ||
+        distro == 'debian' ||
+        distroLike == 'debian') {
       return bestForApt(to: to);
+    }
 
-    if (preferedMethod == 'pacman' || distroLike == 'arch')
+    if (preferedMethod == 'pacman' || distroLike == 'arch') {
       return bestForArch(to: to);
+    }
 
-    if (preferedMethod == 'dnf' || distro == 'fedora')
+    if (preferedMethod == 'dnf' || distro == 'fedora') {
       return bestForFedora(to: to);
+    }
 
-    if (preferedMethod == 'android' || distro == 'android')
+    if (preferedMethod == 'android' || distro == 'android') {
       return bestForAndroid(to: to);
+    }
 
     if (preferedMethod == 'yum' ||
         distro == 'centos' ||
@@ -111,11 +122,13 @@ class Prepare {
       return bestForOpenSUSE(to: to);
     }
 
-    if (preferedMethod == 'brew' || distro == 'macos')
+    if (preferedMethod == 'brew' || distro == 'macos') {
       return bestForMacOS(to: to);
+    }
 
-    if (preferedMethod == 'choco' || distro == 'windows')
+    if (preferedMethod == 'choco' || distro == 'windows') {
       return bestForWindows(to: to);
+    }
 
     return bestForAny(to: to);
   }
@@ -140,7 +153,9 @@ class Prepare {
 
     final String? bestApt = apt ?? aptGet;
 
-    return bestApt != null ? '${to}_apt "$bestApt"' : await bestForAny(to: to);
+    return bestApt != null
+        ? '${to}_apt "$bestApt -y"'
+        : await bestForAny(to: to);
   }
 
   Future<String> bestForArch({String to = 'install'}) async {
@@ -150,7 +165,7 @@ class Prepare {
     String? bestArchLinux = paru ?? yay ?? pacman;
 
     return bestArchLinux != null
-        ? '${to}_pacman "$bestArchLinux"'
+        ? '${to}_pacman "$bestArchLinux --noconfirm"'
         : await bestForAny(to: to);
   }
 

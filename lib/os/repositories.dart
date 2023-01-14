@@ -6,6 +6,7 @@ import 'package:slug/slug.dart';
 import 'package:xpm/database/db.dart';
 import 'package:xpm/database/models/package.dart';
 import 'package:xpm/database/models/repo.dart';
+import 'package:xpm/utils/leave.dart';
 import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/slugify.dart';
 
@@ -18,8 +19,9 @@ class Repositories {
   static Future<Directory> dir(String? repo,
       {package = '', create = true}) async {
     final reposDir = await getReposDir();
+    final repoAsSlug = repo?.slugify() ?? '';
 
-    final dir = Directory("${reposDir.path}/$repo/$package");
+    final dir = Directory("${reposDir.path}/$repoAsSlug/$package");
     if (create) {
       return dir.create(recursive: true);
     }
@@ -31,7 +33,7 @@ class Repositories {
       __dirs.putIfAbsent('reposDir', () async => (await XPM.dataDir('repos')));
 
   static void addRepo(String remote) async {
-    final localDirectory = await dir(remote.slugify());
+    final localDirectory = await dir(remote);
     final localPath = localDirectory.path;
 
     if (await XPM.isGit(localDirectory)) {
@@ -80,11 +82,12 @@ class Repositories {
       var progress = loader
           .progress(format(' Updating {@blue}${repoName(repo.url)}{@end}'));
       final remote = repo.url;
-      final local = (await dir(remote.slugify())).path;
-      if (await XPM.isGit(Directory(local))) {
-        await XPM.git(['-C', local, 'pull']);
+      final localRepoDirPath = (await dir(remote.slugify())).path;
+      if (await XPM.isGit(Directory(localRepoDirPath))) {
+        await XPM.git(['-C', localRepoDirPath, 'reset', '--hard']);
+        await XPM.git(['-C', localRepoDirPath, 'pull', '--force', '--rebase']);
       } else {
-        await XPM.git(['clone', remote, local]);
+        await XPM.git(['clone', remote, localRepoDirPath]);
       }
       progress.finish(showTiming: true);
     }
@@ -120,7 +123,7 @@ class Repositories {
         final package = Package()
           ..name = packageBasename
           ..repo.value = repo;
-        db.writeTxnSync(() async {
+        db.writeTxnSync(() {
           db.packages.putSync(package);
         });
       }

@@ -1,12 +1,16 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:isar/isar.dart';
 import 'package:process_run/shell.dart';
+import 'package:xpm/database/db.dart';
 import 'package:xpm/os/prepare.dart';
 import 'package:xpm/os/repositories.dart';
 import 'package:xpm/os/run.dart';
+import 'package:xpm/utils/leave.dart';
 import 'package:xpm/utils/show_usage.dart';
 import 'package:xpm/xpm.dart';
+import 'package:xpm/database/models/package.dart';
 
 class InstallCommand extends Command {
   @override
@@ -44,40 +48,49 @@ class InstallCommand extends Command {
   // [run] may also return a Future.
   @override
   void run() async {
-    List<String> packages = argResults!.rest;
+    List<String> packagesRequested = argResults!.rest;
 
-    showUsage(packages.isEmpty, () => printUsage());
-
-    // @FIXME find repo
-    Directory repoDir = await Repositories.dir('xpm-popular');
+    showUsage(packagesRequested.isEmpty, () => printUsage());
 
     final bash = await XPM.bash();
 
-    for (String package in packages) {
-      // @TODO Find package or warn then continue
+    final db = await DB.instance();
+    for (String packageRequested in packagesRequested) {
+      final packageInDB =
+          await db.packages.filter().nameEqualTo(packageRequested).findFirst();
+      if (packageInDB == null) {
+        leave(
+            message: 'Package "{@blue}$packageRequested{@end}" not found.',
+            exitCode: 126);
+      }
+      var repoRemote = packageInDB.repo.value!.url;
       // @TODO Check if package is already installed
-      final prepare = Prepare('xpm-popular', package, args: argResults);
-      print('Installing $package...');
+      final prepare =
+          await Prepare(repoRemote, packageRequested, args: argResults);
+      print('Installing $packageRequested...');
 
       final runner = Run();
       try {
         await runner
             .simple(bash, ['-c', 'source ${await prepare.toInstall()}']);
       } on ShellException catch (_) {
-        print('Failed to install $package: ${_.message}');
-        exit(_.result?.exitCode ?? 1);
+        leave(
+            message:
+                'Failed to install "{@blue}$packageRequested{@end}": ${_.message}',
+            exitCode: _.result?.exitCode ?? 1);
       }
 
-      print('Checking installation of $package...');
+      print('Checking installation of $packageRequested...');
       try {
         await runner
             .simple(bash, ['-c', 'source ${await prepare.toValidate()}']);
       } on ShellException catch (_) {
-        print('$package installed with errors: $package: ${_.message}');
+        print(
+            '$packageRequested installed with errors: $packageRequested: ${_.message}');
         exit(_.result?.exitCode ?? 1);
       }
 
-      print('Successfully installed $package.');
+      print('Successfully installed $packageRequested.');
       await sharedStdIn.terminate();
     }
   }

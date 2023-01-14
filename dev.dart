@@ -7,10 +7,6 @@ import 'package:xpm/database/models/package.dart';
 void main() async {
   final db = await DB.instance();
 
-  final packages = await db.packages.where().findAll();
-
-  for (final package in packages) {
-    var repo = package.repo;
-    print(repo.value!.url);
-  }
+  final package = await db.packages.filter().nameEqualTo('micro').findFirst();
+  print(package!.repo.value!.url);
 }
