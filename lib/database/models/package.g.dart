@@ -17,8 +17,13 @@ const PackageSchema = CollectionSchema(
   name: r'Package',
   id: 6192244575192772594,
   properties: {
-    r'name': PropertySchema(
+    r'installed': PropertySchema(
       id: 0,
+      name: r'installed',
+      type: IsarType.bool,
+    ),
+    r'name': PropertySchema(
+      id: 1,
       name: r'name',
       type: IsarType.string,
     )
@@ -60,7 +65,8 @@ void _packageSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.name);
+  writer.writeBool(offsets[0], object.installed);
+  writer.writeString(offsets[1], object.name);
 }
 
 Package _packageDeserialize(
@@ -71,7 +77,8 @@ Package _packageDeserialize(
 ) {
   final object = Package();
   object.id = id;
-  object.name = reader.readString(offsets[0]);
+  object.installed = reader.readBoolOrNull(offsets[0]);
+  object.name = reader.readString(offsets[1]);
   return object;
 }
 
@@ -83,6 +90,8 @@ P _packageDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
+      return (reader.readBoolOrNull(offset)) as P;
+    case 1:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -247,6 +256,32 @@ extension PackageQueryFilter
     });
   }
 
+  QueryBuilder<Package, Package, QAfterFilterCondition> installedIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'installed',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> installedIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'installed',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> installedEqualTo(
+      bool? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'installed',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<Package, Package, QAfterFilterCondition> nameEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -398,6 +433,18 @@ extension PackageQueryLinks
 }
 
 extension PackageQuerySortBy on QueryBuilder<Package, Package, QSortBy> {
+  QueryBuilder<Package, Package, QAfterSortBy> sortByInstalled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'installed', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterSortBy> sortByInstalledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'installed', Sort.desc);
+    });
+  }
+
   QueryBuilder<Package, Package, QAfterSortBy> sortByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -425,6 +472,18 @@ extension PackageQuerySortThenBy
     });
   }
 
+  QueryBuilder<Package, Package, QAfterSortBy> thenByInstalled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'installed', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterSortBy> thenByInstalledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'installed', Sort.desc);
+    });
+  }
+
   QueryBuilder<Package, Package, QAfterSortBy> thenByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -440,6 +499,12 @@ extension PackageQuerySortThenBy
 
 extension PackageQueryWhereDistinct
     on QueryBuilder<Package, Package, QDistinct> {
+  QueryBuilder<Package, Package, QDistinct> distinctByInstalled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'installed');
+    });
+  }
+
   QueryBuilder<Package, Package, QDistinct> distinctByName(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -453,6 +518,12 @@ extension PackageQueryProperty
   QueryBuilder<Package, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<Package, bool?, QQueryOperations> installedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'installed');
     });
   }
 

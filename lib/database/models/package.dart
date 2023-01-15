@@ -9,5 +9,7 @@ class Package {
 
   late String name;
 
+  bool? installed;
+
   final repo = IsarLink<Repo>();
 }

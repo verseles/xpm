@@ -5,7 +5,6 @@ import 'package:isar/isar.dart';
 import 'package:process_run/shell.dart';
 import 'package:xpm/database/db.dart';
 import 'package:xpm/os/prepare.dart';
-import 'package:xpm/os/repositories.dart';
 import 'package:xpm/os/run.dart';
 import 'package:xpm/utils/leave.dart';
 import 'package:xpm/utils/show_usage.dart';
