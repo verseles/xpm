@@ -9,6 +9,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "52.0.0"
+  all_exit_codes:
+    dependency: "direct main"
+    description:
+      name: all_exit_codes
+      sha256: f8d5cfbded067892984f5cb4e18ed004b368c34e4c4283a94b9a41b45eaa97d1
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   analyzer:
     dependency: transitive
     description:

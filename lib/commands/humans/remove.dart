@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:all_exit_codes/all_exit_codes.dart';
 import 'package:args/command_runner.dart';
 import 'package:isar/isar.dart';
 import 'package:process_run/shell.dart';
@@ -57,7 +56,7 @@ class RemoveCommand extends Command {
           await db.packages.filter().nameEqualTo(packageRequested).findFirst();
       if (packageInDB == null) {
         leave(
-            message: 'Package "{@blue}$packageRequested{@end}" not found.',
+            message: 'Package "{@gold}$packageRequested{@end}" not found.',
             exitCode: cantExecute);
       }
 
@@ -65,7 +64,7 @@ class RemoveCommand extends Command {
         // @TODO Check if package is installed in the system but not for me
         leave(
             message:
-                'Package "{@blue}$packageRequested{@end}" is not installed.',
+                'Package "{@gold}$packageRequested{@end}" is not installed.',
             exitCode: cantExecute);
       }
 
@@ -80,7 +79,7 @@ class RemoveCommand extends Command {
       } on ShellException catch (_) {
         sharedStdIn.terminate();
 
-        String error = 'Failed to remove "{@blue}$packageRequested{@end}"';
+        String error = 'Failed to remove "{@red}$packageRequested{@end}"';
         if (argResults!['verbose'] == true) {
           error += ': ${_.message}';
         } else {
@@ -97,7 +96,7 @@ class RemoveCommand extends Command {
         await db.packages.put(packageInDB);
       });
 
-      out('Successfully removed "{@blue}$packageRequested{@end}"');
+      out('Successfully removed "{@green}$packageRequested{@end}"');
     }
   }
 }

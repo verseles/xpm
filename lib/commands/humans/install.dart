@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:all_exit_codes/all_exit_codes.dart';
 import 'package:args/command_runner.dart';
 import 'package:isar/isar.dart';
 import 'package:process_run/shell.dart';
@@ -60,7 +59,7 @@ class InstallCommand extends Command {
           await db.packages.filter().nameEqualTo(packageRequested).findFirst();
       if (packageInDB == null) {
         leave(
-            message: 'Package "{@blue}$packageRequested{@end}" not found.',
+            message: 'Package "{@gold}$packageRequested{@end}" not found.',
             exitCode: cantExecute);
       }
       var repoRemote = packageInDB.repo.value!.url;
@@ -74,7 +73,7 @@ class InstallCommand extends Command {
             .simple(bash, ['-c', 'source ${await prepare.toInstall()}']);
       } on ShellException catch (_) {
         sharedStdIn.terminate();
-        String error = 'Failed to install "{@blue}$packageRequested{@end}"';
+        String error = 'Failed to install "{@red}$packageRequested{@end}"';
         if (argResults!['verbose'] == true) {
           error += ': ${_.message}';
         } else {
@@ -91,7 +90,7 @@ class InstallCommand extends Command {
       } on ShellException catch (_) {
         sharedStdIn.terminate();
         String error =
-            'Package "{@blue}$packageRequested{@end}" installed with errors';
+            'Package "{@gold}$packageRequested{@end}" installed with errors';
         if (argResults!['verbose'] == true) {
           error += ': ${_.message}';
         } else {
@@ -108,7 +107,7 @@ class InstallCommand extends Command {
         await db.packages.put(packageInDB);
       });
 
-      out('Successfully installed "{@blue}$packageRequested{@end}".');
+      out('Successfully installed "{@green}$packageRequested{@end}".');
     }
   }
 }

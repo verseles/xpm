@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:all_exit_codes/all_exit_codes.dart';
 import 'package:args/args.dart';
 import 'package:xpm/os/executable.dart';
 import 'package:xpm/os/os_release.dart';
