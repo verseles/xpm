@@ -38,7 +38,7 @@ class Prepare {
     if (!await packageScript.exists()) {
       leave(
           message: 'Script for "{@blue}$package{@end}" does not exist.',
-          exitCode: 127);
+          exitCode: unableToOpenInputFile);
     }
 
     booted = true;
@@ -61,7 +61,8 @@ class Prepare {
 
     if (forceMethod) {
       if (preferedMethod == 'auto') {
-        leave(message: 'Use --force-method with --method=', exitCode: 64);
+        leave(
+            message: 'Use --force-method with --method=', exitCode: wrongUsage);
       }
       switch (preferedMethod) {
         case 'any':
@@ -85,7 +86,8 @@ class Prepare {
         case 'zypper':
           return bestForOpenSUSE(to: to);
         default:
-          leave(message: 'Unknown method: $preferedMethod', exitCode: 64);
+          leave(
+              message: 'Unknown method: $preferedMethod', exitCode: wrongUsage);
       }
     }
 
@@ -228,9 +230,25 @@ class Prepare {
 
 ${await baseScript.exists() ? await baseScript.readAsString() : ''}
 
-${await packageScript.exists() ? await packageScript.readAsString() : 'echo "WARNING: No script found for $package."'}
+${await packageScript.readAsString()}
 
 ${await best(to: 'install')}
+''';
+
+    return (await writeThisBeast(togetherContents)).path;
+  }
+
+  Future<String> toRemove() async {
+    await boot();
+
+    String togetherContents = '''
+#!/usr/bin/env bash
+
+${await baseScript.exists() ? await baseScript.readAsString() : ''}
+
+${await packageScript.readAsString()}
+
+${await best(to: 'remove')}
 ''';
 
     return (await writeThisBeast(togetherContents)).path;

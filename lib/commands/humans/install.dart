@@ -7,6 +7,7 @@ import 'package:xpm/database/db.dart';
 import 'package:xpm/os/prepare.dart';
 import 'package:xpm/os/run.dart';
 import 'package:xpm/utils/leave.dart';
+import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/show_usage.dart';
 import 'package:xpm/xpm.dart';
 import 'package:xpm/database/models/package.dart';
@@ -60,23 +61,27 @@ class InstallCommand extends Command {
       if (packageInDB == null) {
         leave(
             message: 'Package "{@blue}$packageRequested{@end}" not found.',
-            exitCode: 126);
+            exitCode: cantExecute);
       }
       var repoRemote = packageInDB.repo.value!.url;
       // @TODO Check if package is already installed
-      final prepare =
-          await Prepare(repoRemote, packageRequested, args: argResults);
-      print('Installing $packageRequested...');
+      final prepare = Prepare(repoRemote, packageRequested, args: argResults);
+      out('Installing "{@blue}$packageRequested{@end}"...');
 
       final runner = Run();
       try {
         await runner
             .simple(bash, ['-c', 'source ${await prepare.toInstall()}']);
       } on ShellException catch (_) {
-        leave(
-            message:
-                'Failed to install "{@blue}$packageRequested{@end}": ${_.message}',
-            exitCode: _.result?.exitCode ?? 1);
+        sharedStdIn.terminate();
+        String error = 'Failed to install "{@blue}$packageRequested{@end}"';
+        if (argResults!['verbose'] == true) {
+          error += ': ${_.message}';
+        } else {
+          error += '.';
+        }
+
+        leave(message: error, exitCode: _.result?.exitCode ?? generalError);
       }
 
       print('Checking installation of $packageRequested...');
@@ -84,13 +89,26 @@ class InstallCommand extends Command {
         await runner
             .simple(bash, ['-c', 'source ${await prepare.toValidate()}']);
       } on ShellException catch (_) {
-        print(
-            '$packageRequested installed with errors: $packageRequested: ${_.message}');
-        exit(_.result?.exitCode ?? 1);
+        sharedStdIn.terminate();
+        String error =
+            'Package "{@blue}$packageRequested{@end}" installed with errors';
+        if (argResults!['verbose'] == true) {
+          error += ': ${_.message}';
+        } else {
+          error += '.';
+        }
+
+        leave(message: error, exitCode: _.result?.exitCode ?? generalError);
       }
 
-      print('Successfully installed $packageRequested.');
-      await sharedStdIn.terminate();
+      sharedStdIn.terminate();
+
+      await db.writeTxn(() async {
+        packageInDB.installed = true;
+        await db.packages.put(packageInDB);
+      });
+
+      out('Successfully installed "{@blue}$packageRequested{@end}".');
     }
   }
 }
