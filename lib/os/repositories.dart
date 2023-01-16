@@ -6,6 +6,7 @@ import 'package:slug/slug.dart';
 import 'package:xpm/database/db.dart';
 import 'package:xpm/database/models/package.dart';
 import 'package:xpm/database/models/repo.dart';
+import 'package:xpm/os/bash_script.dart';
 import 'package:xpm/utils/leave.dart';
 import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/slugify.dart';
@@ -114,15 +115,30 @@ class Repositories {
           continue;
         }
 
-        final packageFile = File('${packageFolder.path}/$packageBasename.bash');
-        if (!await packageFile.exists()) {
+        String pathScript = '${packageFolder.path}/$packageBasename.bash';
+        final BashScript bashScript = BashScript(pathScript);
+
+        if (!await bashScript.exists()) {
           continue;
         }
+
+        final desc = bashScript.get('xDESC');
+        final version = bashScript.get('xVERSION');
+        final title = bashScript.get('xTITLE');
+        final url = bashScript.get('xURL');
+
+        final results = await Future.wait([desc, version, title, url]);
 
         // @TODO Validate bash file
         final package = Package()
           ..name = packageBasename
-          ..repo.value = repo;
+          ..repo.value = repo
+          ..script = pathScript
+          ..desc = results[0]
+          ..version = results[1]
+          ..title = results[2]
+          ..url = results[3];
+
         db.writeTxnSync(() {
           db.packages.putSync(package);
         });

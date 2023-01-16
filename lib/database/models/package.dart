@@ -7,7 +7,20 @@ part 'package.g.dart';
 class Package {
   Id? id;
 
+  late String script; // path to script
+
+  @Index(caseSensitive: false)
   late String name;
+
+  @Index(caseSensitive: false)
+  String? desc;
+
+  String? version;
+
+  @Index(caseSensitive: false)
+  String? title;
+
+  String? url;
 
   bool? installed;
 

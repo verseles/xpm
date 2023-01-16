@@ -19,6 +19,5 @@ class RefreshCommand extends Command {
   @override
   void run() async {
     Repositories.index();
-
   }
 }

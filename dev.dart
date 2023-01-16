@@ -1,12 +1,9 @@
-import 'dart:developer';
+import 'package:xpm/os/bash_script.dart';
 
-import 'package:isar/isar.dart';
-import 'package:xpm/database/db.dart';
-import 'package:xpm/database/models/package.dart';
+void main(List<String> args) async {
+  final bashScript =
+      BashScript('/home/helio/sync/WORK/xpm-popular/micro/micro.bash');
+  Map<String, String?>? variables = await bashScript.variables();
+  print(variables);
 
-void main() async {
-  final db = await DB.instance();
-
-  final package = await db.packages.filter().nameEqualTo('micro').findFirst();
-  print(package!.repo.value!.url);
 }
