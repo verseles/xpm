@@ -55,4 +55,13 @@ class BashScript {
 
     return variables;
   }
+
+  Future<bool> hasFunction(String functionName) async {
+    final contents = await this.contents();
+    final regex = RegExp('$functionName\\(.*\\)');
+    final matches = regex.allMatches(contents ?? '');
+
+    return matches.isNotEmpty;
+  }
+
 }

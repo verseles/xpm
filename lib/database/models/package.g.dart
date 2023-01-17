@@ -97,6 +97,19 @@ const PackageSchema = CollectionSchema(
           caseSensitive: false,
         )
       ],
+    ),
+    r'installed': IndexSchema(
+      id: -2396502518995561215,
+      name: r'installed',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'installed',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
     )
   },
   links: {
@@ -225,6 +238,14 @@ extension PackageQueryWhereSort on QueryBuilder<Package, Package, QWhere> {
   QueryBuilder<Package, Package, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhere> anyInstalled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'installed'),
+      );
     });
   }
 }
@@ -462,6 +483,71 @@ extension PackageQueryWhere on QueryBuilder<Package, Package, QWhereClause> {
               indexName: r'title',
               lower: [],
               upper: [title],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> installedIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'installed',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> installedIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'installed',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> installedEqualTo(
+      bool? installed) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'installed',
+        value: [installed],
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> installedNotEqualTo(
+      bool? installed) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'installed',
+              lower: [],
+              upper: [installed],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'installed',
+              lower: [installed],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'installed',
+              lower: [installed],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'installed',
+              lower: [],
+              upper: [installed],
               includeUpper: false,
             ));
       }

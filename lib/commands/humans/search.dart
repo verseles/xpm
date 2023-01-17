@@ -46,6 +46,9 @@ class SearchCommand extends Command {
             .or()
             .anyOf(
                 words, (q, w) => q.titleMatches('*$w*', caseSensitive: false))
+            .sortByName()
+            .thenByTitle()
+            .thenByDesc()
             .findAll();
       }
 

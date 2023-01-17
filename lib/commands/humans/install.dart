@@ -3,6 +3,7 @@ import 'package:args/command_runner.dart';
 import 'package:isar/isar.dart';
 import 'package:process_run/shell.dart';
 import 'package:xpm/database/db.dart';
+import 'package:xpm/os/bash_script.dart';
 import 'package:xpm/os/prepare.dart';
 import 'package:xpm/os/run.dart';
 import 'package:xpm/utils/leave.dart';
@@ -83,21 +84,23 @@ class InstallCommand extends Command {
         leave(message: error, exitCode: _.result?.exitCode ?? generalError);
       }
 
-      print('Checking installation of $packageRequested...');
-      try {
-        await runner
-            .simple(bash, ['-c', 'source ${await prepare.toValidate()}']);
-      } on ShellException catch (_) {
-        sharedStdIn.terminate();
-        String error =
-            'Package "{@gold}$packageRequested{@end}" installed with errors';
-        if (argResults!['verbose'] == true) {
-          error += ': ${_.message}';
-        } else {
-          error += '.';
+      final bashScript = BashScript(packageInDB.script);
+      bool hasValidation = await bashScript.hasFunction('validate');
+      String? error;
+      if (hasValidation) {
+        print('Checking installation of $packageRequested...');
+        try {
+          await runner
+              .simple(bash, ['-c', 'source ${await prepare.toValidate()}']);
+        } on ShellException catch (_) {
+          error =
+              'Package "{@gold}$packageRequested{@end}" installed with {@red}errors{@end}';
+          if (argResults!['verbose'] == true) {
+            error += ': ${_.message}';
+          } else {
+            error += '.';
+          }
         }
-
-        leave(message: error, exitCode: _.result?.exitCode ?? generalError);
       }
 
       sharedStdIn.terminate();
@@ -107,7 +110,11 @@ class InstallCommand extends Command {
         await db.packages.put(packageInDB);
       });
 
-      out('Successfully installed "{@green}$packageRequested{@end}".');
+      if (error != null) {
+        out(error);
+      } else {
+        out('Successfully installed "{@green}$packageRequested{@end}".');
+      }
     }
   }
 }
