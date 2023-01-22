@@ -18,6 +18,7 @@ dependencies:
   all_exit_codes: ^2.1.0
   args: ^2.3.1
   console: ^4.1.0
+  internet_file: ^1.2.0
   isar: ^3.0.5
   logger: ^1.1.0
   path: ^1.8.2

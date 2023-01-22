@@ -1,4 +1,5 @@
 import 'dart:io';
+
 // @TODO Publish as a package
 String? osRelease(String name) {
   Map<String, String> osRelease = <String, String>{};

@@ -5,24 +5,16 @@ class BashScript {
   BashScript(this._filePath);
   String? _contents;
   bool? _exists;
+  File? fileInstance;
 
   Future<bool> exists() async {
-    if (_exists != null) {
-      return _exists!;
-    }
-    final file = File(_filePath);
-    _exists = await file.exists();
+    fileInstance ??= File(_filePath);
+    _exists ??= await fileInstance!.exists();
     return _exists!;
   }
 
   Future<String?> contents() async {
-    if (_contents != null) {
-      return _contents;
-    }
-    if (!await exists()) {
-      return null;
-    }
-    _contents = await File(_filePath).readAsString();
+    _contents ??= await exists() ? await fileInstance!.readAsString() : null;
     return _contents;
   }
 
@@ -35,6 +27,15 @@ class BashScript {
     final value = match?.group(1);
 
     return value;
+  }
+
+  Future<String?> getFirstProvides() async {
+    final value = await get('xPROVIDES');
+    if (value == null) {
+      return null;
+    }
+    final provides = value.split("(").last.split(")").first.split(" ");
+    return provides.first;
   }
 
   Future<Map<String, String?>?> variables() async {
@@ -63,5 +64,4 @@ class BashScript {
 
     return matches.isNotEmpty;
   }
-
 }
