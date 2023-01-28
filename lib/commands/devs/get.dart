@@ -1,6 +1,4 @@
 import 'package:args/command_runner.dart';
-import 'package:internet_file/internet_file.dart';
-import 'package:internet_file/storage_io.dart';
 
 class GetCommand extends Command {
   @override
@@ -20,24 +18,5 @@ class GetCommand extends Command {
 
   // [run] may also return a Future.
   @override
-  void run() async {
-
-
-      final storageIO = InternetFileStorageIO();
-
-      await InternetFile.get(
-        'https://speed.hetzner.de/1GB.bin',
-        storage: storageIO,
-        storageAdditional: storageIO.additional(
-          filename: 'ui_icons.ttf',
-          location: '',
-        ),
-        force: true,
-        progress: (receivedLength, contentLength) {
-          final percentage = receivedLength / contentLength * 100;
-          print(
-              'download progress: $receivedLength of $contentLength ($percentage%)');
-        },
-      );
-  }
+  void run() async {}
 }

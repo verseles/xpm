@@ -254,7 +254,7 @@ ${await best(to: 'remove')}
   Future<String> toValidate() async {
     await boot();
 
-    late final String? bestValidateExecutable;
+    String? bestValidateExecutable;
 
     final String? firstProvides = await packageScript.getFirstProvides();
     if (firstProvides != null) {
@@ -294,10 +294,10 @@ validate "$bestValidateExecutable"
 
   Future<String> dynamicCode() async {
     String xARCH = await getArchitecture();
-    String yCHANNEL = args!['channel'] as String;
+    String yCHANNEL = args!['channel'] ?? '';
     return '''
-readonly yARCH = "$xARCH";
-readonly yCHANNEL = "$yCHANNEL";
+readonly yARCH="$xARCH";
+readonly yCHANNEL="$yCHANNEL";
 ''';
   }
 
