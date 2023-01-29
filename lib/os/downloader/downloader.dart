@@ -22,7 +22,9 @@ class Downloader {
       throw Exception('Downloader adapter ${adapter.executable.cmd} not available');
     }
 
-    segments ??= 1;
+    segments = (segments ?? 1).abs(); 
+
+
     if (url.isEmpty) {
       throw Exception('URL not provided');
     }
