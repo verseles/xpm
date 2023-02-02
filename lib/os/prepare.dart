@@ -39,7 +39,9 @@ class Prepare {
     packageScript = BashScript('$packageDirPath/$package.bash');
 
     if (await packageScript.contents() == null) {
-      leave(message: 'Script for "{@blue}$package{@end}" does not exist.', exitCode: unableToOpenInputFile);
+      leave(
+          message: 'Script for "{@blue}$package{@end}" does not exist.',
+          exitCode: unableToOpenInputFile);
     }
 
     booted = true;
@@ -48,7 +50,8 @@ class Prepare {
   Future<File> writeThisBeast(String script) async {
     await boot();
 
-    return File('${(await cacheRepoDir).path}/together.bash').writeAsString(script.trim());
+    return File('${(await cacheRepoDir).path}/together.bash')
+        .writeAsString(script.trim());
   }
 
   Future<String> best({to = 'install'}) async {
@@ -61,7 +64,8 @@ class Prepare {
 
     if (forceMethod) {
       if (preferedMethod == 'auto') {
-        leave(message: 'Use --force-method with --method=', exitCode: wrongUsage);
+        leave(
+            message: 'Use --force-method with --method=', exitCode: wrongUsage);
       }
       switch (preferedMethod) {
         case 'any':
@@ -91,7 +95,9 @@ class Prepare {
 
     if (preferedMethod == 'any') return bestForAny(to: to);
 
-    if (preferedMethod == 'apt' || distro == 'debian' || distroLike == 'debian') {
+    if (preferedMethod == 'apt' ||
+        distro == 'debian' ||
+        distroLike == 'debian') {
       return bestForApt(to: to);
     }
 
@@ -107,11 +113,16 @@ class Prepare {
       return bestForAndroid(to: to);
     }
 
-    if (preferedMethod == 'yum' || distro == 'centos' || distro == 'rhel' || distroLike == 'rhel fedora') {
+    if (preferedMethod == 'yum' ||
+        distro == 'centos' ||
+        distro == 'rhel' ||
+        distroLike == 'rhel fedora') {
       return bestForCentOS(to: to);
     }
 
-    if (preferedMethod == 'zypper' || distro == 'opensuse' || distro == 'sles') {
+    if (preferedMethod == 'zypper' ||
+        distro == 'opensuse' ||
+        distro == 'sles') {
       return bestForOpenSUSE(to: to);
     }
 
@@ -143,7 +154,9 @@ class Prepare {
       bestPack = appimage;
     }
 
-    return bestPack != null ? '${to}_pack "$bestPack"' : await bestForAny(to: to);
+    return bestPack != null
+        ? '${to}_pack "$bestPack"'
+        : await bestForAny(to: to);
   }
 
   Future<String> bestForApt({String to = 'install'}) async {
@@ -152,7 +165,9 @@ class Prepare {
 
     final String? bestApt = apt ?? aptGet;
 
-    return bestApt != null ? '${to}_apt "$bestApt -y"' : await bestForAny(to: to);
+    return bestApt != null
+        ? '${to}_apt "$bestApt -y"'
+        : await bestForAny(to: to);
   }
 
   Future<String> bestForArch({String to = 'install'}) async {
@@ -161,7 +176,9 @@ class Prepare {
     final pacman = await Executable('pacman').find();
     String? bestArchLinux = paru ?? yay ?? pacman;
 
-    return bestArchLinux != null ? '${to}_pacman "$bestArchLinux --noconfirm"' : await bestForAny(to: to);
+    return bestArchLinux != null
+        ? '${to}_pacman "$bestArchLinux --noconfirm"'
+        : await bestForAny(to: to);
   }
 
   Future<String> bestForFedora({String to = 'install'}) async {
@@ -170,7 +187,9 @@ class Prepare {
 
     String? bestFedora = dnf ?? yum;
 
-    return bestFedora != null ? '${to}_dnf "$bestFedora -y"' : await bestForAny(to: to);
+    return bestFedora != null
+        ? '${to}_dnf "$bestFedora -y"'
+        : await bestForAny(to: to);
   }
 
   Future<String> bestForCentOS({String to = 'install'}) async {
@@ -179,7 +198,9 @@ class Prepare {
 
     String? bestCentOS = dnf ?? yum;
 
-    return bestCentOS != null ? '${to}_yum "$bestCentOS -y"' : await bestForAny(to: to);
+    return bestCentOS != null
+        ? '${to}_yum "$bestCentOS -y"'
+        : await bestForAny(to: to);
   }
 
   Future<String> bestForMacOS({String to = 'install'}) async {
@@ -191,7 +212,9 @@ class Prepare {
   Future<String> bestForOpenSUSE({String to = 'install'}) async {
     final zypper = await Executable('zypper').find();
 
-    return zypper != null ? '${to}_zypper "$zypper -y"' : await bestForAny(to: to);
+    return zypper != null
+        ? '${to}_zypper "$zypper -y"'
+        : await bestForAny(to: to);
   }
 
   Future<String> bestForAndroid({String to = 'install'}) async {
@@ -212,7 +235,9 @@ class Prepare {
       bestWindows = '$scoop --yes';
     }
 
-    return bestWindows != null ? '${to}_windows "$bestWindows"' : await bestForAny(to: to);
+    return bestWindows != null
+        ? '${to}_windows "$bestWindows"'
+        : await bestForAny(to: to);
   }
 
   Future<String> toInstall() async {
@@ -230,7 +255,9 @@ ${await packageScript.contents()}
 ${await best(to: 'install')}
 ''';
 
-    return (await writeThisBeast(togetherContents)).path;
+    final togetherFile = await writeThisBeast(togetherContents);
+
+    return togetherFile.path;
   }
 
   Future<String> toRemove() async {
