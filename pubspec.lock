@@ -210,7 +210,7 @@ packages:
       name: dloader
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.3"
+    version: "1.1.3"
   executable:
     dependency: "direct main"
     description:
