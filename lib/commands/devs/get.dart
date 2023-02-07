@@ -14,8 +14,6 @@ class GetCommand extends Command {
   @override
   final name = "get";
   @override
-  final aliases = ['download'];
-  @override
   final description = "Download file from the internet";
   @override
   final category = "For developers";
