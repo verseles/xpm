@@ -7,7 +7,6 @@ import 'package:xpm/database/db.dart';
 import 'package:xpm/database/models/package.dart';
 import 'package:xpm/database/models/repo.dart';
 import 'package:xpm/os/bash_script.dart';
-import 'package:xpm/utils/leave.dart';
 import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/slugify.dart';
 

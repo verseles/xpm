@@ -1,6 +1,6 @@
 name: xpm
 description: Universal package manager for any unix-like distro
-version: 1.0.0
+version: 1.0.5
 homepage: https://xpm.link
 
 environment:
@@ -17,9 +17,11 @@ dependencies:
   args: ^2.3.1
   build_runner: ^2.3.3
   console: ^4.1.0
+  crypto: ^3.0.2
   dio: ^4.0.6
   dloader: ^1.0.3
   executable: ^1.0.3
+  interact: ^2.1.1
   isar: ^3.0.5
   logger: ^1.1.0
   path: ^1.8.2

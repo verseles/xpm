@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:args/command_runner.dart';
 import 'package:isar/isar.dart';
 import 'package:xpm/database/db.dart';

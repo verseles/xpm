@@ -13,6 +13,6 @@ class DB {
 // Check if isar is open
     return Isar.getInstance('index') ??
         await Isar.open([RepoSchema, PackageSchema],
-        directory: dbDir.path, relaxedDurability: true, name: 'index');
+            directory: dbDir.path, relaxedDurability: true, name: 'index');
   }
 }

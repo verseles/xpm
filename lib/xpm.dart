@@ -52,7 +52,8 @@ class XPM {
   }
 
   static Future<Directory> cacheDir(String? path) async {
-    final String cacheBasePath = _getEnv('XDG_CACHE_HOME') ?? '$userHomePath/.cache';
+    final String cacheBasePath =
+        _getEnv('XDG_CACHE_HOME') ?? '$userHomePath/.cache';
     return Directory('$cacheBasePath/$name/$path').create(recursive: true);
   }
 

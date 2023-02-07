@@ -1,13 +1,7 @@
-import 'dart:io';
-
 import 'package:args/command_runner.dart';
-import 'package:xpm/database/db.dart';
-import 'package:xpm/database/models/repo.dart';
 import 'package:xpm/os/repositories.dart';
 import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/show_usage.dart';
-import 'package:xpm/utils/slugify.dart';
-import 'package:xpm/xpm.dart';
 
 class RepoAddCommand extends Command {
   @override
@@ -29,9 +23,9 @@ class RepoAddCommand extends Command {
     List<String> args = argResults!.rest;
 
     showUsage(args.isEmpty, () => printUsage());
-    
+
     final remote = args[0];
-    
+
     Repositories.addRepo(remote);
 
     out("{@green}Repo added to the list of repos{@end}");
