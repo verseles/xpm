@@ -320,9 +320,11 @@ validate "$bestValidateExecutable"
   }
 
   Future<String> dynamicCode() async {
+    String executable = Platform.resolvedExecutable;
     String xARCH = await getArchitecture();
     String yCHANNEL = args!['channel'] ?? '';
     return '''
+readonly XPM="$executable";
 readonly yARCH="$xARCH";
 readonly yCHANNEL="$yCHANNEL";
 ''';
