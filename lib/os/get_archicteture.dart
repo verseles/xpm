@@ -1,5 +1,6 @@
 import 'dart:io';
 
+/// Returns the architecture of the current device as a future [String].
 Future<String> getArchitecture() async {
   if (Platform.isWindows) {
     return 'x86';
