@@ -4,7 +4,7 @@ import 'package:all_exit_codes/all_exit_codes.dart';
 import 'package:args/args.dart';
 import 'package:xpm/os/bash_script.dart';
 import 'package:xpm/os/executable.dart';
-import 'package:xpm/os/get_architeture.dart';
+import 'package:xpm/os/get_archicteture.dart';
 import 'package:xpm/os/os_release.dart';
 import 'package:xpm/os/repositories.dart';
 import 'package:xpm/utils/slugify.dart';
