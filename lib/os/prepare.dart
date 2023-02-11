@@ -10,6 +10,7 @@ import 'package:xpm/os/repositories.dart';
 import 'package:xpm/utils/slugify.dart';
 import 'package:xpm/xpm.dart';
 import 'package:xpm/utils/leave.dart';
+import 'package:xpm/global.dart';
 
 class Prepare {
   final String repo, package;
@@ -148,10 +149,13 @@ class Prepare {
 
     if (snap != null) {
       bestPack = snap;
+      Global.isSnap = true;
     } else if (flatpak != null) {
       bestPack = '$flatpak --assumeyes';
+      Global.isFlatpak = true;
     } else if (appimage != null) {
       bestPack = appimage;
+      Global.isAppImage = true;
     }
 
     return bestPack != null
@@ -323,10 +327,14 @@ validate "$bestValidateExecutable"
     String executable = Platform.resolvedExecutable;
     String xARCH = await getArchitecture();
     String yCHANNEL = args!['channel'] ?? '';
+
     return '''
 readonly XPM="$executable";
 readonly yARCH="$xARCH";
 readonly yCHANNEL="$yCHANNEL";
+readonly isSnap="${Global.isSnap}";
+readonly isFlatpak="${Global.isFlatpak}";
+readonly isAppImage="${Global.isAppImage}";
 ''';
   }
 

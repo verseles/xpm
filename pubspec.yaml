@@ -1,7 +1,8 @@
 name: xpm
 description: Universal package manager for any unix-like distro
-version: 1.0.5
+version: 0.0.6
 homepage: https://xpm.link
+repository: https://github.com/verseles/xpm
 
 environment:
   sdk: '>=2.18.2 <3.1.0'
@@ -27,3 +28,4 @@ dependencies:
   path: ^1.8.2
   process_run: ^0.12.3+2
   slug: ^1.0.2
+  yaml: ^3.1.1

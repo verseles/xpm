@@ -36,7 +36,7 @@ class InstallCommand extends Command {
 
     argParser.addFlag('force-method',
         negatable: false,
-        help: 'Force the selected method set by --prefer.'
+        help: 'Force the selected method set by --method.'
             '\nIf not set, the selected method can fallsback to another method or finally to [any].');
 
     argParser.addOption('channel',
@@ -51,7 +51,6 @@ class InstallCommand extends Command {
     // add verbose flag
     argParser.addFlag('verbose',
         negatable: false,
-        abbr: 'v',
         help: 'Show more information about what is going on.');
   }
 

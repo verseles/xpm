@@ -4,9 +4,22 @@ import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
 import 'package:xpm/os/executable.dart';
 import 'package:xpm/os/run.dart';
+import 'package:yaml/yaml.dart';
 
 class XPM {
-  static String get name => "xpm";
+  static String get pubspec {
+    return File('pubspec.yaml').readAsStringSync();
+  }
+
+  static String get name {
+    final yaml = loadYaml(pubspec);
+    return yaml['name'];
+  }
+
+  static String get version {
+    final yaml = loadYaml(pubspec);
+    return yaml['version'];
+  }
 
   static final installMethods = {
     'auto': 'Automatically choose the best method or fallsback to [any].',
