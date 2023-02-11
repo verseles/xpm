@@ -1,3 +1,5 @@
+## v0.0.8
+- bigger pub.dev description
 ## v0.0.7
 - Renamed LICENSE.md to LICENSE
 ## v0.0.6
