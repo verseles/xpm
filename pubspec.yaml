@@ -1,6 +1,6 @@
 name: xpm
 description: Universal package manager for any unix-like distro
-version: 0.0.6
+version: 0.0.7
 homepage: https://xpm.link
 repository: https://github.com/verseles/xpm
 
