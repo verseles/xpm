@@ -1,4 +1,4 @@
-## v0.0.9
+## v0.0.10
 - Shortcut class tests
 ## v0.0.9
 - Fix #28
