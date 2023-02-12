@@ -12,6 +12,8 @@ class Shortcut {
   final bool? terminal;
   final String? type;
   final String? categories;
+  final String? destination;
+  final bool sudo;
 
   Shortcut({
     required this.name,
@@ -21,6 +23,8 @@ class Shortcut {
     this.terminal = false,
     this.type = 'Application',
     this.categories,
+    this.destination,
+    this.sudo = true,
   });
 
   String home = XPM.userHome.path;
@@ -37,11 +41,12 @@ class Shortcut {
 
   Future<String> _createLinuxShortcut() async {
     final runner = Run();
-    final filePath = '/usr/share/applications/$name.desktop';
+    final dest = destination ?? '/usr/share/applications';
+    final filePath = '$dest/$name.desktop';
     final file = File(filePath);
 
     if (await file.exists()) {
-      await runner.delete(filePath, sudo: true);
+      await runner.delete(filePath, sudo: sudo);
     }
     String content = '''[Desktop Entry]
     Name=$name
@@ -52,11 +57,11 @@ class Shortcut {
     Comment=$comment
     Categories=${categories ?? 'Utility'};
     ''';
-    await runner.touch(filePath, sudo: true);
+    await runner.touch(filePath, sudo: sudo);
 
-    await runner.writeToFile(filePath, content, sudo: true);
+    await runner.writeToFile(filePath, content, sudo: sudo);
 
-    await runner.asExec(filePath, sudo: true);
+    await runner.asExec(filePath, sudo: sudo);
 
     return filePath;
   }

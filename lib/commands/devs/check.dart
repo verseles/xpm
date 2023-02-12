@@ -8,9 +8,7 @@ class CheckCommand extends Command {
   @override
   final category = "For developers";
 
-  CheckCommand() {
-    // argParser.addFlag('all', abbr: 'a');
-  }
+  CheckCommand();
 
   // [run] may also return a Future.
   @override

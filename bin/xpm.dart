@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:all_exit_codes/all_exit_codes.dart';
 import 'package:args/command_runner.dart';
 import 'package:xpm/commands/devs/check.dart';
+import 'package:xpm/commands/devs/checksum.dart';
 import 'package:xpm/commands/devs/get.dart';
 import 'package:xpm/commands/devs/make.dart';
 import 'package:xpm/commands/devs/repo/repo.dart';
@@ -37,6 +38,7 @@ void main(List<String> args) async {
     ..addCommand(RepoCommand())
     ..addCommand(GetCommand())
     ..addCommand(ShortcutCommand())
+    ..addCommand(ChecksumCommand())
     ..run(args).catchError((error) {
       if (error is! UsageException) throw error;
       print(error);

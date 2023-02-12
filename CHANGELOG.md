@@ -1,3 +1,5 @@
+## v0.0.11
+- Fix #34 Checksum: class, command and tests
 ## v0.0.10
 - Shortcut class tests
 ## v0.0.9

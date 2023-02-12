@@ -3,9 +3,9 @@ name: Publish to pub.dev
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+*'
+      - "v[0-9]+.[0-9]+.[0-9]+*"
   workflow_dispatch:
-    
+
 jobs:
   publish:
     permissions:
@@ -17,8 +17,9 @@ jobs:
     name: Notify the commit on Telegram
     runs-on: ubuntu-latest
     if: always()
+    needs: publish
     steps:
-     - uses: EverythingSuckz/github-telegram-notify@main
-       with:
-        bot_token: '${{ secrets.BOT_TOKEN }}'
-        chat_id: '${{ secrets.CHAT_ID }}'
+      - uses: EverythingSuckz/github-telegram-notify@main
+        with:
+          bot_token: "${{ secrets.BOT_TOKEN }}"
+          chat_id: "${{ secrets.CHAT_ID }}"
