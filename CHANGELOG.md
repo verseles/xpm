@@ -1,4 +1,6 @@
 ## v0.0.9
+- Shortcut class tests
+## v0.0.9
 - Fix #28
 ## v0.0.8
 - bigger pub.dev description
