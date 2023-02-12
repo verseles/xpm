@@ -4,7 +4,7 @@ import 'package:process_run/shell.dart';
 
 class Run {
   Future<ProcessResult> simple(script, List<String> args,
-      {void Function(String)? onProgress, quiet = false}) async {
+      {void Function(String)? onProgress, quiet = false, sudo = false}) async {
     final controller = ShellLinesController();
     ShellEnvironment env = ShellEnvironment()..aliases['sudo'] = 'sudo --stdin';
     Shell shell = Shell(
@@ -21,6 +21,15 @@ class Run {
       controller.stream.listen((line) => print('-> $line'));
     }
 
-    return await shell.runExecutableArguments(script, args);
+    if (sudo) {
+      return await shell.runExecutableArguments('sudo', [script, ...args]);
+    } else {
+      return await shell.runExecutableArguments(script, args);
+    }
+  }
+
+  Future<void> writeToFile(String filePath, String text, {sudo = false}) async {
+    List<String> args = ['-c', 'echo "$text" > $filePath'];
+    await simple('sh', args, sudo: sudo);
   }
 }

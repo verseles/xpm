@@ -6,8 +6,8 @@ class Executable {
 
   const Executable(this.cmd);
 
-  Future<String?> find() async {
-    if (_whichResults.containsKey(cmd)) {
+  Future<String?> find({bool cache = true}) async {
+    if (cache && _whichResults.containsKey(cmd)) {
       return _whichResults[cmd];
     }
     final result = await which(cmd);
@@ -15,9 +15,10 @@ class Executable {
     return result;
   }
 
-  Future<bool> exists() async => await find() != null;
+  Future<bool> exists({bool cache = true}) async =>
+      await find(cache: cache) != null;
 
-  String? findSync() {
+  String? findSync({bool cache = true}) {
     if (_whichResults.containsKey(cmd)) {
       return _whichResults[cmd];
     }
@@ -26,5 +27,5 @@ class Executable {
     return result;
   }
 
-  bool existsSync() => findSync() != null;
+  bool existsSync({bool cache = true}) => findSync(cache: cache) != null;
 }

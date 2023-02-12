@@ -6,6 +6,7 @@ import 'package:xpm/commands/devs/check.dart';
 import 'package:xpm/commands/devs/get.dart';
 import 'package:xpm/commands/devs/make.dart';
 import 'package:xpm/commands/devs/repo/repo.dart';
+import 'package:xpm/commands/devs/shortcut.dart';
 import 'package:xpm/commands/humans/install.dart';
 import 'package:xpm/commands/humans/refresh.dart';
 import 'package:xpm/commands/humans/remove.dart';
@@ -35,6 +36,7 @@ void main(List<String> args) async {
     ..addCommand(CheckCommand())
     ..addCommand(RepoCommand())
     ..addCommand(GetCommand())
+    ..addCommand(ShortcutCommand())
     ..run(args).catchError((error) {
       if (error is! UsageException) throw error;
       print(error);

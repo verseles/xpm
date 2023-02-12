@@ -61,7 +61,7 @@ class InstallCommand extends Command {
 
     showUsage(packagesRequested.isEmpty, () => printUsage());
 
-    final bash = await XPM.bash();
+    final bash = await XPM.bash;
 
     final db = await DB.instance();
     for (String packageRequested in packagesRequested) {

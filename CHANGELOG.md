@@ -1,3 +1,5 @@
+## v0.0.9
+- Fix #28
 ## v0.0.8
 - bigger pub.dev description
 ## v0.0.7

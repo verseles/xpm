@@ -7,6 +7,7 @@ import 'package:dloader/dloader.dart';
 
 import 'package:interact/interact.dart' show Progress, Theme;
 import 'package:xpm/os/bin_folder.dart';
+import 'package:xpm/os/run.dart';
 import 'package:xpm/utils/show_usage.dart';
 import 'package:xpm/xpm.dart';
 
@@ -133,12 +134,14 @@ class GetCommand extends Command {
       throw Exception('Hash expected $expectedHash, but got $fileHash');
     }
 
+    final runner = Run();
+
     if (argResults!['exec'] == true && !Platform.isWindows) {
-      await Process.run('chmod', ['+x', file.path]);
+      await runner.simple('chmod', ['+x', file.path], sudo: true);
     }
 
     if (argResults!['bin'] == true) {
-      await Process.run('sudo', ['cp', file.path, binFolder().path]);
+      await runner.simple('cp', [file.path, binFolder().path], sudo: true);
     }
 
     print(file.path);
