@@ -1,3 +1,5 @@
+## v0.0.20
+- Add tests for Logger
 ## v0.0.19
 - Fix #33 and set search command as default
 ## v0.0.18
