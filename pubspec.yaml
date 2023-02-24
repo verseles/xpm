@@ -1,12 +1,13 @@
 name: xpm
 description: Universal package manager for any unix-like distro including macOS. Also experimental Windows support.
-version: 0.0.11
+version: 0.0.12
 homepage: https://xpm.link
 repository: https://github.com/verseles/xpm
+executables:
+  xpm:
 
 environment:
   sdk: '>=2.18.2 <3.1.0'
-
 
 dev_dependencies:
   isar_generator: ^3.0.5
@@ -27,5 +28,6 @@ dependencies:
   logger: ^1.1.0
   path: ^1.8.2
   process_run: ^0.12.3+2
+  recase: ^4.1.0
   slug: ^1.0.2
   yaml: ^3.1.1

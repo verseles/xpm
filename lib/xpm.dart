@@ -4,18 +4,12 @@ import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
 import 'package:xpm/os/executable.dart';
 import 'package:xpm/os/run.dart';
-import 'package:yaml/yaml.dart';
+// import '../pubspec.dart' as pubspec;
 
 class XPM {
-  static YamlMap? _pubspec;
-  static YamlMap get pubspec {
-    _pubspec ??= loadYaml(File('pubspec.yaml').readAsStringSync());
-    return _pubspec!;
-  }
+  static String get name => 'xpm';
 
-  static String get name => pubspec['name'];
-
-  static String get version => pubspec['version'];
+  static String get version => '0.0.12';
 
   static get installMethods => {
         'auto': 'Automatically choose the best method or fallsback to [any].',

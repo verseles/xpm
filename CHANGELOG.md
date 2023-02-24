@@ -1,3 +1,5 @@
+## v0.0.12
+- preparing to use dpp
 ## v0.0.11
 - Fix #34 Checksum: class, command and tests
 ## v0.0.10
