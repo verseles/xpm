@@ -1,3 +1,5 @@
+## v0.0.15
+- upgrade and clean pub version
 ## v0.0.14
 - better version output
 ## v0.0.13

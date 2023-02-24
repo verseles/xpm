@@ -77,10 +77,10 @@ packages:
     dependency: transitive
     description:
       name: build_daemon
-      sha256: "6bc5544ea6ce4428266e7ea680e945c68806c4aae2da0eb5e9ccf38df8d6acbf"
+      sha256: "757153e5d9cd88253cb13f28c2fb55a537dc31fefd98137549895b5beb7c6169"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.0"
+    version: "3.1.1"
   build_resolvers:
     dependency: transitive
     description:
@@ -90,7 +90,7 @@ packages:
     source: hosted
     version: "2.2.0"
   build_runner:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: build_runner
       sha256: b0a8a7b8a76c493e85f1b84bffa0588859a06197863dba8c9036b15581fd9727
@@ -385,14 +385,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
-  logger:
-    dependency: "direct main"
-    description:
-      name: logger
-      sha256: "5076f09225f91dc49289a4ccb92df2eeea9ea01cf7c26d49b3a1f04c6a49eec1"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.0"
   logging:
     dependency: transitive
     description:
@@ -481,14 +473,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.1"
-  recase:
-    dependency: "direct main"
-    description:
-      name: recase
-      sha256: e4eb4ec2dcdee52dcf99cb4ceabaffc631d7424ee55e56f280bc039737f89213
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.1.0"
   shelf:
     dependency: transitive
     description:
@@ -722,7 +706,7 @@ packages:
     source: hosted
     version: "1.0.1"
   yaml:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: yaml
       sha256: "23812a9b125b48d4007117254bca50abb6c712352927eece9e155207b1db2370"
