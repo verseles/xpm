@@ -4,11 +4,14 @@ import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
 import 'package:xpm/os/executable.dart';
 import 'package:xpm/os/run.dart';
+import 'package:xpm/pubspec.dart' as pubspec;
 
 class XPM {
-  static String get name => 'xpm';
+  static String get name => pubspec.name;
 
-  static String get version => '0.0.12';
+  static String get version => pubspec.version;
+
+  static String get description => pubspec.description.split('.').first;
 
   static get installMethods => {
         'auto': 'Automatically choose the best method or fallsback to [any].',
