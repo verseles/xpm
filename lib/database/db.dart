@@ -1,6 +1,6 @@
 import 'package:isar/isar.dart';
 
-import '../xpm.dart';
+import 'package:xpm/xpm.dart';
 import 'models/package.dart';
 import 'models/repo.dart';
 

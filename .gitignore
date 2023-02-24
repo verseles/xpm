@@ -1,5 +1,7 @@
 dev.dart
 
+bin/libisar.so
+
 .vscode
 
 .dart_tool/

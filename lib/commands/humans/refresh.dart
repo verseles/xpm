@@ -11,9 +11,9 @@ class RefreshCommand extends Command {
   @override
   final category = "For humans";
 
-  RefreshCommand() {
-    argParser.addFlag('all', abbr: 'a');
-  }
+  // RefreshCommand() {
+
+  // }
 
   // [run] may also return a Future.
   @override

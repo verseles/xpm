@@ -1,3 +1,5 @@
+## v0.0.18
+- hotfix
 ## v0.0.17
 - wrong db path saving
 ## v0.0.16
