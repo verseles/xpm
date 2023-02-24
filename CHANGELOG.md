@@ -1,3 +1,5 @@
+## v0.0.13
+- applying new pubspec.dart location
 ## v0.0.12
 - preparing to use dpp
 ## v0.0.11
