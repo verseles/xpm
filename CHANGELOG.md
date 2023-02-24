@@ -1,3 +1,5 @@
+## v0.0.17
+- wrong db path saving
 ## v0.0.16
 - pub upgrade
 ## v0.0.15

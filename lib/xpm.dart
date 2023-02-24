@@ -45,14 +45,13 @@ class XPM {
 
     String gitPath = (await git.find(cache: false))!;
     if (arguments != null) {
-      // leave(message: '$gitPath ${arguments.join(" ")}');
       await runExecutableArguments(gitPath, arguments, verbose: false);
     }
 
     return git;
   }
 
-  static String? _getEnv(String name, {String defaultValue = ''}) {
+  static String? _getEnv(String name, {String? defaultValue}) {
     return Platform.environment[name] ?? defaultValue;
   }
 
@@ -79,7 +78,7 @@ class XPM {
 
   /// Returns data directory.
   static Future<Directory> dataDir(String? path) async {
-    final dir = Directory("$userHome/.$name/$path");
+    final dir = Directory("${userHome.path}/.$name/$path");
     return await dir.create(recursive: true);
   }
 
