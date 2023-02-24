@@ -24,7 +24,7 @@ class SearchCommand extends Command {
 
   // [run] may also return a Future.
   @override
-  void run() async {
+  Future<void> run() async {
     {
       bool exact = argResults!['exact'];
 

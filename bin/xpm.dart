@@ -5,6 +5,7 @@ import 'package:args/command_runner.dart';
 import 'package:xpm/commands/devs/check.dart';
 import 'package:xpm/commands/devs/checksum.dart';
 import 'package:xpm/commands/devs/get.dart';
+import 'package:xpm/commands/devs/log.dart';
 import 'package:xpm/commands/devs/make.dart';
 import 'package:xpm/commands/devs/repo/repo.dart';
 import 'package:xpm/commands/devs/shortcut.dart';
@@ -14,6 +15,7 @@ import 'package:xpm/commands/humans/remove.dart';
 import 'package:xpm/commands/humans/search.dart';
 import 'package:xpm/commands/humans/update.dart';
 import 'package:xpm/utils/leave.dart';
+import 'package:xpm/utils/logger.dart';
 import 'package:xpm/xpm.dart';
 
 void main(List<String> args) async {
@@ -21,7 +23,7 @@ void main(List<String> args) async {
     showVersion(args);
   }
 
-  CommandRunner(XPM.name, XPM.description)
+  final runner = CommandRunner(XPM.name, XPM.description)
     ..argParser.addFlag('version',
         abbr: 'v', negatable: false, help: 'Prints the version of ${XPM.name}.')
     ..addCommand(RefreshCommand())
@@ -35,11 +37,22 @@ void main(List<String> args) async {
     ..addCommand(GetCommand())
     ..addCommand(ShortcutCommand())
     ..addCommand(ChecksumCommand())
-    ..run(args).catchError((error) {
-      if (error is! UsageException) throw error;
-      print(error);
-      exit(wrongUsage);
-    });
+    ..addCommand(LogCommand());
+
+  runner.run(args).catchError((error) async {
+    if (error is! UsageException) throw error;
+    // Use SearchCommand as default command
+    // only runs if no elements on args starts with '-'
+    if (args.every((arg) => !arg.startsWith('-'))) {
+      await runner.run({'search', ...args});
+      exit(success);
+    }
+
+    print(error);
+    Logger.tip('To search packages use: {@cyan}${XPM.name} <package name>');
+
+    exit(wrongUsage);
+  });
 }
 
 Never showVersion(args) {
