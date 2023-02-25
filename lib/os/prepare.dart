@@ -325,6 +325,13 @@ validate "$bestValidateExecutable"
 
   Future<String> dynamicCode() async {
     String executable = Platform.resolvedExecutable;
+
+    // If we are running from a dart file, we need to add the path to the
+    // executable to the script.
+    if (Platform.script.path.endsWith('.dart')) {
+      executable += ' ${Platform.script.path}';
+    }
+
     String xARCH = await getArchitecture();
     String yCHANNEL = args!['channel'] ?? '';
 
