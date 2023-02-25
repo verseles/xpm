@@ -12,18 +12,18 @@ import 'dart:io';
 ///
 /// Throws an exception if no binary folder was found.
 // ignore: non_constant_identifier_names
-Directory binFolder({String? PATH}) {
+Directory binDirectory({String? PATH}) {
   if (!Platform.isWindows) {
     {
       final String path = PATH ?? Platform.environment['PATH'] ?? '';
       List<String> paths = path.split(':');
 
-      Directory dirBin = Directory('/usr/bin');
       Directory dirLocalBin = Directory('/usr/local/bin');
-      if (paths.contains('/usr/bin') && dirBin.existsSync()) {
-        return dirBin;
-      } else if (paths.contains('/usr/local/bin') && dirLocalBin.existsSync()) {
+      Directory dirBin = Directory('/usr/bin');
+      if (paths.contains('/usr/local/bin') && dirLocalBin.existsSync()) {
         return dirLocalBin;
+      } else if (paths.contains('/usr/bin') && dirBin.existsSync()) {
+        return dirBin;
       } else {
         for (String p in paths) {
           Directory dir = Directory(p);
@@ -35,16 +35,16 @@ Directory binFolder({String? PATH}) {
     }
   } else {
     // Windows
-    String? binFolder = Platform.environment['ProgramFiles'];
+    String? binDir = Platform.environment['ProgramFiles'];
 
-    if (binFolder != null) {
-      Directory winBin = Directory(binFolder);
+    if (binDir != null) {
+      Directory winBin = Directory(binDir);
       if (winBin.existsSync()) {
         return winBin;
       }
     } else {
-      binFolder = r'C:\Windows\System32';
-      Directory winBin = Directory(binFolder);
+      binDir = r'C:\Windows\System32';
+      Directory winBin = Directory(binDir);
       if (winBin.existsSync()) {
         return winBin;
       }

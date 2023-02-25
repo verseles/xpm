@@ -6,8 +6,9 @@ import 'package:args/command_runner.dart';
 import 'package:dloader/dloader.dart';
 
 import 'package:interact/interact.dart' show Progress, Theme;
-import 'package:xpm/os/bin_folder.dart';
+import 'package:xpm/os/move_to_bin.dart';
 import 'package:xpm/os/run.dart';
+import 'package:xpm/utils/logger.dart';
 import 'package:xpm/utils/show_usage.dart';
 import 'package:xpm/xpm.dart';
 
@@ -136,12 +137,24 @@ class GetCommand extends Command {
 
     final runner = Run();
 
-    if (argResults!['exec'] == true && !Platform.isWindows) {
-      await runner.simple('chmod', ['+x', file.path], sudo: true);
+    if (argResults!['bin'] == true) {
+      bool toBin = await moveToBin(file, runner: runner, sudo: true);
+
+      if (toBin) {
+        Logger.info('Installed $file to bin folder');
+      } else {
+        throw Exception('Failed to install $file to bin folder');
+      }
     }
 
-    if (argResults!['bin'] == true) {
-      await runner.simple('cp', [file.path, binFolder().path], sudo: true);
+    if (argResults!['exec'] == true && !Platform.isWindows) {
+      // await runner.simple('chmod', ['+x', file.path], sudo: true);
+      bool asExec = await runner.asExec(file.path, sudo: true);
+      if (asExec) {
+        Logger.info('Made $file executable');
+      } else {
+        throw Exception('Failed to make $file executable');
+      }
     }
 
     print(file.path);

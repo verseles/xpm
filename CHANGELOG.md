@@ -1,3 +1,5 @@
+## v0.0.21
+- Add moveToBin method
 ## v0.0.20
 - Add tests for Logger
 ## v0.0.19
