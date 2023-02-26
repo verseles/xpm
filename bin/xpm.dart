@@ -43,7 +43,7 @@ void main(List<String> args) async {
     if (error is! UsageException) throw error;
     // Use SearchCommand as default command
     // only runs if no elements on args starts with '-'
-    if (args.every((arg) => !arg.startsWith('-'))) {
+    if (error.message.startsWith('Could not find a command named')) {
       await runner.run({'search', ...args});
       exit(success);
     }

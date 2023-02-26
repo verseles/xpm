@@ -1,3 +1,5 @@
+## v0.0.23
+- Fix get command
 ## v0.0.22
 - Added support for installation from dart pub global activate
 ## v0.0.21

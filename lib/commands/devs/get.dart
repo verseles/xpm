@@ -72,7 +72,11 @@ class GetCommand extends Command {
     final downloader = Dloader(adapter);
 
     Uri uri = Uri.parse(url);
-    String fileName = uri.pathSegments.last;
+    // if no filename in url, generate one randomly
+    String fileName = uri.pathSegments.isNotEmpty
+        ? uri.pathSegments.last
+        : 'file-${DateTime.now().millisecondsSinceEpoch}';
+
     File destination;
     if (argResults!["out"] != null) {
       destination = File(argResults!["out"]);
