@@ -1,3 +1,5 @@
+## v0.0.25
+- Small fixes (I can't remember)
 ## v0.0.23
 - Fix get command
 ## v0.0.22

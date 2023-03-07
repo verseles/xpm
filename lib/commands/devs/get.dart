@@ -24,6 +24,11 @@ class GetCommand extends Command {
     argParser.addOption("out",
         abbr: "o", help: "Output file path with filename", valueHelp: 'path');
 
+    argParser.addOption('name',
+        abbr: 'n',
+        help: 'Define the name of the downloaded file without defining the path'
+            ' (only works with --out)');
+
     argParser.addFlag('exec',
         abbr: 'x',
         help: 'Make executable the downloaded file (unix only)',
@@ -73,9 +78,14 @@ class GetCommand extends Command {
 
     Uri uri = Uri.parse(url);
     // if no filename in url, generate one randomly
-    String fileName = uri.pathSegments.isNotEmpty
-        ? uri.pathSegments.last
-        : 'file-${DateTime.now().millisecondsSinceEpoch}';
+    String fileName;
+    if (argResults!['name'] != null) {
+      fileName = argResults!['name'];
+    } else if (uri.pathSegments.isNotEmpty) {
+      fileName = uri.pathSegments.last;
+    } else {
+      fileName = 'file-${DateTime.now().millisecondsSinceEpoch}';
+    }
 
     File destination;
     if (argResults!["out"] != null) {
