@@ -19,6 +19,8 @@ class GetCommand extends Command {
   final description = "Download file from the internet";
   @override
   final category = "For developers";
+  @override
+  final invocation = "xpm get <url>";
 
   GetCommand() {
     argParser.addOption("out",
