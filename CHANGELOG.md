@@ -1,3 +1,5 @@
+## v0.0.26
+- Make logger class output to strerr to avoid conflicts with stdout
 ## v0.0.25
 - Small fixes (I can't remember)
 ## v0.0.23

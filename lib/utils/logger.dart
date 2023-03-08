@@ -1,11 +1,12 @@
 import 'package:xpm/utils/out.dart';
 
 /// A class for logging messages to the console.
+/// All methods use stderr for output to avoid conflicts with stdout.
 class Logger {
   /// Logs a [message] with the prefix '[LOG]'.
   static String log(String message) {
     String output = '[LOG] $message';
-    out(output);
+    out(output, error: true);
 
     // Return for testing.
     return output;
@@ -14,7 +15,7 @@ class Logger {
   /// Logs an informational [message] in blue.
   static String info(String message) {
     String output = '{@blue}[INFO] $message{@end}';
-    out(output);
+    out(output, error: true);
 
     // Return for testing.
     return output;
@@ -23,7 +24,7 @@ class Logger {
   /// Logs a warning [message] in yellow.
   static String warning(String message) {
     String output = '{@yellow}[WARNING] $message{@end}';
-    out(output);
+    out(output, error: true);
 
     // Return for testing.
     return output;
@@ -42,7 +43,7 @@ class Logger {
   /// Logs a tip [message] in green.
   static String tip(String message) {
     String output = '{@green}$message{@end}';
-    out(output);
+    out(output, error: true);
 
     // Return for testing.
     return output;

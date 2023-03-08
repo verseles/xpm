@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:all_exit_codes/all_exit_codes.dart';
 import 'package:crypto/crypto.dart';
 
 import 'package:args/command_runner.dart';
@@ -173,6 +174,8 @@ class GetCommand extends Command {
       }
     }
 
+    // leave(message: file.path, exitCode: success);
     print(file.path);
+    exit(success);
   }
 }
