@@ -1,3 +1,5 @@
+## v0.0.27
+- Small adjustment for leave function
 ## v0.0.26
 - Make logger class output to strerr to avoid conflicts with stdout
 ## v0.0.25
