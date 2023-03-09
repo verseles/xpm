@@ -4,6 +4,7 @@ import 'package:all_exit_codes/all_exit_codes.dart';
 import 'package:args/command_runner.dart';
 import 'package:xpm/commands/devs/check.dart';
 import 'package:xpm/commands/devs/checksum.dart';
+import 'package:xpm/commands/devs/file/file.dart';
 import 'package:xpm/commands/devs/get.dart';
 import 'package:xpm/commands/devs/log.dart';
 import 'package:xpm/commands/devs/make.dart';
@@ -34,6 +35,7 @@ void main(List<String> args) async {
     ..addCommand(MakeCommand())
     ..addCommand(CheckCommand())
     ..addCommand(RepoCommand())
+    ..addCommand(FileCommand())
     ..addCommand(GetCommand())
     ..addCommand(ShortcutCommand())
     ..addCommand(ChecksumCommand())

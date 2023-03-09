@@ -155,17 +155,16 @@ class GetCommand extends Command {
     final runner = Run();
 
     if (argResults!['bin'] == true) {
-      bool toBin = await moveToBin(file, runner: runner, sudo: true);
+      final File? toBin = await moveToBin(file, runner: runner, sudo: true);
 
-      if (toBin) {
-        Logger.info('Installed $file to bin folder');
+      if (toBin != null) {
+        Logger.info('Installed $file to bin folder: ${toBin.path}');
       } else {
         throw Exception('Failed to install $file to bin folder');
       }
     }
 
     if (argResults!['exec'] == true && !Platform.isWindows) {
-      // await runner.simple('chmod', ['+x', file.path], sudo: true);
       bool asExec = await runner.asExec(file.path, sudo: true);
       if (asExec) {
         Logger.info('Made $file executable');
@@ -174,7 +173,7 @@ class GetCommand extends Command {
       }
     }
 
-    print(file.path);
+    print(file.absolute.path);
     exit(success);
   }
 }

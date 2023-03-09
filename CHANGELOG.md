@@ -1,3 +1,5 @@
+## v0.0.29
+- many new commands to manage files and install bin
 ## v0.0.28
 - small changes in logger
 ## v0.0.27

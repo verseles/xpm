@@ -13,14 +13,7 @@ class RepoCommand extends Command {
   final category = "For developers";
 
   RepoCommand() {
-    // argParser.addFlag('all', abbr: 'a');
     addSubcommand(RepoAddCommand());
     addSubcommand(RepoRemoveCommand());
-  }
-
-  // [run] may also return a Future.
-  @override
-  void run() {
-    // print(argResults!['all']);
   }
 }

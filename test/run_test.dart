@@ -90,6 +90,30 @@ void main() {
       await file.delete();
     });
 
+    test('copy file', () async {
+      String sourcePath = '${tempDir.path}/source_file.txt';
+      String destPath = '${tempDir.path}/dest_file.txt';
+      String text = 'Hello, world!';
+      bool success = await runner.writeToFile(sourcePath, text);
+      expect(success, isTrue);
+
+      success = await runner.copy(sourcePath, destPath);
+      expect(success, isTrue);
+
+      File sourceFile = File(sourcePath);
+      File destFile = File(destPath);
+      expect(await sourceFile.exists(), isTrue);
+      expect(await destFile.exists(), isTrue);
+
+      String originalText = await sourceFile.readAsString();
+      String copiedText = await destFile.readAsString();
+      expect(originalText.trim(), equals(text.trim()));
+      expect(copiedText.trim(), equals(text.trim()));
+
+      await sourceFile.delete();
+      await destFile.delete();
+    });
+
     test('check if file exists', () async {
       String filePath = '${tempDir.path}/test_file.txt';
       String text = 'Hello, world!';

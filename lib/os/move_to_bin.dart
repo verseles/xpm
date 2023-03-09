@@ -8,15 +8,21 @@ import 'package:path/path.dart';
 /// If [binDir] is not specified, the system's bin folder will be used.
 /// If [runner] is not specified, a new [Run] instance will be used.
 /// If [sudo] is true, the file will be moved using sudo.
-Future<bool> moveToBin(File file,
+Future<File?> moveToBin(File file,
     {Run? runner, Directory? binDir, bool sudo = true}) async {
   binDir ??= binDirectory();
   runner ??= Run();
 
   try {
-    return await runner.move(file.path, join(binDir.path, basename(file.path)),
-        sudo: sudo);
+    final dest = File(join(binDir.absolute.path, basename(file.absolute.path)));
+    final success =
+        await runner.move(file.absolute.path, dest.absolute.path, sudo: sudo);
+    if (success) {
+      return dest.absolute;
+    }
   } catch (e) {
-    return false;
+    return null;
   }
+
+  return null;
 }
