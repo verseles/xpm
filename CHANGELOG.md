@@ -1,3 +1,5 @@
+## v0.0.28
+- small changes in logger
 ## v0.0.27
 - Small adjustment for leave function
 ## v0.0.26

@@ -174,7 +174,6 @@ class GetCommand extends Command {
       }
     }
 
-    // leave(message: file.path, exitCode: success);
     print(file.path);
     exit(success);
   }
