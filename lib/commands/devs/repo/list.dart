@@ -20,7 +20,8 @@ class ListCommand extends Command {
   void run() async {
     out("{@green}List of repositories:{@end}");
     final reposList = await Repositories.allRepos();
-    print(reposList[0].url);
+
+    reposList.forEach((repo) => out(repo.url));
   }
 }
 
