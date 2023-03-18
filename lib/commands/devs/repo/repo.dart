@@ -1,6 +1,7 @@
 import 'package:args/command_runner.dart';
 import 'package:xpm/commands/devs/repo/add.dart';
 import 'package:xpm/commands/devs/repo/remove.dart';
+import 'package:xpm/commands/devs/repo/list.dart';
 
 class RepoCommand extends Command {
   @override
@@ -15,5 +16,6 @@ class RepoCommand extends Command {
   RepoCommand() {
     addSubcommand(RepoAddCommand());
     addSubcommand(RepoRemoveCommand());
+    addSubcommand(ListCommand());
   }
 }
