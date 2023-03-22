@@ -22,11 +22,9 @@ class DB {
     }
     final isarInstance = Isar.getInstance('index');
     if (isarInstance == null) {
-      Logger.info('Opening database...');
       return await Isar.open([RepoSchema, PackageSchema],
           directory: dbDir.path, relaxedDurability: true, name: 'index');
     } else  {
-      Logger.info('Database already open. Skipping...');
       return isarInstance;
     }
   }
