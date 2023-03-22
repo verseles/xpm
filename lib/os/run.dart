@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:process_run/shell.dart';
+import 'package:xpm/xpm.dart';
 
 class Run {
   /// Run a command on the system
@@ -15,7 +16,7 @@ class Run {
         stdout: controller.sink,
         stdin: sharedStdIn,
         environment: env,
-        workingDirectory: userHomePath,
+        workingDirectory: XPM.userHome.path,
         runInShell: true,
         commandVerbose: false);
 
