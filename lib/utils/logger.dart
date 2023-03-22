@@ -42,7 +42,7 @@ class Logger {
 
   /// Logs a tip [message] in green.
   static String tip(String message, {bool error = true}) {
-    String output = '{@green}$message{@end}';
+    String output = '{@green}[TIP] $message{@end}';
     out(output, error: error);
 
     // Return for testing.
