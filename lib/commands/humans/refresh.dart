@@ -31,6 +31,6 @@ class RefreshCommand extends Command {
       }
     }
 
-    Repositories.index();
+    await Repositories.index();
   }
 }
