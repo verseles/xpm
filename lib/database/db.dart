@@ -15,7 +15,6 @@ class DB {
 
     final dbDir = await XPM.dataDir('');
 
-// Warn that the database is being created
     final dbFile = File('${dbDir.path}/index.isar');
     if (!dbFile.existsSync()) {
       Logger.info('Creating database... This may take a while.');
