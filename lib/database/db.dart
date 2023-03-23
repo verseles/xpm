@@ -1,9 +1,7 @@
 import 'dart:io';
 
-import 'package:all_exit_codes/all_exit_codes.dart';
 import 'package:isar/isar.dart';
 import 'package:xpm/utils/logger.dart';
-import 'package:xpm/utils/out.dart';
 
 import 'package:xpm/xpm.dart';
 import 'models/package.dart';
@@ -23,7 +21,7 @@ class DB {
     if (isarInstance == null) {
       return await Isar.open([RepoSchema, PackageSchema],
           directory: dbDir.path, relaxedDurability: true, name: 'index');
-    } else  {
+    } else {
       return isarInstance;
     }
   }
