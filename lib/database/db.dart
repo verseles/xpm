@@ -1,4 +1,9 @@
+import 'dart:io';
+
+import 'package:all_exit_codes/all_exit_codes.dart';
 import 'package:isar/isar.dart';
+import 'package:xpm/utils/logger.dart';
+import 'package:xpm/utils/out.dart';
 
 import 'package:xpm/xpm.dart';
 import 'models/package.dart';
@@ -10,9 +15,16 @@ class DB {
 
     final dbDir = await XPM.dataDir('');
 
-// Check if isar is open
-    return Isar.getInstance('index') ??
-        await Isar.open([RepoSchema, PackageSchema],
-            directory: dbDir.path, relaxedDurability: true, name: 'index');
+    final dbFile = File('${dbDir.path}/index.isar');
+    if (!dbFile.existsSync()) {
+      Logger.info('Creating database... This may take a while.');
+    }
+    final isarInstance = Isar.getInstance('index');
+    if (isarInstance == null) {
+      return await Isar.open([RepoSchema, PackageSchema],
+          directory: dbDir.path, relaxedDurability: true, name: 'index');
+    } else  {
+      return isarInstance;
+    }
   }
 }
