@@ -34,6 +34,15 @@ class RemoveCommand extends Command {
         help: 'Force the selected method set by --prefer.'
             '\nIf not set, the selected method can fallsback to another method or finally to [any].');
 
+    argParser.addOption('channel',
+        abbr: 'c', help: 'Inform the prefered channel to install the package.');
+
+    argParser.addMultiOption('flags',
+        abbr: 'f',
+        help: 'Inform custom flags to the script.'
+            '\nUse this option multiple times to pass multiple flags.'
+            '\nExample: --flags="--flag1" --flags="--flag2"');
+
     // add verbose flag
     argParser.addFlag('verbose',
         negatable: false,

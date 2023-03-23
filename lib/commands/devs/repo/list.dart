@@ -1,7 +1,6 @@
 import 'package:args/command_runner.dart';
 import 'package:xpm/os/repositories.dart';
 import 'package:xpm/utils/out.dart';
-import 'package:xpm/utils/show_usage.dart';
 
 class ListCommand extends Command {
   @override

@@ -1,3 +1,5 @@
+## v0.0.30
+- fix: many fixes
 ## v0.0.29
 - many new commands to manage files and install bin
 ## v0.0.28

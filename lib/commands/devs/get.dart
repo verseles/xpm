@@ -1,12 +1,11 @@
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:all_exit_codes/all_exit_codes.dart';
-import 'package:crypto/crypto.dart';
-
 import 'package:args/command_runner.dart';
+import 'package:crypto/crypto.dart';
 import 'package:dloader/dloader.dart';
-
-import 'package:interact/interact.dart' show Progress, Theme;
+import 'package:interact/interact.dart' show Progress, Theme, ProgressState;
 import 'package:xpm/os/move_to_bin.dart';
 import 'package:xpm/os/run.dart';
 import 'package:xpm/utils/logger.dart';
@@ -42,6 +41,10 @@ class GetCommand extends Command {
         help: 'Install to bin folder of the system',
         negatable: false);
 
+    // no progress bar
+    argParser.addFlag('no-progress',
+        help: 'Disable progress bar', negatable: false);
+
     argParser.addOption('md5', help: 'Check MD5 hash', valueHelp: 'hash');
     argParser.addOption('sha1', help: 'Check SHA1 hash', valueHelp: 'hash');
     argParser.addOption('sha256', help: 'Check SHA256 hash', valueHelp: 'hash');
@@ -76,6 +79,7 @@ class GetCommand extends Command {
     } else {
       adapter = dioAdapter;
     }
+    Logger.info("Using ${adapter.executable.cmd} adapter");
 
     final downloader = Dloader(adapter);
 
@@ -89,6 +93,7 @@ class GetCommand extends Command {
     } else {
       fileName = 'file-${DateTime.now().millisecondsSinceEpoch}';
     }
+    Logger.info("File name: $fileName");
 
     File destination;
     if (argResults!["out"] != null) {
@@ -98,78 +103,101 @@ class GetCommand extends Command {
       Directory tempDir = await XPM.temp('');
       destination = File(tempDir.path + fileName);
     }
+    Logger.info("Destination: ${destination.path}");
 
-    final progressBar = Progress.withTheme(
-        theme: Theme.colorfulTheme,
-        length: 100,
-        rightPrompt: (current) => ' ${current.toString().padLeft(3)}%',
-        leftPrompt: (c) => 'Downloading $fileName ').interact();
+    final progressBarEnabled = argResults!["no-progress"] == null;
+
+    final ProgressState? progressBar;
+    if (progressBarEnabled) {
+      progressBar = Progress.withTheme(
+          theme: Theme.colorfulTheme,
+          length: 100,
+          rightPrompt: (current) => ' ${current.toString().padLeft(3)}%',
+          leftPrompt: (c) => 'Downloading $fileName ').interact();
+    } else {
+      progressBar = null;
+    }
 
     final File file = await downloader.download(
       url: url,
       destination: destination,
       onProgress: (progress) {
-        if (progress['percentComplete'] != null) {
-          progressBar.clear();
+        if (progressBarEnabled && progress['percentComplete'] != null) {
+          progressBar!.clear();
           progressBar.increase(int.parse(progress['percentComplete']));
         }
       },
     );
 
-    progressBar.done();
-
-    String? expectedHash;
-    Digest? fileHash;
-    final Uint8List asBytes = await file.readAsBytes();
-
-    if (argResults!['sha1'] != null) {
-      expectedHash = argResults!['sha1'];
-      fileHash = sha1.convert(asBytes);
-    } else if (argResults!['sha256'] != null) {
-      expectedHash = argResults!['sha256'];
-      fileHash = sha256.convert(asBytes);
-    } else if (argResults!['sha512'] != null) {
-      expectedHash = argResults!['sha512'];
-      fileHash = sha512.convert(asBytes);
-    } else if (argResults!['md5'] != null) {
-      expectedHash = argResults!['md5'];
-      fileHash = md5.convert(asBytes);
-    } else if (argResults!['sha224'] != null) {
-      expectedHash = argResults!['sha224'];
-      fileHash = sha224.convert(asBytes);
-    } else if (argResults!['sha384'] != null) {
-      expectedHash = argResults!['sha384'];
-      fileHash = sha384.convert(asBytes);
-    } else if (argResults!['sha512-224'] != null) {
-      expectedHash = argResults!['sha512-224'];
-      fileHash = sha512224.convert(asBytes);
-    } else if (argResults!['sha512-256'] != null) {
-      expectedHash = argResults!['sha512-256'];
-      fileHash = sha512256.convert(asBytes);
+    if (progressBarEnabled) {
+      progressBar!.done();
     }
 
-    if (fileHash != null && fileHash.toString() != expectedHash) {
-      throw Exception('Hash expected $expectedHash, but got $fileHash');
-    }
+    if (argResults!['md5'] != null ||
+        argResults!['sha1'] != null ||
+        argResults!['sha256'] != null ||
+        argResults!['sha512'] != null ||
+        argResults!['sha224'] != null ||
+        argResults!['sha384'] != null ||
+        argResults!['sha512-224'] != null ||
+        argResults!['sha512-256'] != null) {
+      Logger.info("Checking hash...");
 
-    final runner = Run();
+      String? expectedHash;
+      Digest? fileHash;
+      final Uint8List asBytes = await file.readAsBytes();
 
-    if (argResults!['bin'] == true) {
-      final File? toBin = await moveToBin(file, runner: runner, sudo: true);
+      if (argResults!['sha1'] != null) {
+        expectedHash = argResults!['sha1'];
+        fileHash = sha1.convert(asBytes);
+      } else if (argResults!['sha256'] != null) {
+        expectedHash = argResults!['sha256'];
+        fileHash = sha256.convert(asBytes);
+      } else if (argResults!['sha512'] != null) {
+        expectedHash = argResults!['sha512'];
+        fileHash = sha512.convert(asBytes);
+      } else if (argResults!['md5'] != null) {
+        expectedHash = argResults!['md5'];
+        fileHash = md5.convert(asBytes);
+      } else if (argResults!['sha224'] != null) {
+        expectedHash = argResults!['sha224'];
+        fileHash = sha224.convert(asBytes);
+      } else if (argResults!['sha384'] != null) {
+        expectedHash = argResults!['sha384'];
+        fileHash = sha384.convert(asBytes);
+      } else if (argResults!['sha512-224'] != null) {
+        expectedHash = argResults!['sha512-224'];
+        fileHash = sha512224.convert(asBytes);
+      } else if (argResults!['sha512-256'] != null) {
+        expectedHash = argResults!['sha512-256'];
+        fileHash = sha512256.convert(asBytes);
+      }
 
-      if (toBin != null) {
-        Logger.info('Installed $file to bin folder: ${toBin.path}');
-      } else {
-        throw Exception('Failed to install $file to bin folder');
+      if (fileHash != null && fileHash.toString() != expectedHash) {
+        throw Exception('Hash expected $expectedHash, but got $fileHash');
       }
     }
 
-    if (argResults!['exec'] == true && !Platform.isWindows) {
-      bool asExec = await runner.asExec(file.path, sudo: true);
-      if (asExec) {
-        Logger.info('Made $file executable');
-      } else {
-        throw Exception('Failed to make $file executable');
+    if (argResults!['bin'] == true || argResults!['exec'] == true) {
+      final runner = Run();
+
+      if (argResults!['bin'] == true) {
+        final File? toBin = await moveToBin(file, runner: runner, sudo: true);
+
+        if (toBin != null) {
+          Logger.info('Installed $file to bin folder: ${toBin.path}');
+        } else {
+          throw Exception('Failed to install $file to bin folder');
+        }
+      }
+
+      if (argResults!['exec'] == true && !Platform.isWindows) {
+        bool asExec = await runner.asExec(file.path, sudo: true);
+        if (asExec) {
+          Logger.info('Made $file executable');
+        } else {
+          throw Exception('Failed to make $file executable');
+        }
       }
     }
 

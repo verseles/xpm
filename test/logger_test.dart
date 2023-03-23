@@ -32,7 +32,7 @@ void main() {
 
   test('tip() logs message in green', () {
     String message = 'This is a tip message.';
-    String expected = '{@green}$message{@end}';
+    String expected = '{@green}[TIP] $message{@end}';
     String result = Logger.tip(message);
     expect(result, equals(expected));
   });
