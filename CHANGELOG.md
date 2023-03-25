@@ -1,3 +1,5 @@
+## v0.2.2
+- testing release binaries with gzip
 ## v0.2.0
 - testing release binaries
 ## v0.1.8
