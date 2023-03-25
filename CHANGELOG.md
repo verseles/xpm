@@ -1,3 +1,5 @@
+## v0.1.1
+- ci:testing pre-release binaries
 ## v0.1.0
 - ci:testing pre-release binaries
 ## v0.0.33
