@@ -30,7 +30,7 @@ jobs:
       - name: Compile on ${{ matrix.os }}
         if: matrix.os != 'windows-latest'
         run: mkdir -p build && dart compile exe bin/xpm.dart -o build/xpm-$(uname -s | tr '[:upper:]' '[:lower:]')
-      - name: Compile on windows-lastest
+      - name: Compile on windows-latest
         if: matrix.os == 'windows-latest'
         run: mkdir -p build && dart compile exe bin/xpm.dart -o build/xpm-windows.exe
 
