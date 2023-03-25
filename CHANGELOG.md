@@ -1,3 +1,5 @@
+## v0.4.0
+- xpm get --user-agent available
 ## v0.3.3
 - finished first great installer.bash
 ## v0.3.1
