@@ -78,9 +78,9 @@ class InstallCommand extends Command {
       final prepare = Prepare(repoRemote, packageRequested, args: argResults);
       if (packageInDB.installed == true &&
           Executable(packageRequested).existsSync(cache: false)) {
-        Logger.info('Reinstalling "{@blue}$packageRequested{@end}"...');
+        Logger.info('Reinstalling "$packageRequested"...');
       } else {
-        Logger.info('Installing "{@blue}$packageRequested{@end}"...');
+        Logger.info('Installing "$packageRequested"...');
       }
 
       final runner = Run();
@@ -108,8 +108,7 @@ class InstallCommand extends Command {
           await runner
               .simple(bash, ['-c', 'source ${await prepare.toValidate()}']);
         } on ShellException catch (_) {
-          error =
-              'Package "{@gold}$packageRequested{@end}" installed with {@red}errors{@end}';
+          error = 'Package "$packageRequested" installed with errors';
           if (argResults!['verbose'] == true) {
             error += ': ${_.message}';
           } else {
@@ -128,8 +127,7 @@ class InstallCommand extends Command {
       if (error != null) {
         Logger.error(error);
       } else {
-        Logger.success(
-            'Successfully installed "{@green}$packageRequested{@end}".');
+        Logger.success('Successfully installed "$packageRequested".');
       }
     }
   }

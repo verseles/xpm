@@ -1,3 +1,5 @@
+## v0.0.33
+- fix: new adjustments to reflect #23
 ## v0.0.32
 - fix: show 'reinstalling' when reinstalling
 ## v0.0.31
