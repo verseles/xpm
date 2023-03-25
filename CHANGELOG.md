@@ -1,3 +1,5 @@
+## v0.2.3
+- testing release binaries with gzip and arch
 ## v0.2.2
 - testing release binaries with gzip
 ## v0.2.0
