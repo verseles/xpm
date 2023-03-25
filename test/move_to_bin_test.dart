@@ -1,3 +1,5 @@
+@Tags(['skip-ci', 'sudo'])
+
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:xpm/os/bin_directory.dart';

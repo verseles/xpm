@@ -1,21 +1,19 @@
-SRC_DIR := lib
-BIN_DIR := bin
-TEST_DIR := test
-BUILD_DIR := build
-
-# Set the XPM variable to the name of the Dart file to compile
-NAME := xpm
-
 .DEFAULT_GOAL := compile
 
 test:
 	dart test
 
+ci:
+	dart pub get
+	dart format --output=none --set-exit-if-changed .
+	dart analyze
+	dart test --exclude-tags=skip-ci,sudo
+
 compile:
-	mkdir -p $(BUILD_DIR)
-	dart compile exe $(BIN_DIR)/$(NAME).dart -o $(BUILD_DIR)/$(NAME)
+	mkdir -p ./build
+	dart compile exe $(BIN_DIR)/xpm.dart -o ./build/xpm
 
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -rf ./build
 
-.PHONY: test compile clean
+.PHONY: test compile clean ci

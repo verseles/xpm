@@ -1,0 +1,8 @@
+# We occasionally want to use --tags or --exclude-tags on these tags.
+tags:
+  sudo:
+    description: Require sudo to run this test.
+
+  skip-ci:
+    description: Skip this test on CI.
+    # This is a workaround for
