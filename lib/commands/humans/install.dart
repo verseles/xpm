@@ -9,7 +9,6 @@ import 'package:xpm/os/prepare.dart';
 import 'package:xpm/os/run.dart';
 import 'package:xpm/utils/leave.dart';
 import 'package:xpm/utils/logger.dart';
-import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/show_usage.dart';
 import 'package:xpm/xpm.dart';
 import 'package:xpm/database/models/package.dart';
@@ -76,14 +75,12 @@ class InstallCommand extends Command {
       }
 
       var repoRemote = packageInDB.repo.value!.url;
-      // @TODO Check if package is already installed
       final prepare = Prepare(repoRemote, packageRequested, args: argResults);
       if (packageInDB.installed == true  && Executable(packageRequested).existsSync(cache: false)) {
         Logger.info('Reinstalling "{@blue}$packageRequested{@end}"...');
       } else {
         Logger.info('Installing "{@blue}$packageRequested{@end}"...');
       }
-      // out('{@red}$packageRequested{@end}, {@red}{@end}');
 
       final runner = Run();
       try {
@@ -91,7 +88,7 @@ class InstallCommand extends Command {
             .simple(bash, ['-c', 'source ${await prepare.toInstall()}']);
       } on ShellException catch (_) {
         sharedStdIn.terminate();
-        String error = 'Failed to install "{@red}$packagesRequested{@end}"';
+        String error = 'Failed to install "$packageRequested"';
         if (argResults!['verbose'] == true) {
           error += ': ${_.message}';
         } else {
