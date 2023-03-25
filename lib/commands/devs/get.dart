@@ -20,11 +20,16 @@ class GetCommand extends Command {
   @override
   final category = "For developers";
   @override
-  final invocation = "xpm get <url>";
+  String get invocation => "${runner!.executableName} $name <url>";
 
   GetCommand() {
     argParser.addOption("out",
         abbr: "o", help: "Output file path with filename", valueHelp: 'path');
+
+    argParser.addOption("user-agent",
+        abbr: "u",
+        help: "Identification of the software accessing the internet",
+        valueHelp: "<string>");
 
     argParser.addOption('name',
         abbr: 'n',
@@ -121,6 +126,7 @@ class GetCommand extends Command {
     final File file = await downloader.download(
       url: url,
       destination: destination,
+      userAgent: argResults!['user-agent'],
       onProgress: (progress) {
         if (progressBarEnabled && progress['percentComplete'] != null) {
           progressBar!.clear();

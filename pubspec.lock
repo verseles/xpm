@@ -245,10 +245,10 @@ packages:
     dependency: "direct main"
     description:
       name: dloader
-      sha256: "2aa5f62d96b03bb4197121fb1385df1b5d8a0a8bbfd2c9a77d44c295d1f9e570"
+      sha256: "9817e214d2128671ea7fdb73234d8a0fde1e024025ab5d01bbbf69ee0fd452f2"
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.1"
   executable:
     dependency: "direct main"
     description:
