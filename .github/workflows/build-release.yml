@@ -27,6 +27,7 @@ jobs:
         run: dart analyze
       - name: Test
         run: dart test --exclude-tags=skip-ci
+
       - name: Compile on ${{ matrix.os }}
         if: runner.os != 'Windows'
         run: mkdir -p build && dart compile exe bin/xpm.dart -o build/xpm-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m)
@@ -39,7 +40,7 @@ jobs:
         run: mkdir -p build && dart compile exe bin/xpm.dart -o build/xpm-windows-${{ runner.arch }}
       - name: Gzip compiled file on Windows
         if: runner.os == 'Windows'
-        run: gzip --best --keep build/xpm-windows-${{ runner.arch }}
+        run: gzip --best --keep build/xpm-windows-${{ env.PROCESSOR_ARCHITECTURE }}
 
       - name: Release
         uses: softprops/action-gh-release@v1

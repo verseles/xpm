@@ -1,3 +1,5 @@
+## v0.3.1
+- testing release arch on windows
 ## v0.3.0
 - testing release binaries with gzip and arch
 ## v0.2.4

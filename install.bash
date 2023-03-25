@@ -13,10 +13,11 @@ fi
 # Get latest release version from GitHub
 VERSION=$(curl -s https://api.github.com/repos/verseles/xpm/releases/latest | awk -F'"' '/tag_name/{print $4}')
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+ARCH=$(uname -m)
 echo "Installing XPM version $VERSION..."
 
 if [[ $OS =~ ^(linux|darwin)$ ]]; then
-  curl -sL https://github.com/verseles/xpm/releases/download/"$VERSION"/xpm-"$OS" -o xpm || err "Download failed."
+  curl -sL https://github.com/verseles/xpm/releases/download/"$VERSION"/xpm-"$OS"-"$ARCH".gz | gunzip -c >xpm || err "Could not download XPM"
 else
   err "This script only supports Linux and macOS. Check the site for manual installation instructions."
 fi
