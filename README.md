@@ -1,4 +1,5 @@
 # xpm - uniX Package Manager
+[![CI tests](https://github.com/verseles/xpm/actions/workflows/ci.yml/badge.svg)](https://github.com/verseles/xpm/actions/workflows/ci.yml)
 
 ### Universal package manager for any unix-like distro.
 ## Our key values
