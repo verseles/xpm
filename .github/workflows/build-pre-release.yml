@@ -3,7 +3,7 @@ name: Releases
 on:
   push:
     tags:
-      - "v0.1.[0-9]+*"
+      - "v[0-9]+.[0-9]+.[0-9]+*"
 
 jobs:
 
@@ -29,15 +29,18 @@ jobs:
         run: dart test --exclude-tags=skip-ci
       - name: Compile on ${{ matrix.os }}
         if: matrix.os != 'windows-latest'
-        run: mkdir -p build && dart compile exe bin/xpm.dart -o build/xpm
+        run: mkdir -p build && dart compile exe bin/xpm.dart -o build/xpm-$(uname -s | tr '[:upper:]' '[:lower:]')
       - name: Compile on windows-lastest
         if: matrix.os == 'windows-latest'
-        run: mkdir -p build && dart compile exe bin/xpm.dart -o build/xpm.exe
+        run: mkdir -p build && dart compile exe bin/xpm.dart -o build/xpm-windows.exe
 
       - name: Release
         uses: softprops/action-gh-release@v1
+        env:
+          TAG_NAME: ${{ github.ref }}
+          PATCH_NUMBER: ${{ env.TAG_NAME =~ /v\d+\.\d+\.(\d+)/ && ${{BASH_REMATCH[1]} || '0'}}}
         with:
-          prerelease: true
+          prerelease: ${{ env.PATCH_NUMBER != '0' }}
           fail_on_unmatched_files: false
           append_body: true
           files: |
