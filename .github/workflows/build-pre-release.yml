@@ -40,6 +40,4 @@ jobs:
           prerelease: ${{ !endsWith(github.ref, '.0') }}
           fail_on_unmatched_files: false
           append_body: true
-          files: |
-            build/xpm
-            build/xpm.exe
+          files: build/xpm-*
