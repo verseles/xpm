@@ -12,7 +12,7 @@ class Logger {
     return output;
   }
 
-   /// Logs a success [message] in green.
+  /// Logs a success [message] in green.
   static String success(String message, {bool error = true}) {
     String output = '{@green}[INFO] $message{@end}';
     out(output, error: error);

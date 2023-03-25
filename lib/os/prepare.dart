@@ -289,13 +289,15 @@ ${await best(to: 'remove')}
 
     final String? firstProvides = await packageScript.getFirstProvides();
     if (firstProvides != null) {
-      final firstProvidesExecutable = await Executable(firstProvides).find(cache: false);
+      final firstProvidesExecutable =
+          await Executable(firstProvides).find(cache: false);
       if (firstProvidesExecutable != null) {
         bestValidateExecutable = firstProvidesExecutable;
       }
     }
     if (bestValidateExecutable == null) {
-      final String? nameExecutable = await Executable(package).find(cache: false);
+      final String? nameExecutable =
+          await Executable(package).find(cache: false);
       if (nameExecutable != null) {
         bestValidateExecutable = nameExecutable;
       }

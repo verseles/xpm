@@ -1,3 +1,5 @@
+## v0.0.32
+- fix: show 'reinstalling' when reinstalling
 ## v0.0.31
 - fix: many fixes
 ## v0.0.30

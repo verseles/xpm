@@ -76,7 +76,8 @@ class InstallCommand extends Command {
 
       var repoRemote = packageInDB.repo.value!.url;
       final prepare = Prepare(repoRemote, packageRequested, args: argResults);
-      if (packageInDB.installed == true  && Executable(packageRequested).existsSync(cache: false)) {
+      if (packageInDB.installed == true &&
+          Executable(packageRequested).existsSync(cache: false)) {
         Logger.info('Reinstalling "{@blue}$packageRequested{@end}"...');
       } else {
         Logger.info('Installing "{@blue}$packageRequested{@end}"...');
@@ -127,7 +128,8 @@ class InstallCommand extends Command {
       if (error != null) {
         Logger.error(error);
       } else {
-        Logger.success('Successfully installed "{@green}$packageRequested{@end}".');
+        Logger.success(
+            'Successfully installed "{@green}$packageRequested{@end}".');
       }
     }
   }
