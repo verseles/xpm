@@ -1,6 +1,6 @@
 name: xpm
 description: Universal package manager for any unix-like distro including macOS. Also experimental Windows support.
-version: 0.1.3
+version: 0.1.4
 homepage: https://xpm.link
 repository: https://github.com/verseles/xpm
 executables:
