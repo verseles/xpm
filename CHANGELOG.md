@@ -1,3 +1,5 @@
+## v0.1.7
+- testing release binaries
 ## v0.1.5
 - testing release binaries
 ## v0.1.4

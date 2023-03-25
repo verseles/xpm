@@ -37,7 +37,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          prerelease: ${{ github.ref.endsWith('.0') }}
+          prerelease: ${{ !endsWith(github.ref, '.0') }}
           fail_on_unmatched_files: false
           append_body: true
           files: |
