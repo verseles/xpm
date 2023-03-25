@@ -30,7 +30,7 @@ jobs:
       - name: Compile on ${{ matrix.os }}
         if: matrix.os != 'windows-latest'
         run: mkdir -p build && dart compile exe bin/xpm.dart -o build/xpm
-      - name: Compile on ${{ matrix.os }}
+      - name: Compile on windows-lastest
         if: matrix.os == 'windows-latest'
         run: mkdir -p build && dart compile exe bin/xpm.dart -o build/xpm.exe
 
@@ -41,5 +41,5 @@ jobs:
           fail_on_unmatched_files: false
           append_body: true
           files: |
-            xpm
-            xpm.exe
+            build/xpm
+            build/xpm.exe
