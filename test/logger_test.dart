@@ -9,6 +9,13 @@ void main() {
     expect(result, equals(expected));
   });
 
+  test('success() logs message in green', () {
+    String message = 'This is a success message.';
+    String expected = '{@green}[INFO] $message{@end}';
+    String result = Logger.success(message);
+    expect(result, equals(expected));
+  });
+
   test('info() logs message in blue', () {
     String message = 'This is an info message.';
     String expected = '{@blue}[INFO] $message{@end}';

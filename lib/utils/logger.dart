@@ -12,6 +12,15 @@ class Logger {
     return output;
   }
 
+   /// Logs a success [message] in green.
+  static String success(String message, {bool error = true}) {
+    String output = '{@green}[INFO] $message{@end}';
+    out(output, error: error);
+
+    // Return for testing.
+    return output;
+  }
+
   /// Logs an informational [message] in blue.
   static String info(String message, {bool error = true}) {
     String output = '{@blue}[INFO] $message{@end}';

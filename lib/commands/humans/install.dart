@@ -4,9 +4,11 @@ import 'package:isar/isar.dart';
 import 'package:process_run/shell.dart';
 import 'package:xpm/database/db.dart';
 import 'package:xpm/os/bash_script.dart';
+import 'package:xpm/os/executable.dart';
 import 'package:xpm/os/prepare.dart';
 import 'package:xpm/os/run.dart';
 import 'package:xpm/utils/leave.dart';
+import 'package:xpm/utils/logger.dart';
 import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/show_usage.dart';
 import 'package:xpm/xpm.dart';
@@ -72,10 +74,16 @@ class InstallCommand extends Command {
             message: 'Package "{@gold}$packageRequested{@end}" not found.',
             exitCode: cantExecute);
       }
+
       var repoRemote = packageInDB.repo.value!.url;
       // @TODO Check if package is already installed
       final prepare = Prepare(repoRemote, packageRequested, args: argResults);
-      out('Installing "{@blue}$packageRequested{@end}"...');
+      if (packageInDB.installed == true  && Executable(packageRequested).existsSync(cache: false)) {
+        Logger.info('Reinstalling "{@blue}$packageRequested{@end}"...');
+      } else {
+        Logger.info('Installing "{@blue}$packageRequested{@end}"...');
+      }
+      // out('{@red}$packageRequested{@end}, {@red}{@end}');
 
       final runner = Run();
       try {
@@ -83,7 +91,7 @@ class InstallCommand extends Command {
             .simple(bash, ['-c', 'source ${await prepare.toInstall()}']);
       } on ShellException catch (_) {
         sharedStdIn.terminate();
-        String error = 'Failed to install "{@red}$packageRequested{@end}"';
+        String error = 'Failed to install "{@red}$packagesRequested{@end}"';
         if (argResults!['verbose'] == true) {
           error += ': ${_.message}';
         } else {
@@ -97,7 +105,7 @@ class InstallCommand extends Command {
       bool hasValidation = await bashScript.hasFunction('validate');
       String? error;
       if (hasValidation) {
-        print('Checking installation of $packageRequested...');
+        Logger.info('Checking installation of $packageRequested...');
         try {
           await runner
               .simple(bash, ['-c', 'source ${await prepare.toValidate()}']);
@@ -120,9 +128,9 @@ class InstallCommand extends Command {
       });
 
       if (error != null) {
-        out(error);
+        Logger.error(error);
       } else {
-        out('Successfully installed "{@green}$packageRequested{@end}".');
+        Logger.success('Successfully installed "{@green}$packageRequested{@end}".');
       }
     }
   }
