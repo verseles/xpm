@@ -21,7 +21,7 @@ dependencies:
   args: ^2.3.1
   console: ^4.1.0
   crypto: ^3.0.2
-  dio: ^4.0.6
+  dio: ^5.0.3
   dloader: ^1.0.3
   executable: ^1.0.3
   interact: ^2.1.1
