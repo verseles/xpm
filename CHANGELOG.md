@@ -1,3 +1,5 @@
+## v0.1.0
+- ci:testing pre-release binaries
 ## v0.0.33
 - fix: new adjustments to reflect #23
 ## v0.0.32
