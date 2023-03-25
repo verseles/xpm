@@ -69,7 +69,7 @@ void main() {
     test('userHome should return the user home directory', () {
       final userHome = XPM.userHome;
       expect(userHome.path, isNotEmpty);
-      expect(userHome.path, equals(Platform.environment['HOME']));
+      expect(userHome.path, equals(Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'] ?? Platform.environment['HOMEPATH'] ?? Directory.current.absolute.path));
     });
   });
 }

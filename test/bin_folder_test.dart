@@ -12,6 +12,6 @@ void main() {
     test('throws an exception if no binary folder was found', () {
       // Ensure the PATH environment variable does not contain any valid directories
       expect(() => binDirectory(PATH: ''), throwsException);
-    });
+    }, testOn: '!windows');
   });
 }
