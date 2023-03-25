@@ -38,6 +38,7 @@ jobs:
         if: runner.os == 'Windows'
         run: mkdir -p build && dart compile exe bin/xpm.dart -o build/xpm-windows-${{ runner.arch }}
       - name: Gzip compiled file on Windows
+        if: runner.os == 'Windows'
         run: gzip --best --keep build/xpm-windows-${{ runner.arch }}
 
       - name: Release
