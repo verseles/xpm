@@ -1,3 +1,5 @@
+## v0.3.3
+- finished first great installer.bash
 ## v0.3.1
 - testing release arch on windows
 ## v0.3.0

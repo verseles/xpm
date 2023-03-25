@@ -40,7 +40,7 @@ jobs:
         run: mkdir -p build && dart compile exe bin/xpm.dart -o build/xpm-windows-${{ runner.arch }}
       - name: Gzip compiled file on Windows
         if: runner.os == 'Windows'
-        run: gzip --best --keep build/xpm-windows-${{ env.PROCESSOR_ARCHITECTURE }}
+        run: gzip --best --keep build/xpm-windows-${{ runner.arch }}
 
       - name: Release
         uses: softprops/action-gh-release@v1
