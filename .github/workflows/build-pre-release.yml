@@ -36,11 +36,8 @@ jobs:
 
       - name: Release
         uses: softprops/action-gh-release@v1
-        env:
-          TAG_NAME: ${{ github.ref }}
-          PATCH_NUMBER: ${{ env.TAG_NAME.match('v\\d+\\.\\d+\\.(\\d+)')[1] || '0' }}
         with:
-          prerelease: ${{ env.PATCH_NUMBER != '0' }}
+          prerelease: ${{ github.ref.endsWith('.0') }}
           fail_on_unmatched_files: false
           append_body: true
           files: |
