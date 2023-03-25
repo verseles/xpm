@@ -6,3 +6,7 @@ tags:
   skip-ci:
     description: Skip this test on CI.
     # This is a workaround for
+
+  untested:
+    description: This test is not yet tested.
+    # This is a workaround for

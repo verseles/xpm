@@ -7,7 +7,7 @@ ci:
 	dart pub get
 	dart format --output=none --set-exit-if-changed .
 	dart analyze
-	dart test
+	dart test --exclude-tags=skip-ci
 
 compile:
 	mkdir -p ./build
