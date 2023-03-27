@@ -4,7 +4,11 @@ set -eu
 err() { echo -e "\033[0;31mERROR:\033[0m $1.\nTry again or visit \033[0;34mhttps://xpm.link\033[0m for help." >&2; exit 1; }
 
 SUDO=$(command -v sudo || :)
-[ -n "$SUDO" ] && $SUDO -v || err "We need sudo to install XPM"
+if [ -n "$SUDO" ]; then
+  if ! $SUDO -v >/dev/null 2>&1; then
+    err "We need sudo to install XPM"
+  fi
+fi
 
 REPO="verseles/xpm"
 TAG=$(curl -s https://api.github.com/repos/$REPO/releases/latest | awk -F'"' '/tag_name/{print $4}')
