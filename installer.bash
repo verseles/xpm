@@ -3,9 +3,11 @@ set -eu
 
 err() { echo -e "ERROR: $1.\nTry again or visit \033[0;34mhttps://xpm.link\033[0m for help." >&2; exit 1; }
 
-if command -v sudo &> /dev/null; then
-    ((EUID == 0)) || { echo -e "\033[0;34mThis script requires sudo permissions to install XPM.\033[0m" >&2; exec sudo "$0" "$@"; }
+if command -v sudo &> /dev/null && ((EUID == 0)); then
+  echo -e "\033[0;34mThis script requires sudo permissions to install XPM.\033[0m" >&2;
+  exec sudo "$0" "$@";
 fi
+
 
 VERSION=$(curl -s https://api.github.com/repos/verseles/xpm/releases/latest | awk -F'"' '/tag_name/{print $4}')
 echo "Installing XPM $VERSION..."
