@@ -1,17 +1,16 @@
 #!/usr/bin/env bash
 set -eu
 
-err() { echo -e "ERROR: $1.\nTry again or visit \033[0;34mhttps://xpm.link\033[0m for help." >&2; exit 1; }
+err() { echo -e "\033[0;31mERROR:\033[0m $1.\nTry again or visit \033[0;34mhttps://xpm.link\033[0m for help." >&2; exit 1; }
 
 sudo=$(command -v sudo)
-if [ "$sudo" ]; then
-  echo -e "\033[0;34mThis script requires sudo permissions to install XPM.\033[0m" >&2;
-  exec "$sudo" "$0" "$@"
+if [ -n "$sudo" ]; then
+  $sudo -v || err "This script requires sudo permissions to install XPM";
 fi
 
 
 VERSION=$(curl -s https://api.github.com/repos/verseles/xpm/releases/latest | awk -F'"' '/tag_name/{print $4}')
-echo "Installing XPM $VERSION..."
+echo -e "\033[0;34mInstalling XPM $VERSION...\033[0m"
 
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 ARCH=$(uname -m)
