@@ -3,22 +3,21 @@ set -eu
 
 err() { echo -e "\033[0;31mERROR:\033[0m $1.\nTry again or visit \033[0;34mhttps://xpm.link\033[0m for help." >&2; exit 1; }
 
-sudo=$(command -v sudo)
-if [ -n "$sudo" ]; then
-  $sudo -v || err "This script requires sudo permissions to install XPM";
-fi
+SUDO=$(command -v sudo || :)
+[ -n "$SUDO" ] && $SUDO -v || err "We need sudo to install XPM"
 
+REPO="verseles/xpm"
+TAG=$(curl -s https://api.github.com/repos/$REPO/releases/latest | awk -F'"' '/tag_name/{print $4}')
 
-VERSION=$(curl -s https://api.github.com/repos/verseles/xpm/releases/latest | awk -F'"' '/tag_name/{print $4}')
-echo -e "\033[0;34mInstalling XPM $VERSION...\033[0m"
+echo -e "\033[0;34mInstalling XPM $TAG...\033[0m"
 
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 ARCH=$(uname -m)
-BASE_URL="https://github.com/verseles/xpm/releases/download/$VERSION"
+BASE_URL="https://github.com/$REPO/releases/download"
+FILE="$BASE_URL/$TAG/xpm-$OS-$ARCH.gz"
+curl -sL "$FILE" | gunzip -c >./xpm || err "Could not download $FILE"
 
-curl -sL "$BASE_URL"/xpm-"$OS"-"$ARCH".gz | gunzip -c >./xpm || err "Could not download XPM"
-
-(chmod +x ./xpm && $sudo mv -f ./xpm "${PATH%%:*}/xpm" && xpm -v >/dev/null 2>&1) || err "XPM was not installed correctly."
+(chmod +x ./xpm && $SUDO mv -f ./xpm "${PATH%%:*}/xpm" && xpm -v >/dev/null 2>&1) || err "XPM was not installed correctly."
 
 xpm ref
 
