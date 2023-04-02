@@ -5,9 +5,14 @@ void main() {
   group('Setting', () {
     // tearDown removes any settings that were created during the test
     tearDown(() async {
-      await Setting.delete('greeting');
-      await Setting.delete('missing');
-      await Setting.delete('expireme');
+      await Setting.delete([
+        'greeting',
+        'missing',
+        'deleteme',
+        'deleteme1',
+        'deleteme2',
+        'deleteme3'
+      ]);
     });
     test('set and get a setting value', () async {
       // Set the value of a setting
@@ -67,6 +72,21 @@ void main() {
 
       // Assert that the value of the setting is null (it doesn't exist)
       expect(deleteme, isNull);
+    });
+    test('delete a List of keys of settings', () async {
+      // Set the value of a setting
+      await Setting.set('deleteme1', 'I should be deleted');
+      await Setting.set('deleteme2', 'I should be deleted');
+      await Setting.set('deleteme3', 'I should be deleted');
+
+      // Delete the list of settings
+      await Setting.delete(['deleteme1', 'deleteme2', 'deleteme3']);
+
+      // Get the value of the setting
+      final deleteme2 = await Setting.get('deleteme2');
+
+      // Assert that the value of the setting is null (it doesn't exist)
+      expect(deleteme2, isNull);
     });
 
     test('delete expired settings imeadiately', () async {

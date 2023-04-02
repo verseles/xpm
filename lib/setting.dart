@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:isar/isar.dart';
 import 'package:xpm/database/db.dart';
 import 'package:xpm/database/models/kv.dart';
@@ -53,18 +55,25 @@ class Setting {
     }
   }
 
-  /// Deletes a setting with the specified key.
+  /// Deletes a setting with the specified key or keys.
   ///
   /// Parameters:
-  /// - [key]: A unique key for the setting to delete. It is case-insensitive and will be searched in lowercase.
-  static Future<void> delete(String key) async {
-    key = key.toLowerCase();
-
+  /// - [keys]: A unique key or list of keys for the setting(s) to delete. Keys are case-insensitive and will be searched in lowercase.
+  /// - [lazy]: Whether to delete the setting(s) in a lazy transaction. Defaults to `false`.
+  static Future<void> delete(dynamic keys, {lazy = false}) async {
     final db = await DB.instance();
 
-    await db.writeTxn(() async => await db.kVs.deleteByKey(key));
+    List<String> listOfKeys = keys is String ? [keys] : keys;
 
-    _cache.remove(key);
+    final lcKeys = listOfKeys.map((String key) => key.toLowerCase()).toList();
+
+    if (lazy) {
+      db.writeTxn(() async => db.kVs.deleteAllByKey(lcKeys));
+    } else {
+      await db.writeTxn(() async => await db.kVs.deleteAllByKey(lcKeys));
+    }
+
+    _cache.removeWhere((key, value) => lcKeys.contains(key));
   }
 
   // Factory to save cached values in a list map
