@@ -49,7 +49,7 @@ We have a main repository with many popular installers, but we need more. If you
 We rely on dart lang. If you want to contribute, just follow good practices and make a PR. We will review it and merge it if it's ok.
 Don't forget to run the tests before make a PR:
 ```bash
-dart test
+dart pub get && dart format --fix . && dart analyze && dart test
 ```
 The binaries are automatically generated and published in the [releases](https://github.com/verseles/xpm/releases) page.
 
