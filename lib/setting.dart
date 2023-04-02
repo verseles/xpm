@@ -61,7 +61,7 @@ class Setting {
     final db = await DB.instance();
 
     await db.writeTxn(() async => await db.kVs.deleteByKey(key));
-    
+
     _cache.remove(key);
   }
 
