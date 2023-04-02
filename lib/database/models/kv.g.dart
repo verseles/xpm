@@ -51,6 +51,19 @@ const KVSchema = CollectionSchema(
           caseSensitive: true,
         )
       ],
+    ),
+    r'expiresAt': IndexSchema(
+      id: 4994901953235663716,
+      name: r'expiresAt',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'expiresAt',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
     )
   },
   links: {},
@@ -187,6 +200,14 @@ extension KVQueryWhereSort on QueryBuilder<KV, KV, QWhere> {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
+
+  QueryBuilder<KV, KV, QAfterWhere> anyExpiresAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'expiresAt'),
+      );
+    });
+  }
 }
 
 extension KVQueryWhere on QueryBuilder<KV, KV, QWhereClause> {
@@ -295,6 +316,116 @@ extension KVQueryWhere on QueryBuilder<KV, KV, QWhereClause> {
               includeUpper: false,
             ));
       }
+    });
+  }
+
+  QueryBuilder<KV, KV, QAfterWhereClause> expiresAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'expiresAt',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<KV, KV, QAfterWhereClause> expiresAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'expiresAt',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<KV, KV, QAfterWhereClause> expiresAtEqualTo(
+      DateTime? expiresAt) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'expiresAt',
+        value: [expiresAt],
+      ));
+    });
+  }
+
+  QueryBuilder<KV, KV, QAfterWhereClause> expiresAtNotEqualTo(
+      DateTime? expiresAt) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'expiresAt',
+              lower: [],
+              upper: [expiresAt],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'expiresAt',
+              lower: [expiresAt],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'expiresAt',
+              lower: [expiresAt],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'expiresAt',
+              lower: [],
+              upper: [expiresAt],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<KV, KV, QAfterWhereClause> expiresAtGreaterThan(
+    DateTime? expiresAt, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'expiresAt',
+        lower: [expiresAt],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<KV, KV, QAfterWhereClause> expiresAtLessThan(
+    DateTime? expiresAt, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'expiresAt',
+        lower: [],
+        upper: [expiresAt],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<KV, KV, QAfterWhereClause> expiresAtBetween(
+    DateTime? lowerExpiresAt,
+    DateTime? upperExpiresAt, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'expiresAt',
+        lower: [lowerExpiresAt],
+        includeLower: includeLower,
+        upper: [upperExpiresAt],
+        includeUpper: includeUpper,
+      ));
     });
   }
 }

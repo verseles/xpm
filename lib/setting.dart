@@ -13,11 +13,13 @@ class Setting {
   /// Parameters:
   /// - [key]: A unique key for the setting. It is case-insensitive and will be stored in lowercase.
   /// - [value]: The value to set for the setting.
-  static Future<void> set(String key, dynamic value) async {
+  static Future<void> set(String key, dynamic value,
+      {DateTime? expires}) async {
     final db = await DB.instance();
     final data = KV()
       ..key = key.toLowerCase()
-      ..value = serialize(value);
+      ..value = serialize(value)
+      ..expiresAt = expires;
 
     await db.writeTxn(() async => await db.kVs.putByKey(data));
 
@@ -69,4 +71,25 @@ class Setting {
   factory Setting() => _instance;
   static final _instance = Setting._privateConstructor();
   Setting._privateConstructor();
+
+  /// Delete all expired settings.
+  ///
+  /// This is called automatically by the database when the app starts.
+  ///
+  /// Parameters:
+  /// - [lazy]: Whether to delete the expired settings in a lazy transaction. Defaults to `false`.
+  static Future<void> deleteExpired({lazy = false}) async {
+    final db = await DB.instance();
+    final now = DateTime.now();
+
+    if (lazy) {
+      db.writeTxn(() async {
+        db.kVs.where().expiresAtLessThan(now).deleteAll();
+      });
+    } else {
+      await db.writeTxn(() async {
+        await db.kVs.where().expiresAtLessThan(now).deleteAll();
+      });
+    }
+  }
 }
