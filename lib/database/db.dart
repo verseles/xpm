@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:isar/isar.dart';
+import 'package:xpm/database/models/kv.dart';
 import 'package:xpm/utils/logger.dart';
 
 import 'package:xpm/xpm.dart';
@@ -19,7 +20,7 @@ class DB {
     }
     final isarInstance = Isar.getInstance('index');
     if (isarInstance == null) {
-      return await Isar.open([RepoSchema, PackageSchema],
+      return await Isar.open([RepoSchema, PackageSchema, KVSchema],
           directory: dbDir.path, relaxedDurability: true, name: 'index');
     } else {
       return isarInstance;
