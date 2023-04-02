@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'setting.dart';
+part of 'kv.dart';
 
 // **************************************************************************
 // IsarCollectionGenerator
@@ -9,13 +9,13 @@ part of 'setting.dart';
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters
 
-extension GetSettingCollection on Isar {
-  IsarCollection<Setting> get settings => this.collection();
+extension GetKVCollection on Isar {
+  IsarCollection<KV> get kVs => this.collection();
 }
 
-const SettingSchema = CollectionSchema(
-  name: r'Setting',
-  id: 2542600759502230801,
+const KVSchema = CollectionSchema(
+  name: r'kv',
+  id: 3557462688186956702,
   properties: {
     r'expiresAt': PropertySchema(
       id: 0,
@@ -33,10 +33,10 @@ const SettingSchema = CollectionSchema(
       type: IsarType.string,
     )
   },
-  estimateSize: _settingEstimateSize,
-  serialize: _settingSerialize,
-  deserialize: _settingDeserialize,
-  deserializeProp: _settingDeserializeProp,
+  estimateSize: _kVEstimateSize,
+  serialize: _kVSerialize,
+  deserialize: _kVDeserialize,
+  deserializeProp: _kVDeserializeProp,
   idName: r'id',
   indexes: {
     r'key': IndexSchema(
@@ -55,14 +55,14 @@ const SettingSchema = CollectionSchema(
   },
   links: {},
   embeddedSchemas: {},
-  getId: _settingGetId,
-  getLinks: _settingGetLinks,
-  attach: _settingAttach,
+  getId: _kVGetId,
+  getLinks: _kVGetLinks,
+  attach: _kVAttach,
   version: '3.0.5',
 );
 
-int _settingEstimateSize(
-  Setting object,
+int _kVEstimateSize(
+  KV object,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
@@ -72,8 +72,8 @@ int _settingEstimateSize(
   return bytesCount;
 }
 
-void _settingSerialize(
-  Setting object,
+void _kVSerialize(
+  KV object,
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
@@ -83,21 +83,21 @@ void _settingSerialize(
   writer.writeString(offsets[2], object.value);
 }
 
-Setting _settingDeserialize(
+KV _kVDeserialize(
   Id id,
   IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = Setting();
-  object.expiresAt = reader.readDateTime(offsets[0]);
+  final object = KV();
+  object.expiresAt = reader.readDateTimeOrNull(offsets[0]);
   object.id = id;
   object.key = reader.readString(offsets[1]);
   object.value = reader.readString(offsets[2]);
   return object;
 }
 
-P _settingDeserializeProp<P>(
+P _kVDeserializeProp<P>(
   IsarReader reader,
   int propertyId,
   int offset,
@@ -105,7 +105,7 @@ P _settingDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 1:
       return (reader.readString(offset)) as P;
     case 2:
@@ -115,24 +115,24 @@ P _settingDeserializeProp<P>(
   }
 }
 
-Id _settingGetId(Setting object) {
+Id _kVGetId(KV object) {
   return object.id ?? Isar.autoIncrement;
 }
 
-List<IsarLinkBase<dynamic>> _settingGetLinks(Setting object) {
+List<IsarLinkBase<dynamic>> _kVGetLinks(KV object) {
   return [];
 }
 
-void _settingAttach(IsarCollection<dynamic> col, Id id, Setting object) {
+void _kVAttach(IsarCollection<dynamic> col, Id id, KV object) {
   object.id = id;
 }
 
-extension SettingByIndex on IsarCollection<Setting> {
-  Future<Setting?> getByKey(String key) {
+extension KVByIndex on IsarCollection<KV> {
+  Future<KV?> getByKey(String key) {
     return getByIndex(r'key', [key]);
   }
 
-  Setting? getByKeySync(String key) {
+  KV? getByKeySync(String key) {
     return getByIndexSync(r'key', [key]);
   }
 
@@ -144,12 +144,12 @@ extension SettingByIndex on IsarCollection<Setting> {
     return deleteByIndexSync(r'key', [key]);
   }
 
-  Future<List<Setting?>> getAllByKey(List<String> keyValues) {
+  Future<List<KV?>> getAllByKey(List<String> keyValues) {
     final values = keyValues.map((e) => [e]).toList();
     return getAllByIndex(r'key', values);
   }
 
-  List<Setting?> getAllByKeySync(List<String> keyValues) {
+  List<KV?> getAllByKeySync(List<String> keyValues) {
     final values = keyValues.map((e) => [e]).toList();
     return getAllByIndexSync(r'key', values);
   }
@@ -164,33 +164,33 @@ extension SettingByIndex on IsarCollection<Setting> {
     return deleteAllByIndexSync(r'key', values);
   }
 
-  Future<Id> putByKey(Setting object) {
+  Future<Id> putByKey(KV object) {
     return putByIndex(r'key', object);
   }
 
-  Id putByKeySync(Setting object, {bool saveLinks = true}) {
+  Id putByKeySync(KV object, {bool saveLinks = true}) {
     return putByIndexSync(r'key', object, saveLinks: saveLinks);
   }
 
-  Future<List<Id>> putAllByKey(List<Setting> objects) {
+  Future<List<Id>> putAllByKey(List<KV> objects) {
     return putAllByIndex(r'key', objects);
   }
 
-  List<Id> putAllByKeySync(List<Setting> objects, {bool saveLinks = true}) {
+  List<Id> putAllByKeySync(List<KV> objects, {bool saveLinks = true}) {
     return putAllByIndexSync(r'key', objects, saveLinks: saveLinks);
   }
 }
 
-extension SettingQueryWhereSort on QueryBuilder<Setting, Setting, QWhere> {
-  QueryBuilder<Setting, Setting, QAfterWhere> anyId() {
+extension KVQueryWhereSort on QueryBuilder<KV, KV, QWhere> {
+  QueryBuilder<KV, KV, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
 }
 
-extension SettingQueryWhere on QueryBuilder<Setting, Setting, QWhereClause> {
-  QueryBuilder<Setting, Setting, QAfterWhereClause> idEqualTo(Id id) {
+extension KVQueryWhere on QueryBuilder<KV, KV, QWhereClause> {
+  QueryBuilder<KV, KV, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
         lower: id,
@@ -199,7 +199,7 @@ extension SettingQueryWhere on QueryBuilder<Setting, Setting, QWhereClause> {
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterWhereClause> idNotEqualTo(Id id) {
+  QueryBuilder<KV, KV, QAfterWhereClause> idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -221,7 +221,7 @@ extension SettingQueryWhere on QueryBuilder<Setting, Setting, QWhereClause> {
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterWhereClause> idGreaterThan(Id id,
+  QueryBuilder<KV, KV, QAfterWhereClause> idGreaterThan(Id id,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -230,7 +230,7 @@ extension SettingQueryWhere on QueryBuilder<Setting, Setting, QWhereClause> {
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterWhereClause> idLessThan(Id id,
+  QueryBuilder<KV, KV, QAfterWhereClause> idLessThan(Id id,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -239,7 +239,7 @@ extension SettingQueryWhere on QueryBuilder<Setting, Setting, QWhereClause> {
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterWhereClause> idBetween(
+  QueryBuilder<KV, KV, QAfterWhereClause> idBetween(
     Id lowerId,
     Id upperId, {
     bool includeLower = true,
@@ -255,7 +255,7 @@ extension SettingQueryWhere on QueryBuilder<Setting, Setting, QWhereClause> {
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterWhereClause> keyEqualTo(String key) {
+  QueryBuilder<KV, KV, QAfterWhereClause> keyEqualTo(String key) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
         indexName: r'key',
@@ -264,7 +264,7 @@ extension SettingQueryWhere on QueryBuilder<Setting, Setting, QWhereClause> {
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterWhereClause> keyNotEqualTo(String key) {
+  QueryBuilder<KV, KV, QAfterWhereClause> keyNotEqualTo(String key) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -299,10 +299,25 @@ extension SettingQueryWhere on QueryBuilder<Setting, Setting, QWhereClause> {
   }
 }
 
-extension SettingQueryFilter
-    on QueryBuilder<Setting, Setting, QFilterCondition> {
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> expiresAtEqualTo(
-      DateTime value) {
+extension KVQueryFilter on QueryBuilder<KV, KV, QFilterCondition> {
+  QueryBuilder<KV, KV, QAfterFilterCondition> expiresAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'expiresAt',
+      ));
+    });
+  }
+
+  QueryBuilder<KV, KV, QAfterFilterCondition> expiresAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'expiresAt',
+      ));
+    });
+  }
+
+  QueryBuilder<KV, KV, QAfterFilterCondition> expiresAtEqualTo(
+      DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'expiresAt',
@@ -311,8 +326,8 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> expiresAtGreaterThan(
-    DateTime value, {
+  QueryBuilder<KV, KV, QAfterFilterCondition> expiresAtGreaterThan(
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -324,8 +339,8 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> expiresAtLessThan(
-    DateTime value, {
+  QueryBuilder<KV, KV, QAfterFilterCondition> expiresAtLessThan(
+    DateTime? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -337,9 +352,9 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> expiresAtBetween(
-    DateTime lower,
-    DateTime upper, {
+  QueryBuilder<KV, KV, QAfterFilterCondition> expiresAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -354,7 +369,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> idIsNull() {
+  QueryBuilder<KV, KV, QAfterFilterCondition> idIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'id',
@@ -362,7 +377,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> idIsNotNull() {
+  QueryBuilder<KV, KV, QAfterFilterCondition> idIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'id',
@@ -370,7 +385,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> idEqualTo(Id? value) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> idEqualTo(Id? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
@@ -379,7 +394,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> idGreaterThan(
+  QueryBuilder<KV, KV, QAfterFilterCondition> idGreaterThan(
     Id? value, {
     bool include = false,
   }) {
@@ -392,7 +407,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> idLessThan(
+  QueryBuilder<KV, KV, QAfterFilterCondition> idLessThan(
     Id? value, {
     bool include = false,
   }) {
@@ -405,7 +420,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> idBetween(
+  QueryBuilder<KV, KV, QAfterFilterCondition> idBetween(
     Id? lower,
     Id? upper, {
     bool includeLower = true,
@@ -422,7 +437,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> keyEqualTo(
+  QueryBuilder<KV, KV, QAfterFilterCondition> keyEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -435,7 +450,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> keyGreaterThan(
+  QueryBuilder<KV, KV, QAfterFilterCondition> keyGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -450,7 +465,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> keyLessThan(
+  QueryBuilder<KV, KV, QAfterFilterCondition> keyLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -465,7 +480,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> keyBetween(
+  QueryBuilder<KV, KV, QAfterFilterCondition> keyBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -484,7 +499,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> keyStartsWith(
+  QueryBuilder<KV, KV, QAfterFilterCondition> keyStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -497,7 +512,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> keyEndsWith(
+  QueryBuilder<KV, KV, QAfterFilterCondition> keyEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -510,8 +525,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> keyContains(
-      String value,
+  QueryBuilder<KV, KV, QAfterFilterCondition> keyContains(String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
@@ -522,8 +536,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> keyMatches(
-      String pattern,
+  QueryBuilder<KV, KV, QAfterFilterCondition> keyMatches(String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
@@ -534,7 +547,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> keyIsEmpty() {
+  QueryBuilder<KV, KV, QAfterFilterCondition> keyIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'key',
@@ -543,7 +556,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> keyIsNotEmpty() {
+  QueryBuilder<KV, KV, QAfterFilterCondition> keyIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'key',
@@ -552,7 +565,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> valueEqualTo(
+  QueryBuilder<KV, KV, QAfterFilterCondition> valueEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -565,7 +578,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> valueGreaterThan(
+  QueryBuilder<KV, KV, QAfterFilterCondition> valueGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -580,7 +593,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> valueLessThan(
+  QueryBuilder<KV, KV, QAfterFilterCondition> valueLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -595,7 +608,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> valueBetween(
+  QueryBuilder<KV, KV, QAfterFilterCondition> valueBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -614,7 +627,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> valueStartsWith(
+  QueryBuilder<KV, KV, QAfterFilterCondition> valueStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -627,7 +640,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> valueEndsWith(
+  QueryBuilder<KV, KV, QAfterFilterCondition> valueEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -640,8 +653,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> valueContains(
-      String value,
+  QueryBuilder<KV, KV, QAfterFilterCondition> valueContains(String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
@@ -652,8 +664,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> valueMatches(
-      String pattern,
+  QueryBuilder<KV, KV, QAfterFilterCondition> valueMatches(String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
@@ -664,7 +675,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> valueIsEmpty() {
+  QueryBuilder<KV, KV, QAfterFilterCondition> valueIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'value',
@@ -673,7 +684,7 @@ extension SettingQueryFilter
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterFilterCondition> valueIsNotEmpty() {
+  QueryBuilder<KV, KV, QAfterFilterCondition> valueIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'value',
@@ -683,145 +694,138 @@ extension SettingQueryFilter
   }
 }
 
-extension SettingQueryObject
-    on QueryBuilder<Setting, Setting, QFilterCondition> {}
+extension KVQueryObject on QueryBuilder<KV, KV, QFilterCondition> {}
 
-extension SettingQueryLinks
-    on QueryBuilder<Setting, Setting, QFilterCondition> {}
+extension KVQueryLinks on QueryBuilder<KV, KV, QFilterCondition> {}
 
-extension SettingQuerySortBy on QueryBuilder<Setting, Setting, QSortBy> {
-  QueryBuilder<Setting, Setting, QAfterSortBy> sortByExpiresAt() {
+extension KVQuerySortBy on QueryBuilder<KV, KV, QSortBy> {
+  QueryBuilder<KV, KV, QAfterSortBy> sortByExpiresAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'expiresAt', Sort.asc);
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterSortBy> sortByExpiresAtDesc() {
+  QueryBuilder<KV, KV, QAfterSortBy> sortByExpiresAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'expiresAt', Sort.desc);
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterSortBy> sortByKey() {
+  QueryBuilder<KV, KV, QAfterSortBy> sortByKey() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'key', Sort.asc);
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterSortBy> sortByKeyDesc() {
+  QueryBuilder<KV, KV, QAfterSortBy> sortByKeyDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'key', Sort.desc);
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterSortBy> sortByValue() {
+  QueryBuilder<KV, KV, QAfterSortBy> sortByValue() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'value', Sort.asc);
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterSortBy> sortByValueDesc() {
+  QueryBuilder<KV, KV, QAfterSortBy> sortByValueDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'value', Sort.desc);
     });
   }
 }
 
-extension SettingQuerySortThenBy
-    on QueryBuilder<Setting, Setting, QSortThenBy> {
-  QueryBuilder<Setting, Setting, QAfterSortBy> thenByExpiresAt() {
+extension KVQuerySortThenBy on QueryBuilder<KV, KV, QSortThenBy> {
+  QueryBuilder<KV, KV, QAfterSortBy> thenByExpiresAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'expiresAt', Sort.asc);
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterSortBy> thenByExpiresAtDesc() {
+  QueryBuilder<KV, KV, QAfterSortBy> thenByExpiresAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'expiresAt', Sort.desc);
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterSortBy> thenById() {
+  QueryBuilder<KV, KV, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterSortBy> thenByIdDesc() {
+  QueryBuilder<KV, KV, QAfterSortBy> thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterSortBy> thenByKey() {
+  QueryBuilder<KV, KV, QAfterSortBy> thenByKey() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'key', Sort.asc);
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterSortBy> thenByKeyDesc() {
+  QueryBuilder<KV, KV, QAfterSortBy> thenByKeyDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'key', Sort.desc);
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterSortBy> thenByValue() {
+  QueryBuilder<KV, KV, QAfterSortBy> thenByValue() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'value', Sort.asc);
     });
   }
 
-  QueryBuilder<Setting, Setting, QAfterSortBy> thenByValueDesc() {
+  QueryBuilder<KV, KV, QAfterSortBy> thenByValueDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'value', Sort.desc);
     });
   }
 }
 
-extension SettingQueryWhereDistinct
-    on QueryBuilder<Setting, Setting, QDistinct> {
-  QueryBuilder<Setting, Setting, QDistinct> distinctByExpiresAt() {
+extension KVQueryWhereDistinct on QueryBuilder<KV, KV, QDistinct> {
+  QueryBuilder<KV, KV, QDistinct> distinctByExpiresAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'expiresAt');
     });
   }
 
-  QueryBuilder<Setting, Setting, QDistinct> distinctByKey(
-      {bool caseSensitive = true}) {
+  QueryBuilder<KV, KV, QDistinct> distinctByKey({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'key', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<Setting, Setting, QDistinct> distinctByValue(
-      {bool caseSensitive = true}) {
+  QueryBuilder<KV, KV, QDistinct> distinctByValue({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'value', caseSensitive: caseSensitive);
     });
   }
 }
 
-extension SettingQueryProperty
-    on QueryBuilder<Setting, Setting, QQueryProperty> {
-  QueryBuilder<Setting, int, QQueryOperations> idProperty() {
+extension KVQueryProperty on QueryBuilder<KV, KV, QQueryProperty> {
+  QueryBuilder<KV, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
     });
   }
 
-  QueryBuilder<Setting, DateTime, QQueryOperations> expiresAtProperty() {
+  QueryBuilder<KV, DateTime?, QQueryOperations> expiresAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'expiresAt');
     });
   }
 
-  QueryBuilder<Setting, String, QQueryOperations> keyProperty() {
+  QueryBuilder<KV, String, QQueryOperations> keyProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'key');
     });
   }
 
-  QueryBuilder<Setting, String, QQueryOperations> valueProperty() {
+  QueryBuilder<KV, String, QQueryOperations> valueProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'value');
     });

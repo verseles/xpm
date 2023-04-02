@@ -1,19 +1,21 @@
 import 'package:isar/isar.dart';
 
-part 'setting.g.dart';
+part 'kv.g.dart';
 
 @collection
-class Setting {
+@Name('kv')
+class KV {
   Id? id;
 
-  /// The key of the setting.
+  /// The key
   @Index(unique: true, caseSensitive: true)
   late String key;
 
-  /// The value of the setting.
+  /// The value
   late String value;
 
   /// UTC timestamp of when the setting expires.
   /// @TODO: Implement this.
-  late DateTime expiresAt;
+  @Index()
+  DateTime? expiresAt;
 }
