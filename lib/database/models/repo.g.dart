@@ -38,7 +38,7 @@ const RepoSchema = CollectionSchema(
         IndexPropertySchema(
           name: r'url',
           type: IndexType.hash,
-          caseSensitive: false,
+          caseSensitive: true,
         )
       ],
     )

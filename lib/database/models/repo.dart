@@ -7,7 +7,7 @@ part 'repo.g.dart';
 class Repo {
   Id? id;
 
-  @Index(unique: true, caseSensitive: false)
+  @Index(unique: true, caseSensitive: true)
   late String url;
 
   @Backlink(to: 'repo')
