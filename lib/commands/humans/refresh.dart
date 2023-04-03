@@ -1,10 +1,7 @@
-import 'dart:io';
-
 import 'package:args/command_runner.dart';
 import 'package:xpm/os/repositories.dart';
 import 'package:xpm/setting.dart';
 import 'package:xpm/utils/logger.dart';
-import 'package:xpm/xpm.dart';
 
 class RefreshCommand extends Command {
   @override

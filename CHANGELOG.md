@@ -1,3 +1,5 @@
+## v0.6.0
+- Fix #51
 ## v0.4.0
 - xpm get --user-agent available
 ## v0.3.3

@@ -32,7 +32,7 @@ class Repositories {
   static Future<Directory> getReposDir() async =>
       __dirs.putIfAbsent('reposDir', () async => (await XPM.dataDir('repos')));
 
-  static void addRepo(String remote) async {
+  static Future<void> addRepo(String remote) async {
     final localDirectory = await dir(remote);
     final localPath = localDirectory.path;
 
@@ -54,10 +54,8 @@ class Repositories {
     return repos;
   }
 
-  static void addPopular() async {
-    final remote = 'https://github.com/verseles/xpm-popular.git';
-
-    addRepo(remote);
+  static Future<void> addPopular() async {
+    await addRepo('https://github.com/verseles/xpm-popular.git');
   }
 
   static String repoName(String url) {
@@ -69,12 +67,13 @@ class Repositories {
   }
 
   // Pull or clone all repos
-  static pull() async {
+  static Future<void> pull() async {
     final Slug loader = Slug(slugStyle: SlugStyle.toggle);
-    final repos = await allRepos();
+    List<Repo> repos = await allRepos();
 
     if (repos.isEmpty) {
-      addPopular();
+      await addPopular();
+      repos = await allRepos();
     }
 
     out("{@green}Updating repos...{@end}");
@@ -98,6 +97,7 @@ class Repositories {
     await db.writeTxn(() async {
       await db.packages.clear();
     });
+
     await pull();
 
     final repos = await allRepos();
