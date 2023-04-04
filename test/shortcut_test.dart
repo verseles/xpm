@@ -32,7 +32,7 @@ void main() async {
 
       final file = File(await shortcut.create());
       expect(await file.exists(), isTrue);
-    }, testOn: 'mac-os', tags: 'untested');
+    }, testOn: 'mac-os', tags: 'not-tested');
 
     test('creates a Windows shortcut correctly', () async {
       final shortcut = Shortcut(
@@ -42,6 +42,6 @@ void main() async {
 
       final file = File(await shortcut.create());
       expect(await file.exists(), isTrue);
-    }, testOn: 'windows', tags: 'untested');
+    }, testOn: 'windows', tags: 'not-tested');
   });
 }

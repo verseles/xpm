@@ -69,7 +69,7 @@ class RemoveCommand extends Command {
             exitCode: cantExecute);
       }
 
-      if (packageInDB.installed != true) {
+      if (packageInDB.installed == null) {
         // @TODO Check if package is installed in the system but not for me
         leave(
             message:
@@ -101,7 +101,7 @@ class RemoveCommand extends Command {
       await sharedStdIn.terminate();
 
       await db.writeTxn(() async {
-        packageInDB.installed = false;
+        packageInDB.installed = null;
         await db.packages.put(packageInDB);
       });
 

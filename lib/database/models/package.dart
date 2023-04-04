@@ -23,7 +23,7 @@ class Package {
   String? url;
 
   @Index()
-  bool? installed;
+  String? installed;
 
   final repo = IsarLink<Repo>();
 }

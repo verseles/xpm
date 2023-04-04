@@ -22,14 +22,13 @@ class RefreshCommand extends Command {
   void run() async {
     if (argResults!.name == 'refresh') {
       final cacheName = 'tip_refresh_ref_shown';
-      await Setting.delete(cacheName);
 
       final bool shown = await Setting.get(cacheName, defaultValue: false);
       if (!shown) {
         final tip = 'You can use the alias "ref" instead of "refresh"';
         Logger.tip(tip);
         final nextWeek = DateTime.now().add(Duration(days: 7));
-        await Setting.set(cacheName, true, expires: nextWeek);
+        Setting.set(cacheName, true, expires: nextWeek, lazy: true);
       }
     }
 

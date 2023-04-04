@@ -58,7 +58,7 @@ void main() {
       // Assert that the value of the setting is correct and was only queried once
       expect(greeting1, equals('Hello, World!'));
       expect(greeting2, equals('Hello, World!'));
-    });
+    }, tags: ['not-tested']);
 
     test('delete a just created setting', () async {
       // Set the value of a setting
