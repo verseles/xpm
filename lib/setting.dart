@@ -27,7 +27,7 @@ class Setting {
       await db.writeTxn(() async => await db.kVs.put(data));
     }
 
-    _cache[key] = value;    
+    _cache[key] = value;
   }
 
   /// Gets the value of a setting with the specified key.
