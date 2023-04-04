@@ -76,7 +76,7 @@ class InstallCommand extends Command {
 
       var repoRemote = packageInDB.repo.value!.url;
       final prepare = Prepare(repoRemote, packageRequested, args: argResults);
-      if (packageInDB.installed == true &&
+      if (packageInDB.installed != null &&
           Executable(packageRequested).existsSync(cache: false)) {
         Logger.info('Reinstalling "$packageRequested"...');
       } else {
@@ -120,7 +120,7 @@ class InstallCommand extends Command {
       sharedStdIn.terminate();
 
       await db.writeTxn(() async {
-        packageInDB.installed = true;
+        packageInDB.installed = packageInDB.version;
         await db.packages.put(packageInDB);
       });
 
