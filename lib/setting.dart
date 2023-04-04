@@ -14,16 +14,20 @@ class Setting {
   /// - [key]: A unique key for the setting. It is case-insensitive and will be stored in lowercase.
   /// - [value]: The value to set for the setting.
   static Future<void> set(String key, dynamic value,
-      {DateTime? expires}) async {
-    final db = await DB.instance();
+      {DateTime? expires, lazy = false}) async {
     final data = KV()
       ..key = key.toLowerCase()
       ..value = serialize(value)
       ..expiresAt = expires;
 
-    await db.writeTxn(() async => await db.kVs.putByKey(data));
+    final db = await DB.instance();
+    if (lazy) {
+      db.writeTxn(() async => db.kVs.put(data));
+    } else {
+      await db.writeTxn(() async => await db.kVs.put(data));
+    }
 
-    _cache[key] = value;
+    _cache[key] = value;    
   }
 
   /// Gets the value of a setting with the specified key.

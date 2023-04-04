@@ -14,7 +14,7 @@ import 'package:xpm/commands/humans/install.dart';
 import 'package:xpm/commands/humans/refresh.dart';
 import 'package:xpm/commands/humans/remove.dart';
 import 'package:xpm/commands/humans/search.dart';
-import 'package:xpm/commands/humans/update.dart';
+import 'package:xpm/commands/humans/upgrade.dart';
 import 'package:xpm/setting.dart';
 import 'package:xpm/utils/leave.dart';
 import 'package:xpm/utils/logger.dart';
@@ -32,7 +32,7 @@ void main(List<String> args) async {
     ..addCommand(RefreshCommand())
     ..addCommand(SearchCommand())
     ..addCommand(InstallCommand())
-    ..addCommand(UpdateCommand())
+    ..addCommand(UpgradeCommand())
     ..addCommand(RemoveCommand())
     ..addCommand(MakeCommand())
     ..addCommand(CheckCommand())
