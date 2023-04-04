@@ -95,7 +95,7 @@ class Repositories {
   static index() async {
     final db = await DB.instance();
     await db.writeTxn(() async {
-      await db.packages.clear();
+      await db.packages.where().installedIsNull().deleteAll();
     });
 
     await pull();
