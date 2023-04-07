@@ -125,8 +125,10 @@ class Repositories {
         final version = bashScript.get('xVERSION');
         final title = bashScript.get('xTITLE');
         final url = bashScript.get('xURL');
+        final arch = bashScript.getArray('xARCH');
 
-        final results = await Future.wait([desc, version, title, url]);
+        final List<dynamic> results = await Future.wait([desc, version, title, url, arch]);
+        print(results);
 
         // @TODO Validate bash file
         final package = Package()
@@ -136,7 +138,8 @@ class Repositories {
           ..desc = results[0]
           ..version = results[1]
           ..title = results[2]
-          ..url = results[3];
+          ..url = results[3]
+          ..arch = results[4];
 
         db.writeTxnSync(() {
           db.packages.putSync(package);

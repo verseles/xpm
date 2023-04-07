@@ -17,38 +17,43 @@ const PackageSchema = CollectionSchema(
   name: r'Package',
   id: 6192244575192772594,
   properties: {
-    r'desc': PropertySchema(
+    r'arch': PropertySchema(
       id: 0,
+      name: r'arch',
+      type: IsarType.stringList,
+    ),
+    r'desc': PropertySchema(
+      id: 1,
       name: r'desc',
       type: IsarType.string,
     ),
     r'installed': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'installed',
       type: IsarType.string,
     ),
     r'name': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'name',
       type: IsarType.string,
     ),
     r'script': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'script',
       type: IsarType.string,
     ),
     r'title': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'title',
       type: IsarType.string,
     ),
     r'url': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'url',
       type: IsarType.string,
     ),
     r'version': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'version',
       type: IsarType.string,
     )
@@ -98,6 +103,19 @@ const PackageSchema = CollectionSchema(
         )
       ],
     ),
+    r'arch': IndexSchema(
+      id: -7338939058228875704,
+      name: r'arch',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'arch',
+          type: IndexType.hash,
+          caseSensitive: false,
+        )
+      ],
+    ),
     r'installed': IndexSchema(
       id: -2396502518995561215,
       name: r'installed',
@@ -133,6 +151,18 @@ int _packageEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  {
+    final list = object.arch;
+    if (list != null) {
+      bytesCount += 3 + list.length * 3;
+      {
+        for (var i = 0; i < list.length; i++) {
+          final value = list[i];
+          bytesCount += value.length * 3;
+        }
+      }
+    }
+  }
   {
     final value = object.desc;
     if (value != null) {
@@ -174,13 +204,14 @@ void _packageSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.desc);
-  writer.writeString(offsets[1], object.installed);
-  writer.writeString(offsets[2], object.name);
-  writer.writeString(offsets[3], object.script);
-  writer.writeString(offsets[4], object.title);
-  writer.writeString(offsets[5], object.url);
-  writer.writeString(offsets[6], object.version);
+  writer.writeStringList(offsets[0], object.arch);
+  writer.writeString(offsets[1], object.desc);
+  writer.writeString(offsets[2], object.installed);
+  writer.writeString(offsets[3], object.name);
+  writer.writeString(offsets[4], object.script);
+  writer.writeString(offsets[5], object.title);
+  writer.writeString(offsets[6], object.url);
+  writer.writeString(offsets[7], object.version);
 }
 
 Package _packageDeserialize(
@@ -190,14 +221,15 @@ Package _packageDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Package();
-  object.desc = reader.readStringOrNull(offsets[0]);
+  object.arch = reader.readStringList(offsets[0]);
+  object.desc = reader.readStringOrNull(offsets[1]);
   object.id = id;
-  object.installed = reader.readStringOrNull(offsets[1]);
-  object.name = reader.readString(offsets[2]);
-  object.script = reader.readString(offsets[3]);
-  object.title = reader.readStringOrNull(offsets[4]);
-  object.url = reader.readStringOrNull(offsets[5]);
-  object.version = reader.readStringOrNull(offsets[6]);
+  object.installed = reader.readStringOrNull(offsets[2]);
+  object.name = reader.readString(offsets[3]);
+  object.script = reader.readString(offsets[4]);
+  object.title = reader.readStringOrNull(offsets[5]);
+  object.url = reader.readStringOrNull(offsets[6]);
+  object.version = reader.readStringOrNull(offsets[7]);
   return object;
 }
 
@@ -209,18 +241,20 @@ P _packageDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readStringList(offset)) as P;
     case 1:
       return (reader.readStringOrNull(offset)) as P;
     case 2:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 3:
       return (reader.readString(offset)) as P;
     case 4:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 5:
       return (reader.readStringOrNull(offset)) as P;
     case 6:
+      return (reader.readStringOrNull(offset)) as P;
+    case 7:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -487,6 +521,71 @@ extension PackageQueryWhere on QueryBuilder<Package, Package, QWhereClause> {
     });
   }
 
+  QueryBuilder<Package, Package, QAfterWhereClause> archIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'arch',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> archIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'arch',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> archEqualTo(
+      List<String>? arch) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'arch',
+        value: [arch],
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> archNotEqualTo(
+      List<String>? arch) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'arch',
+              lower: [],
+              upper: [arch],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'arch',
+              lower: [arch],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'arch',
+              lower: [arch],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'arch',
+              lower: [],
+              upper: [arch],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
   QueryBuilder<Package, Package, QAfterWhereClause> installedIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
@@ -555,6 +654,237 @@ extension PackageQueryWhere on QueryBuilder<Package, Package, QWhereClause> {
 
 extension PackageQueryFilter
     on QueryBuilder<Package, Package, QFilterCondition> {
+  QueryBuilder<Package, Package, QAfterFilterCondition> archIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'arch',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> archIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'arch',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> archElementEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'arch',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> archElementGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'arch',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> archElementLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'arch',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> archElementBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'arch',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> archElementStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'arch',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> archElementEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'arch',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> archElementContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'arch',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> archElementMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'arch',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> archElementIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'arch',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition>
+      archElementIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'arch',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> archLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'arch',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> archIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'arch',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> archIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'arch',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> archLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'arch',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> archLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'arch',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> archLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'arch',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
   QueryBuilder<Package, Package, QAfterFilterCondition> descIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1820,6 +2150,12 @@ extension PackageQuerySortThenBy
 
 extension PackageQueryWhereDistinct
     on QueryBuilder<Package, Package, QDistinct> {
+  QueryBuilder<Package, Package, QDistinct> distinctByArch() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'arch');
+    });
+  }
+
   QueryBuilder<Package, Package, QDistinct> distinctByDesc(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1875,6 +2211,12 @@ extension PackageQueryProperty
   QueryBuilder<Package, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<Package, List<String>?, QQueryOperations> archProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'arch');
     });
   }
 
