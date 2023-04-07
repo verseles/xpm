@@ -7,6 +7,7 @@ import 'package:xpm/database/models/package.dart';
 import 'package:xpm/os/prepare.dart';
 import 'package:xpm/os/run.dart';
 import 'package:xpm/utils/leave.dart';
+import 'package:xpm/utils/logger.dart';
 import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/show_usage.dart';
 import 'package:xpm/xpm.dart';
@@ -98,14 +99,29 @@ class RemoveCommand extends Command {
         leave(message: error, exitCode: _.result?.exitCode ?? generalError);
       }
 
+      try {
+        await runner.simple(
+            bash, ['-c', 'source ${await prepare.toValidate(removing: true)}']);
+      } on ShellException catch (_) {
+        String error =
+            'Failed to validate uninstall of "{@red}$packageRequested{@end}"';
+        if (argResults!['verbose'] == true) {
+          error += ': ${_.message}';
+        } else {
+          error += '.';
+        }
+        Logger.warning(error);
+      }
+
       await sharedStdIn.terminate();
 
       await db.writeTxn(() async {
         packageInDB.installed = null;
         await db.packages.put(packageInDB);
       });
+      
+     Logger.success('Successfully removed "$packageRequested".');
 
-      out('Successfully removed "{@green}$packageRequested{@end}"');
     }
   }
 }
