@@ -128,8 +128,14 @@ class Repositories {
         final arch = bashScript.getArray('xARCH');
 
         final List<dynamic> results = await Future.wait([desc, version, title, url, arch]);
-        print(results);
-
+        final Map<String, dynamic> data = {
+          'desc': results[0],
+          'version': results[1],
+          'title': results[2],
+          'url': results[3],
+          'arch': results[4],
+        };
+        data['arch'];
         // @TODO Validate bash file
         final package = Package()
           ..name = packageBasename
