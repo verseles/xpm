@@ -7,6 +7,7 @@ import 'package:xpm/database/db.dart';
 import 'package:xpm/database/models/package.dart';
 import 'package:xpm/database/models/repo.dart';
 import 'package:xpm/os/bash_script.dart';
+import 'package:xpm/utils/list_string_extensions.dart';
 import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/slugify.dart';
 
@@ -127,28 +128,35 @@ class Repositories {
         final url = bashScript.get('xURL');
         final arch = bashScript.getArray('xARCH');
 
-        final List<dynamic> results = await Future.wait([desc, version, title, url, arch]);
+        final List<dynamic> results =
+            await Future.wait([desc, version, title, url, arch]);
         final Map<String, dynamic> data = {
           'desc': results[0],
           'version': results[1],
           'title': results[2],
           'url': results[3],
-          'arch': results[4],
+          'arch':
+              (results[4] as List<String>).standardize(XPM.archCorrespondence),
         };
-        data['arch'];
+
         // @TODO Validate bash file
         final package = Package()
           ..name = packageBasename
           ..repo.value = repo
           ..script = pathScript
-          ..desc = results[0]
-          ..version = results[1]
-          ..title = results[2]
-          ..url = results[3]
-          ..arch = results[4];
+          ..desc = data['desc']
+          ..version = data['version']
+          ..title = data['title']
+          ..url = data['url']
+          ..arch = data['arch'];
 
-        db.writeTxnSync(() {
-          db.packages.putSync(package);
+        // @TODO test if this version is slow when there are many packages
+        // db.writeTxnSync(() {
+        //   db.packages.putByIndexSync('name', package);
+        // });
+
+        db.writeTxn(() async {
+          db.packages.putByIndex('name', package);
         });
       }
     }

@@ -35,7 +35,9 @@ class BashScript {
     final match = regex.firstMatch(contents ?? '');
     final arrayValues = match?.group(1)?.split(' ') ?? [];
 
-    return arrayValues;
+    return arrayValues
+        .map((value) => value.replaceAllMapped(RegExp(r"^'|'$"), (match) => ''))
+        .toList();
   }
 
   Future<String?> getFirstProvides() async {
