@@ -29,6 +29,15 @@ class BashScript {
     return value;
   }
 
+  Future<List<String>?> getArray(String arrayName) async {
+    final contents = await this.contents();
+    final regex = RegExp('$arrayName=\\((.*?)\\)');
+    final match = regex.firstMatch(contents ?? '');
+    final arrayValues = match?.group(1)?.split(' ') ?? [];
+
+    return arrayValues;
+  }
+
   Future<String?> getFirstProvides() async {
     final value = await get('xPROVIDES');
     if (value == null) {

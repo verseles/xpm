@@ -119,9 +119,8 @@ class RemoveCommand extends Command {
         packageInDB.installed = null;
         await db.packages.put(packageInDB);
       });
-      
-     Logger.success('Successfully removed "$packageRequested".');
 
+      Logger.success('Successfully removed "$packageRequested".');
     }
   }
 }

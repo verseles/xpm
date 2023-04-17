@@ -125,8 +125,20 @@ class Repositories {
         final version = bashScript.get('xVERSION');
         final title = bashScript.get('xTITLE');
         final url = bashScript.get('xURL');
+        final arch = bashScript.getArray('xARCH');
 
-        final results = await Future.wait([desc, version, title, url]);
+        final List<dynamic> results =
+            await Future.wait([desc, version, title, url, arch]);
+
+        final Map<String, dynamic> map = {
+          'desc': results[0],
+          'version': results[1],
+          'title': results[2],
+          'url': results[3],
+          'arch': results[4],
+        };
+
+        // replace arch with current arch
 
         // @TODO Validate bash file
         final package = Package()

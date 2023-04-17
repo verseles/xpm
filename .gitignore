@@ -1,4 +1,5 @@
 dev.dart
+dev.*.dart
 
 libisar.so
 bin/libisar.so

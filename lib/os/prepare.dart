@@ -312,7 +312,6 @@ ${await best(to: 'remove')}
 
     if (removing && bestValidateExecutable == null) {
       Logger.info('Validation for removing package $package passed!');
-      
     } else if (bestValidateExecutable == null) {
       leave(
         message: 'No executable found for $package, validation failed.',
