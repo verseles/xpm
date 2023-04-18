@@ -7,7 +7,6 @@ import 'package:xpm/database/db.dart';
 import 'package:xpm/database/models/package.dart';
 import 'package:xpm/database/models/repo.dart';
 import 'package:xpm/os/bash_script.dart';
-import 'package:xpm/utils/debug.dart';
 import 'package:xpm/utils/list_string_extensions.dart';
 import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/slugify.dart';
@@ -132,7 +131,7 @@ class Repositories {
         final List<dynamic> results =
             await Future.wait([desc, version, title, url, arch]);
 
-        final Map<String, dynamic> map = {
+        final Map<String, dynamic> data = {
           'desc': results[0],
           'version': results[1],
           'title': results[2],

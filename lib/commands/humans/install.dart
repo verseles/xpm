@@ -9,7 +9,6 @@ import 'package:xpm/os/bash_script.dart';
 import 'package:xpm/os/executable.dart';
 import 'package:xpm/os/prepare.dart';
 import 'package:xpm/os/run.dart';
-import 'package:xpm/utils/debug.dart';
 import 'package:xpm/utils/leave.dart';
 import 'package:xpm/utils/logger.dart';
 import 'package:xpm/utils/show_usage.dart';
