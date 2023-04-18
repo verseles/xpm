@@ -1,3 +1,5 @@
+## v0.10.2
+- some fix and support for architectures
 ## v0.10.0
 - some fixes
 ## v0.8.0

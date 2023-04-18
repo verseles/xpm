@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:all_exit_codes/all_exit_codes.dart';
 import 'package:args/command_runner.dart';
 import 'package:isar/isar.dart';

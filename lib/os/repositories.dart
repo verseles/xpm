@@ -140,7 +140,6 @@ class Repositories {
               (results[4] as List<String>).standardize(XPM.archCorrespondence),
         };
 
-
         // @TODO Validate bash file
         final package = Package()
           ..repo.value = repo
