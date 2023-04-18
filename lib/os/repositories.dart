@@ -7,6 +7,7 @@ import 'package:xpm/database/db.dart';
 import 'package:xpm/database/models/package.dart';
 import 'package:xpm/database/models/repo.dart';
 import 'package:xpm/os/bash_script.dart';
+import 'package:xpm/utils/debug.dart';
 import 'package:xpm/utils/list_string_extensions.dart';
 import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/slugify.dart';
@@ -141,8 +142,8 @@ class Repositories {
 
         // @TODO Validate bash file
         final package = Package()
-          ..name = packageBasename
           ..repo.value = repo
+          ..name = packageBasename
           ..script = pathScript
           ..desc = data['desc']
           ..version = data['version']
@@ -150,13 +151,9 @@ class Repositories {
           ..url = data['url']
           ..arch = data['arch'];
 
-        // @TODO test if this version is slow when there are many packages
-        // db.writeTxnSync(() {
-        //   db.packages.putByIndexSync('name', package);
-        // });
-
-        db.writeTxn(() async {
-          db.packages.putByIndex('name', package);
+        /// WARN: async is not working and is a hell to debug
+        db.writeTxnSync(() {
+          db.packages.putByIndexSync('name', package);
         });
       }
     }
