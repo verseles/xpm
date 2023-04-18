@@ -7,6 +7,8 @@ import 'package:xpm/database/db.dart';
 import 'package:xpm/database/models/package.dart';
 import 'package:xpm/database/models/repo.dart';
 import 'package:xpm/os/bash_script.dart';
+import 'package:xpm/utils/debug.dart';
+import 'package:xpm/utils/list_string_extensions.dart';
 import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/slugify.dart';
 
@@ -135,23 +137,25 @@ class Repositories {
           'version': results[1],
           'title': results[2],
           'url': results[3],
-          'arch': results[4],
+          'arch':
+              (results[4] as List<String>).standardize(XPM.archCorrespondence),
         };
 
-        // replace arch with current arch
 
         // @TODO Validate bash file
         final package = Package()
-          ..name = packageBasename
           ..repo.value = repo
+          ..name = packageBasename
           ..script = pathScript
-          ..desc = results[0]
-          ..version = results[1]
-          ..title = results[2]
-          ..url = results[3];
+          ..desc = data['desc']
+          ..version = data['version']
+          ..title = data['title']
+          ..url = data['url']
+          ..arch = data['arch'];
 
+        /// WARN: async is not working and is a hell to debug
         db.writeTxnSync(() {
-          db.packages.putSync(package);
+          db.packages.putByIndexSync('name', package);
         });
       }
     }

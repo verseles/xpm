@@ -34,7 +34,6 @@ class BashScript {
     final regex = RegExp('$arrayName=\\((.*?)\\)');
     final match = regex.firstMatch(contents ?? '');
     final arrayValues = match?.group(1)?.split(' ') ?? [];
-
     return arrayValues;
   }
 

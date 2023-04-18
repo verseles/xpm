@@ -25,6 +25,28 @@ class XPM {
         'zypper': 'Use zypper or zypper-like package manager.',
       };
 
+  static get archCorrespondence => {
+        'linux64': 'linux-x86_64',
+        'linux32': 'linux-i686',
+        'linuxarm': 'linux-armv7l',
+        'linuxarm64': 'linux-aarch64',
+        'macos': 'darwin-x86_64',
+        'windows': 'windows-x86_64',
+        'windows32': 'windows-i686',
+        'win32': 'windows-i686',
+        'win64': 'windows-x86_64',
+        'macos64': 'darwin-x86_64',
+        'macos-arm64': 'darwin-aarch64',
+        'macos-arm': 'darwin-armv7l',
+        'freebsd32': 'freebsd-i686',
+        'freebsd64': 'freebsd-x86_64',
+        'netbsd32': 'netbsd-i686',
+        'netbsd64': 'netbsd-x86_64',
+        'openbsd': 'openbsd-x86_64',
+        'openbsd32': 'openbsd-i686',
+        'openbsd64': 'openbsd-x86_64',
+      };
+
   /// Returns the path to the git executable.
   /// There is no need to cache the result as it is cached by the [Executable] class.
   static Future<Executable> git([List<String>? arguments]) async {

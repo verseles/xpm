@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:args/command_runner.dart';
 import 'package:isar/isar.dart';
 import 'package:xpm/database/db.dart';
 import 'package:xpm/database/models/package.dart';
+import 'package:xpm/os/get_archicteture.dart';
 import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/show_usage.dart';
 
@@ -52,12 +55,23 @@ class SearchCommand extends Command {
             .findAll();
       }
 
+      final currentArch = getArchitecture();
+      final currentOS = Platform.operatingSystem;
+      final platform = "$currentOS-$currentArch";
+
       if (results.isEmpty) {
         print('No packages found.');
       } else {
         print('Found ${results.length} packages:');
         for (final result in results) {
-          out('{@blue}${result.name}{@end} {@gray}${result.version}{@end} - ${result.desc}');
+          final installed =
+              result.installed != null ? '[{@green}installed{@end}] ' : '';
+          final unavailable =
+              result.arch != null && !result.arch!.contains(platform)
+                  ? '[{@red}unavailable for $platform{@end}] '
+                  : '';
+
+          out('$unavailable{@blue}${result.name}{@end} {@gray}${result.version}{@end} $installed- ${result.desc}');
         }
       }
     }

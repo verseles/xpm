@@ -22,6 +22,9 @@ class Package {
 
   String? url;
 
+  @Index(caseSensitive: false)
+  List<String>? arch;
+
   @Index()
   String? installed;
 

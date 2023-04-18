@@ -343,7 +343,7 @@ validate "$bestValidateExecutable"
       executable += ' ${Platform.script.path}';
     }
 
-    String xARCH = await getArchitecture();
+    String xARCH = getArchitecture();
     String yCHANNEL = args!['channel'] ?? '';
 
     return '''

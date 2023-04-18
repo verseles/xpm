@@ -1,5 +1,7 @@
 ## v0.10.0
 - some fixes
+## v0.8.0
+- better support for platform arch
 ## v0.7.0
 - Fix #52
 ## v0.6.0
