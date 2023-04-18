@@ -34,10 +34,7 @@ class BashScript {
     final regex = RegExp('$arrayName=\\((.*?)\\)');
     final match = regex.firstMatch(contents ?? '');
     final arrayValues = match?.group(1)?.split(' ') ?? [];
-
-    return arrayValues
-        .map((value) => value.replaceAllMapped(RegExp(r"^'|'$"), (match) => ''))
-        .toList();
+    return arrayValues;
   }
 
   Future<String?> getFirstProvides() async {

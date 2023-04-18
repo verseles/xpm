@@ -131,7 +131,8 @@ class Repositories {
 
         final List<dynamic> results =
             await Future.wait([desc, version, title, url, arch]);
-        final Map<String, dynamic> data = {
+
+        final Map<String, dynamic> map = {
           'desc': results[0],
           'version': results[1],
           'title': results[2],
@@ -139,6 +140,7 @@ class Repositories {
           'arch':
               (results[4] as List<String>).standardize(XPM.archCorrespondence),
         };
+
 
         // @TODO Validate bash file
         final package = Package()

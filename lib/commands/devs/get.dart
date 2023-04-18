@@ -75,15 +75,17 @@ class GetCommand extends Command {
 
     late final DloaderAdapter adapter;
 
-    if (aria2Adapter.isAvailable) {
-      adapter = aria2Adapter;
-    } else if (curlAdapter.isAvailable) {
-      adapter = curlAdapter;
-    } else if (wgetAdapter.isAvailable) {
-      adapter = wgetAdapter;
-    } else {
-      adapter = dioAdapter;
-    }
+    adapter = dioAdapter;
+
+    // if (aria2Adapter.isAvailable) {
+    //   adapter = aria2Adapter;
+    // } else if (curlAdapter.isAvailable) {
+    //   adapter = curlAdapter;
+    // } else if (wgetAdapter.isAvailable) {
+    //   adapter = wgetAdapter;
+    // } else {
+    //   adapter = dioAdapter;
+    // }
     Logger.info("Using ${adapter.executable.cmd} adapter");
 
     final downloader = Dloader(adapter);
@@ -110,7 +112,7 @@ class GetCommand extends Command {
     }
     Logger.info("Destination: ${destination.path}");
 
-    final progressBarEnabled = argResults!["no-progress"] == null;
+    final progressBarEnabled = !argResults!["no-progress"];
 
     final ProgressState? progressBar;
     if (progressBarEnabled) {
@@ -123,14 +125,19 @@ class GetCommand extends Command {
       progressBar = null;
     }
 
+    int actualProgress = 0;
+    int lastProgress = 0;
     final File file = await downloader.download(
       url: url,
       destination: destination,
       userAgent: argResults!['user-agent'],
       onProgress: (progress) {
-        if (progressBarEnabled && progress['percentComplete'] != null) {
-          progressBar!.clear();
-          progressBar.increase(int.parse(progress['percentComplete']));
+        actualProgress = int.parse(progress['percentComplete']);
+        if (progressBarEnabled &&
+            actualProgress > 0 &&
+            actualProgress > lastProgress) {
+          progressBar!.increase(actualProgress - lastProgress);
+          lastProgress = actualProgress;
         }
       },
     );

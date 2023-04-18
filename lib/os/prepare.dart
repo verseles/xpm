@@ -7,6 +7,7 @@ import 'package:xpm/os/executable.dart';
 import 'package:xpm/os/get_archicteture.dart';
 import 'package:xpm/os/os_release.dart';
 import 'package:xpm/os/repositories.dart';
+import 'package:xpm/utils/logger.dart';
 import 'package:xpm/utils/slugify.dart';
 import 'package:xpm/xpm.dart';
 import 'package:xpm/utils/leave.dart';
@@ -282,7 +283,7 @@ ${await best(to: 'remove')}
     return (await writeThisBeast(togetherContents)).path;
   }
 
-  Future<String> toValidate() async {
+  Future<String> toValidate({removing = false}) async {
     await boot();
 
     String? bestValidateExecutable;
@@ -303,14 +304,21 @@ ${await best(to: 'remove')}
       }
     }
 
-    if (bestValidateExecutable == null) {
+    String togetherContents = '''
+#!/usr/bin/env bash
+
+# no need to validate using bash
+''';
+
+    if (removing && bestValidateExecutable == null) {
+      Logger.info('Validation for removing package $package passed!');
+    } else if (bestValidateExecutable == null) {
       leave(
         message: 'No executable found for $package, validation failed.',
         exitCode: notFound,
       );
-    }
-
-    String togetherContents = '''
+    } else {
+      togetherContents = '''
 #!/usr/bin/env bash
 
 ${await dynamicCode()}
@@ -321,6 +329,7 @@ ${await packageScript.contents()}
 
 validate "$bestValidateExecutable"
 ''';
+    }
 
     return (await writeThisBeast(togetherContents)).path;
   }

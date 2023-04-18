@@ -76,5 +76,5 @@ void main() {
               Platform.environment['HOMEPATH'] ??
               Directory.current.absolute.path));
     });
-  });
+  }, tags: ['dpp']);
 }
