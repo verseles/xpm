@@ -1,3 +1,5 @@
+## v0.12.0
+- some fixes and new xpm search --all or 'xpm s -a'
 ## v0.10.2
 - some fix and support for architectures
 ## v0.10.0

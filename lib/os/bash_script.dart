@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 class BashScript {
@@ -14,74 +13,80 @@ class BashScript {
     return _exists!;
   }
 
+  bool existsSync() {
+    fileInstance ??= File(_filePath);
+    _exists ??= fileInstance!.existsSync();
+    return _exists!;
+  }
+
   Future<String?> contents() async {
     _contents ??= await exists() ? await fileInstance!.readAsString() : null;
     return _contents;
   }
 
-  Future<String?> get(String param) async {
-    final contents = await this.contents();
+  // contents sync
+  String? contentsSync() {
+    _contents ??= existsSync() ? fileInstance!.readAsStringSync() : null;
+    return _contents;
+  }
 
+  Future<String?> get(String param) async {
+    final script = await contents();
+    if (script == null) {
+      return null;
+    }
     final regex = RegExp('readonly $param="(.*)"');
-    final match = regex.firstMatch(contents ?? '');
+    final match = regex.firstMatch(script);
 
     final value = match?.group(1);
 
     return value;
   }
 
+  /// Returns the array with the specified name from the script.
+  ///
+  /// If the script does not exist, returns null.
+  /// If the array does not exist, returns null.
+  ///
+  /// [arrayName] is the name of the array to return.
+  ///
+  /// The script must be in the form:
+  ///     var arrayName = [...];
+  /// The array should be a list of strings, which may be enclosed in single quotes.
+  /// The strings will be stripped of their single quotes.
   Future<List<String>?> getArray(String arrayName) async {
-    final contents = await this.contents() ?? '';
+    final script = await contents();
+    if (script == null) {
+      return null;
+    }
     final regex = RegExp('$arrayName=\\((.*?)\\)');
-    final match = regex.firstMatch(contents);
-    final arrayValues = match?.group(1)?.split(' ') ?? [];
-    return arrayValues;
-  }
-
-  Future<Map<String, String>> getMap(String variableName) async {
-    final contents = await this.contents() ?? '';
-
-    final pattern = RegExp(r'\b' + variableName + '\s*=\s*(\([^\)]*\))\s*');
-    final match = pattern.firstMatch(contents);
+    final match = regex.firstMatch(script);
 
     if (match == null) {
-      throw Exception('Variable $variableName not found in script');
+      return null;
     }
 
-    final variableValue = match.group(1)!;
-    final jsonValue = variableValue
-        .replaceAll('declare -r', '')
-        .replaceAll('\'', '"')
-        .replaceAll(r'\n', '')
-        .replaceAll(r'\r', '');
+    final array = match.group(1)?.split(' ') ?? [];
 
-    final decodedValue = json.decode(jsonValue) as Map<String, dynamic>;
-    final map = <String, String>{};
-
-    decodedValue.forEach((key, value) {
-      if (value is String) {
-        map[key] = value.replaceAll('"', '');
-      } else {
-        throw Exception('Invalid value for key $key');
-      }
-    });
-
-    return map;
+    return array.map((str) => str.replaceAll(RegExp("^'|'\$"), "")).toList();
   }
 
+  /// Returns the first value of the PROVIDES array.
   Future<String?> getFirstProvides() async {
-    final value = await get('xPROVIDES');
+    final value = await getArray('xPROVIDES');
     if (value == null) {
       return null;
     }
-    final provides = value.split("(").last.split(")").first.split(" ");
-    return provides.first;
+    return value.first;
   }
 
   Future<Map<String, String?>?> variables() async {
-    final contents = await this.contents();
+    final script = await contents();
+    if (script == null) {
+      return null;
+    }
     final regex = RegExp('readonly (.*)="(.*)"');
-    final matches = regex.allMatches(contents ?? '');
+    final matches = regex.allMatches(script);
 
     if (matches.isEmpty) {
       return null;
@@ -89,8 +94,8 @@ class BashScript {
 
     final variables = <String, String?>{};
     for (final match in matches) {
-      final variableName = match.group(1);
-      final variableValue = await get(variableName!);
+      final variableName = match.group(1)!;
+      final variableValue = await get(variableName);
       variables[variableName] = variableValue;
     }
 
@@ -98,9 +103,12 @@ class BashScript {
   }
 
   Future<bool> hasFunction(String functionName) async {
-    final contents = await this.contents();
+    final script = await contents();
+    if (script == null) {
+      return false;
+    }
     final regex = RegExp('$functionName\\(.*\\)');
-    final matches = regex.allMatches(contents ?? '');
+    final matches = regex.allMatches(script);
 
     return matches.isNotEmpty;
   }

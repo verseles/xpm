@@ -74,7 +74,7 @@ class SearchCommand extends Command {
               result.installed != null ? '[{@green}installed{@end}] ' : '';
           final unavailable =
               result.arch != null && !result.arch!.contains(platform)
-                  ? '${result.arch![0]}[{@red}unavailable for $platform{@end}] '
+                  ? '[{@red}unavailable for $platform{@end}] '
                   : '';
 
           out('$unavailable{@blue}${result.name}{@end} {@gray}${result.version}{@end} $installed- ${result.desc}');

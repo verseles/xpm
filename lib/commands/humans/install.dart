@@ -72,7 +72,7 @@ class InstallCommand extends Command {
             message: 'Package "{@gold}$packageRequested{@end}" not found.',
             exitCode: cantExecute);
       }
-      
+
       var repoRemote = packageInDB.repo.value!.url;
       final prepare = Prepare(repoRemote, packageRequested, args: argResults);
       if (packageInDB.installed != null &&

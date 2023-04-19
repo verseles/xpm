@@ -122,22 +122,14 @@ class Repositories {
           continue;
         }
 
-        // @FIXME remove this
-        if (packageBasename != 'micro') {
-          continue;
-        }
-
         final desc = bashScript.get('xDESC');
         final version = bashScript.get('xVERSION');
         final title = bashScript.get('xTITLE');
         final url = bashScript.get('xURL');
-        final archs = bashScript.getMap('xARCH');
+        final archs = bashScript.getArray('xARCH');
 
         final List<dynamic> results =
             await Future.wait([desc, version, title, url, archs]);
-
-        print(results[3]);
-            
 
         final Map<String, dynamic> data = {
           'desc': results[0],
