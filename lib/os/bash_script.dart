@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 class BashScript {
@@ -39,41 +40,34 @@ class BashScript {
 
   Future<Map<String, String>> getMap(String variableName) async {
     final contents = await this.contents() ?? '';
-    // Remove comments from bash script
-    var bashScript = contents.replaceAll(RegExp(r"#.*?\n"), "");
 
-    // Find the variable declaration and its value
-    final variableRegex = RegExp(r"declare -r $variableName=\(([\s\S]*?)\)\s*");
-    final variableMatch = variableRegex.firstMatch(bashScript);
+    final pattern = RegExp(r'\b' + variableName + '\s*=\s*(\([^\)]*\))\s*');
+    final match = pattern.firstMatch(contents);
 
-    if (variableMatch == null) {
-      throw Exception("Variable not found.");
+    if (match == null) {
+      throw Exception('Variable $variableName not found in script');
     }
 
-    final variableValue = variableMatch.group(1)!;
+    final variableValue = match.group(1)!;
+    final jsonValue = variableValue
+        .replaceAll('declare -r', '')
+        .replaceAll('\'', '"')
+        .replaceAll(r'\n', '')
+        .replaceAll(r'\r', '');
 
-    // Parse the variable value into a Map
-    final mapRegex = RegExp(r"\[([\w\d]+)\]=([\s\S]+?)(?=\s*\[|$)");
-    final mapMatches = mapRegex.allMatches(variableValue);
-
+    final decodedValue = json.decode(jsonValue) as Map<String, dynamic>;
     final map = <String, String>{};
 
-    for (final match in mapMatches) {
-      final key = match.group(1)!;
-      final value = (match.group(2) ?? '').trim();
-
-      // Remove quotes from value if needed
-      if (value.startsWith("'") && value.endsWith("'") ||
-          value.startsWith('"') && value.endsWith('"')) {
-        map[key] = value.substring(1, value.length - 1);
+    decodedValue.forEach((key, value) {
+      if (value is String) {
+        map[key] = value.replaceAll('"', '');
       } else {
-        map[key] = value;
+        throw Exception('Invalid value for key $key');
       }
-    }
+    });
 
     return map;
   }
-
 
   Future<String?> getFirstProvides() async {
     final value = await get('xPROVIDES');

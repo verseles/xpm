@@ -122,6 +122,11 @@ class Repositories {
           continue;
         }
 
+        // @FIXME remove this
+        if (packageBasename != 'micro') {
+          continue;
+        }
+
         final desc = bashScript.get('xDESC');
         final version = bashScript.get('xVERSION');
         final title = bashScript.get('xTITLE');
