@@ -59,7 +59,6 @@ class InstallCommand extends Command {
   @override
   void run() async {
     List<String> packagesRequested = argResults!.rest;
-
     showUsage(packagesRequested.isEmpty, () => printUsage());
 
     final bash = await XPM.bash;
@@ -73,7 +72,7 @@ class InstallCommand extends Command {
             message: 'Package "{@gold}$packageRequested{@end}" not found.',
             exitCode: cantExecute);
       }
-
+      
       var repoRemote = packageInDB.repo.value!.url;
       final prepare = Prepare(repoRemote, packageRequested, args: argResults);
       if (packageInDB.installed != null &&

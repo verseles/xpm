@@ -23,6 +23,9 @@ class SearchCommand extends Command {
         negatable: false,
         abbr: 'e',
         help: 'Search for an exact match of the package name.');
+
+    argParser.addFlag('all',
+        negatable: false, abbr: 'a', help: 'List all packages available.');
   }
 
   // [run] may also return a Future.
@@ -30,15 +33,18 @@ class SearchCommand extends Command {
   Future<void> run() async {
     {
       bool exact = argResults!['exact'];
+      bool all = argResults!['all'];
 
       List<String> words = argResults!.rest;
 
-      showUsage(words.isEmpty, () => printUsage());
+      showUsage(words.isEmpty && !all, () => printUsage());
 
       final db = await DB.instance();
-
       final List<Package> results;
-      if (exact) {
+
+      if (all) {
+        results = await db.packages.where().findAll();
+      } else if (exact) {
         results = await db.packages.filter().nameEqualTo(words[0]).findAll();
       } else {
         results = await db.packages
@@ -68,7 +74,7 @@ class SearchCommand extends Command {
               result.installed != null ? '[{@green}installed{@end}] ' : '';
           final unavailable =
               result.arch != null && !result.arch!.contains(platform)
-                  ? '[{@red}unavailable for $platform{@end}] '
+                  ? '${result.arch![0]}[{@red}unavailable for $platform{@end}] '
                   : '';
 
           out('$unavailable{@blue}${result.name}{@end} {@gray}${result.version}{@end} $installed- ${result.desc}');
