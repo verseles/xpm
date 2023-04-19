@@ -126,10 +126,13 @@ class Repositories {
         final version = bashScript.get('xVERSION');
         final title = bashScript.get('xTITLE');
         final url = bashScript.get('xURL');
-        final arch = bashScript.getArray('xARCH');
+        final archs = bashScript.getMap('xARCH');
 
         final List<dynamic> results =
-            await Future.wait([desc, version, title, url, arch]);
+            await Future.wait([desc, version, title, url, archs]);
+
+        print(results[3]);
+            
 
         final Map<String, dynamic> data = {
           'desc': results[0],

@@ -343,12 +343,12 @@ validate "$bestValidateExecutable"
       executable += ' ${Platform.script.path}';
     }
 
-    String xARCH = getArchitecture();
+    String yARCH = getArchitecture();
     String yCHANNEL = args!['channel'] ?? '';
 
     return '''
 readonly XPM="$executable";
-readonly yARCH="$xARCH";
+readonly yARCH="$yARCH";
 readonly yCHANNEL="$yCHANNEL";
 readonly isSnap="${Global.isSnap}";
 readonly isFlatpak="${Global.isFlatpak}";

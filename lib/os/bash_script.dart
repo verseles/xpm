@@ -30,12 +30,50 @@ class BashScript {
   }
 
   Future<List<String>?> getArray(String arrayName) async {
-    final contents = await this.contents();
+    final contents = await this.contents() ?? '';
     final regex = RegExp('$arrayName=\\((.*?)\\)');
-    final match = regex.firstMatch(contents ?? '');
+    final match = regex.firstMatch(contents);
     final arrayValues = match?.group(1)?.split(' ') ?? [];
     return arrayValues;
   }
+
+  Future<Map<String, String>> getMap(String variableName) async {
+    final contents = await this.contents() ?? '';
+    // Remove comments from bash script
+    var bashScript = contents.replaceAll(RegExp(r"#.*?\n"), "");
+
+    // Find the variable declaration and its value
+    final variableRegex = RegExp(r"declare -r $variableName=\(([\s\S]*?)\)\s*");
+    final variableMatch = variableRegex.firstMatch(bashScript);
+
+    if (variableMatch == null) {
+      throw Exception("Variable not found.");
+    }
+
+    final variableValue = variableMatch.group(1)!;
+
+    // Parse the variable value into a Map
+    final mapRegex = RegExp(r"\[([\w\d]+)\]=([\s\S]+?)(?=\s*\[|$)");
+    final mapMatches = mapRegex.allMatches(variableValue);
+
+    final map = <String, String>{};
+
+    for (final match in mapMatches) {
+      final key = match.group(1)!;
+      final value = (match.group(2) ?? '').trim();
+
+      // Remove quotes from value if needed
+      if (value.startsWith("'") && value.endsWith("'") ||
+          value.startsWith('"') && value.endsWith('"')) {
+        map[key] = value.substring(1, value.length - 1);
+      } else {
+        map[key] = value;
+      }
+    }
+
+    return map;
+  }
+
 
   Future<String?> getFirstProvides() async {
     final value = await get('xPROVIDES');
