@@ -2,6 +2,8 @@
 .DEFAULT_GOAL := compile
 
 CMD ?= ref
+
+IMG ?= ubuntu
 PKG ?= micro
 
 compile:
@@ -14,8 +16,8 @@ try:
 test:
 	dart test --concurrency=12 --test-randomize-ordering-seed=random
 
-ubuntu:
-	docker build -f docker/ubuntu/Dockerfile -t xpm:ubuntu .
-	docker run -it xpm xpm install $(PKG)
+validate:
+	docker build -f docker/$(IMG)/Dockerfile -t $(IMG) .
+	docker run -it xpm:$(IMG) xpm install $(PKG)
 
 .PHONY: compile try test validate
