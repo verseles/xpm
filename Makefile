@@ -17,7 +17,7 @@ test:
 	dart test --concurrency=12 --test-randomize-ordering-seed=random
 
 validate:
-	docker build -f docker/$(IMG)/Dockerfile -t $(IMG) .
+	docker build -f docker/$(IMG)/Dockerfile -t xpm:$(IMG) .
 	docker run -it xpm:$(IMG) xpm install $(PKG)
 
 .PHONY: compile try test validate

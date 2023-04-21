@@ -21,7 +21,11 @@ BASE_URL="https://github.com/$REPO/releases/download"
 FILE="$BASE_URL/$TAG/xpm-$OS-$ARCH.gz"
 curl -sL "$FILE" | gunzip -c >./xpm || err "Could not download $FILE"
 
-(chmod +x ./xpm && $SUDO mv -f ./xpm "${PATH%%:*}/xpm" && xpm -v >/dev/null 2>&1) || err "XPM was not installed correctly."
+BIN_DIR="${PATH%%:*}"
+(mkdir -p "$BIN_DIR"
+&& chmod +x ./xpm
+&& $SUDO mv -f ./xpm "$BIN_DIR/xpm"
+&& xpm -v >/dev/null 2>&1) || err "XPM was not installed correctly."
 
 xpm ref
 
