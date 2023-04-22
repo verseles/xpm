@@ -5,6 +5,7 @@ CMD ?= ref
 
 IMG ?= ubuntu
 PKG ?= micro
+MET ?= auto
 
 compile:
 	mkdir -p build
@@ -18,7 +19,6 @@ test:
 
 validate:
 	docker build -f docker/$(IMG)/Dockerfile -t xpm:$(IMG) .
-	docker run -it xpm:$(IMG) xpm install $(PKG)
-	docker run -it xpm:$(IMG) xpm install $(PKG) -m any
+	docker run -it xpm:$(IMG) xpm install $(PKG) -m $(MET)
 
 .PHONY: compile try test validate
