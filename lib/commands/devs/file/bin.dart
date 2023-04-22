@@ -50,7 +50,7 @@ class FileBinCommand extends Command {
 
     if (argResults!['exec']) {
       final run = Run();
-      final marked = await run.asExec(finalPath, sudo: argResults!['sudo']);
+      final marked = await run.asExec(finalPath, sudo: sudo);
 
       if (!marked) {
         out("{@red}Failed to mark '$finalPath' as executable{@end}");
