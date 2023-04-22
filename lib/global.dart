@@ -1,6 +1,7 @@
 bool _isSnap = false;
 bool _isFlatpak = false;
 bool _isAppImage = false;
+String _sudoPath = '';
 
 class Global {
   static bool get isSnap => _isSnap;
@@ -29,4 +30,7 @@ class Global {
       _isFlatpak = false;
     }
   }
+
+  static String get sudoPath => _sudoPath;
+  static set sudoPath(String value) => _sudoPath = value;
 }
