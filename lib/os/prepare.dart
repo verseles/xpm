@@ -184,9 +184,8 @@ class Prepare {
 
   Future<String> bestForFedora({String to = 'install'}) async {
     final dnf = await Executable('dnf').find();
-    final yum = await Executable('yum').find();
 
-    String? bestFedora = dnf ?? yum;
+    String? bestFedora = dnf;
 
     return bestFedora != null
         ? '${to}_dnf "${Global.sudoPath} $bestFedora -y"'
@@ -203,14 +202,16 @@ class Prepare {
     final zypper = await Executable('zypper').find();
 
     return zypper != null
-        ? '${to}_zypper "$zypper -y"'
+        ? '${to}_zypper "${Global.sudoPath} $zypper -y"'
         : await bestForAny(to: to);
   }
 
   Future<String> bestForAndroid({String to = 'install'}) async {
     final pkg = await Executable('pkg').find(); // termux
 
-    return pkg != null ? '${to}_android "$pkg -y"' : await bestForAny(to: to);
+    return pkg != null
+        ? '${to}_android "${Global.sudoPath} $pkg -y"'
+        : await bestForAny(to: to);
   }
 
   Future<String> bestForWindows({String to = 'install'}) async {
