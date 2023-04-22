@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:all_exit_codes/all_exit_codes.dart';
 import 'package:args/command_runner.dart';
+import 'package:xpm/os/executable.dart';
 import 'package:xpm/os/move_to_bin.dart';
 import 'package:xpm/os/run.dart';
 import 'package:xpm/utils/out.dart';
@@ -33,7 +34,8 @@ class FileBinCommand extends Command {
     final filePath = args[0];
 
     final file = File(filePath);
-    final moved = await moveToBin(file, sudo: argResults!['sudo']);
+    final sudo = argResults!['sudo'] && await Executable('sudo').exists();
+    final moved = await moveToBin(file, sudo: sudo);
 
     if (moved == null) {
       out("{@red}Failed to move '${file.absolute.path}' to bin{@end}");

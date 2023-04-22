@@ -345,11 +345,13 @@ validate "$bestValidateExecutable"
 
     String yARCH = getArchitecture();
     String yCHANNEL = args!['channel'] ?? '';
+    String ySUDO = await Executable('sudo').find() ?? '';
 
     return '''
 readonly XPM="$executable";
 readonly yARCH="$yARCH";
 readonly yCHANNEL="$yCHANNEL";
+readonly ySUDO="$ySUDO";
 readonly isSnap="${Global.isSnap}";
 readonly isFlatpak="${Global.isFlatpak}";
 readonly isAppImage="${Global.isAppImage}";
