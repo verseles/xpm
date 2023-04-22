@@ -1,3 +1,5 @@
+## v0.13.0
+- some fixes about sudo usage
 ## v0.12.0
 - some fixes and new xpm search --all or 'xpm s -a'
 ## v0.10.2
