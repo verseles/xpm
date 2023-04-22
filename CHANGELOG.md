@@ -1,3 +1,5 @@
+## v0.14.0
+- more fixes about sudo usage
 ## v0.13.0
 - some fixes about sudo usage
 ## v0.12.0
