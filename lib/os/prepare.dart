@@ -88,8 +88,6 @@ class Prepare {
           return bestForArch(to: to);
         case 'android':
           return bestForAndroid(to: to);
-        case 'yum':
-          return bestForCentOS(to: to);
         case 'zypper':
           return bestForOpenSUSE(to: to);
         default:
@@ -109,19 +107,15 @@ class Prepare {
       return bestForArch(to: to);
     }
 
-    if (preferedMethod == 'dnf' || distro == 'fedora') {
+    if (preferedMethod == 'dnf' ||
+        distro == 'fedora' ||
+        distro == 'rhel' ||
+        distroLike == 'rhel fedora') {
       return bestForFedora(to: to);
     }
 
     if (preferedMethod == 'android' || distro == 'android') {
       return bestForAndroid(to: to);
-    }
-
-    if (preferedMethod == 'yum' ||
-        distro == 'centos' ||
-        distro == 'rhel' ||
-        distroLike == 'rhel fedora') {
-      return bestForCentOS(to: to);
     }
 
     if (preferedMethod == 'zypper' ||
@@ -173,7 +167,7 @@ class Prepare {
     final String? bestApt = apt ?? aptGet;
 
     return bestApt != null
-        ? '${to}_apt "$bestApt -y"'
+        ? '${to}_apt "${Global.sudoPath} $bestApt -y"'
         : await bestForAny(to: to);
   }
 
@@ -184,7 +178,7 @@ class Prepare {
     String? bestArchLinux = paru ?? yay ?? pacman;
 
     return bestArchLinux != null
-        ? '${to}_pacman "$bestArchLinux --noconfirm"'
+        ? '${to}_pacman "${Global.sudoPath} $bestArchLinux --noconfirm"'
         : await bestForAny(to: to);
   }
 
@@ -195,18 +189,7 @@ class Prepare {
     String? bestFedora = dnf ?? yum;
 
     return bestFedora != null
-        ? '${to}_dnf "$bestFedora -y"'
-        : await bestForAny(to: to);
-  }
-
-  Future<String> bestForCentOS({String to = 'install'}) async {
-    final dnf = await Executable('dnf').find();
-    final yum = await Executable('yum').find();
-
-    String? bestCentOS = dnf ?? yum;
-
-    return bestCentOS != null
-        ? '${to}_yum "$bestCentOS -y"'
+        ? '${to}_dnf "${Global.sudoPath} $bestFedora -y"'
         : await bestForAny(to: to);
   }
 
