@@ -21,7 +21,6 @@ class XPM {
         'choco': 'Use choco or choco-like package manager.',
         'dnf': 'Use dnf or dnf-like package manager.',
         'pacman': 'Use pacman or pacman-like package manager.',
-        'yum': 'Use yum or yum-like package manager.',
         'zypper': 'Use zypper or zypper-like package manager.',
       };
 

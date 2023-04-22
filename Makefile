@@ -19,5 +19,6 @@ test:
 validate:
 	docker build -f docker/$(IMG)/Dockerfile -t xpm:$(IMG) .
 	docker run -it xpm:$(IMG) xpm install $(PKG)
+	docker run -it xpm:$(IMG) xpm install $(PKG) -m any
 
 .PHONY: compile try test validate

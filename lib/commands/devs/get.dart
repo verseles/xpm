@@ -6,6 +6,7 @@ import 'package:args/command_runner.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dloader/dloader.dart';
 import 'package:interact/interact.dart' show Progress, Theme, ProgressState;
+import 'package:xpm/os/executable.dart';
 import 'package:xpm/os/move_to_bin.dart';
 import 'package:xpm/os/run.dart';
 import 'package:xpm/utils/logger.dart';
@@ -195,7 +196,8 @@ class GetCommand extends Command {
       final runner = Run();
 
       if (argResults!['bin'] == true) {
-        final File? toBin = await moveToBin(file, runner: runner, sudo: true);
+        final File? toBin = await moveToBin(file,
+            runner: runner, sudo: await Executable('sudo').exists());
 
         if (toBin != null) {
           Logger.info('Installed $file to bin folder: ${toBin.path}');
@@ -205,7 +207,8 @@ class GetCommand extends Command {
       }
 
       if (argResults!['exec'] == true && !Platform.isWindows) {
-        bool asExec = await runner.asExec(file.path, sudo: true);
+        bool asExec = await runner.asExec(file.path,
+            sudo: await Executable('sudo').exists());
         if (asExec) {
           Logger.info('Made $file executable');
         } else {
