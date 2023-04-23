@@ -26,12 +26,9 @@ void main(List<String> args) async {
     showVersion(args);
   }
 
-  final refresh = 'automatic_refresh';
-  final bool refreshExpired = await Setting.get(refresh, defaultValue: false);
-  if (!refreshExpired) {
+  final bool isExpired = await Setting.get('needs_refresh' , defaultValue: true);
+  if (!isExpired) {
     await Repositories.index();
-    final threeDays = DateTime.now().add(Duration(days: 3));
-    Setting.set(refresh, true, expires: threeDays, lazy: true);
   }
   
   await Setting.deleteExpired(lazy: true);

@@ -7,6 +7,7 @@ import 'package:xpm/database/db.dart';
 import 'package:xpm/database/models/package.dart';
 import 'package:xpm/database/models/repo.dart';
 import 'package:xpm/os/bash_script.dart';
+import 'package:xpm/setting.dart';
 import 'package:xpm/utils/list_string_extensions.dart';
 import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/slugify.dart';
@@ -157,5 +158,7 @@ class Repositories {
         });
       }
     }
+    final threeDays = DateTime.now().add(Duration(days: 3));
+    Setting.set('needs_refresh' , true, expires: threeDays, lazy: true);
   }
 }
