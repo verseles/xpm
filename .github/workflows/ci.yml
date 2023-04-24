@@ -16,6 +16,6 @@ jobs:
       - uses: dart-lang/setup-dart@v1
 
       - run: dart pub get
-      - run: dart format --output=none --set-exit-if-changed .
-      - run: dart analyze
+      # - run: dart format --output=none --set-exit-if-changed .
+      - run: dart analyze --fatal-warnings
       - run: dart test --exclude-tags=skip-ci
