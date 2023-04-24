@@ -28,6 +28,7 @@ void main(List<String> args) async {
 
   final bool isExpired = await Setting.get('needs_refresh' , defaultValue: true);
   if (!isExpired) {
+    // @VERBOSE
     await Repositories.index();
   }
   

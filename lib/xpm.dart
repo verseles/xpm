@@ -22,6 +22,7 @@ class XPM {
         'dnf': 'Use dnf or dnf-like package manager.',
         'pacman': 'Use pacman or pacman-like package manager.',
         'zypper': 'Use zypper or zypper-like package manager.',
+        'android': 'Use android or android-like package manager.',
       };
 
   static get archCorrespondence => {

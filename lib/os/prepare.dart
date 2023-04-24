@@ -202,7 +202,7 @@ class Prepare {
     final zypper = await Executable('zypper').find();
 
     return zypper != null
-        ? '${to}_zypper "${Global.sudoPath} $zypper -y"'
+        ? '${to}_zypper "${Global.sudoPath} $zypper --non-interactive"'
         : await bestForAny(to: to);
   }
 
