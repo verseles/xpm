@@ -15,6 +15,7 @@ import 'package:xpm/commands/humans/refresh.dart';
 import 'package:xpm/commands/humans/remove.dart';
 import 'package:xpm/commands/humans/search.dart';
 import 'package:xpm/commands/humans/upgrade.dart';
+import 'package:xpm/os/repositories.dart';
 import 'package:xpm/setting.dart';
 import 'package:xpm/utils/leave.dart';
 import 'package:xpm/utils/logger.dart';
@@ -25,7 +26,13 @@ void main(List<String> args) async {
     showVersion(args);
   }
 
+  final bool isExpired = await Setting.get('needs_refresh' , defaultValue: true);
+  if (!isExpired) {
+    await Repositories.index();
+  }
+  
   await Setting.deleteExpired(lazy: true);
+  
   final runner = CommandRunner(XPM.name, XPM.description)
     ..argParser.addFlag('version',
         abbr: 'v', negatable: false, help: 'Prints the version of ${XPM.name}.')

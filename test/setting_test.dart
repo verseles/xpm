@@ -109,7 +109,7 @@ void main() {
       expect(expired, isNull);
     });
 
-    test('delete expired settings at the end of the executation', () async {
+    test('delete expired settings at the end of the execution', () async {
       // Set the value of a setting with an expiration date of 1 second
       final now = DateTime.now();
       final expireTime = now.add(Duration(seconds: 1));
