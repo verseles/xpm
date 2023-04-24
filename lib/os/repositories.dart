@@ -159,6 +159,6 @@ class Repositories {
       }
     }
     final threeDays = DateTime.now().add(Duration(days: 3));
-    Setting.set('needs_refresh' , true, expires: threeDays, lazy: true);
+    Setting.set('needs_refresh', true, expires: threeDays, lazy: true);
   }
 }

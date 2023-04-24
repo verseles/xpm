@@ -26,14 +26,14 @@ void main(List<String> args) async {
     showVersion(args);
   }
 
-  final bool isExpired = await Setting.get('needs_refresh' , defaultValue: true);
+  final bool isExpired = await Setting.get('needs_refresh', defaultValue: true);
   if (!isExpired) {
     // @VERBOSE
     await Repositories.index();
   }
-  
+
   await Setting.deleteExpired(lazy: true);
-  
+
   final runner = CommandRunner(XPM.name, XPM.description)
     ..argParser.addFlag('version',
         abbr: 'v', negatable: false, help: 'Prints the version of ${XPM.name}.')

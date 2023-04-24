@@ -1,3 +1,5 @@
+## v0.17.0
+- zypper fix, auto refresh every 3 days and many other fixes
 ## v0.16.0
 - more fixes about sudo usage
 ## v0.15.0

@@ -10,7 +10,6 @@ import 'models/package.dart';
 import 'models/repo.dart';
 
 class DB {
-
   static Future<Isar> instance() async {
     final dbName = 'index';
     final dataDir = await XPM.dataDir('isar');
