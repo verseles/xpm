@@ -31,7 +31,7 @@ fi
 
 # Get the latest release tag from GitHub
 REPO="verseles/xpm"
-TAG=$(curl -s https://api.github.com/repos/$REPO/releases/latest | awk -F'"' '/tag_name/{print $4}')
+TAG=$(curl -sL https://api.github.com/repos/$REPO/releases/latest | awk -F'"' '/tag_name/{print $4}')
 
 echo -e "\n\033[0;32m   Installing XPM $TAG\033[0m\n"
 
