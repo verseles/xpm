@@ -23,6 +23,7 @@ class XPM {
         'pacman': 'Use pacman or pacman-like package manager.',
         'zypper': 'Use zypper or zypper-like package manager.',
         'android': 'Use android or android-like package manager.',
+        'swupd': 'Use swupd or swupd-like package manager.'
       };
 
   static get archCorrespondence => {
