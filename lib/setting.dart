@@ -22,9 +22,9 @@ class Setting {
 
     final db = await DB.instance();
     if (lazy) {
-      db.writeTxn(() async => db.kVs.put(data));
+      db.writeTxn(() async => db.kVs.putByKey(data));
     } else {
-      await db.writeTxn(() async => await db.kVs.put(data));
+      await db.writeTxn(() async => await db.kVs.putByKey(data));
     }
 
     _cache[key] = value;

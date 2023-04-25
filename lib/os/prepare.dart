@@ -63,7 +63,6 @@ class Prepare {
 
     final String preferedMethod = args?['method'] ?? 'auto';
     final bool forceMethod = args!['force-method'];
-
     // @FIXME on any "best" function, check if the method is available on the package script
 
     if (forceMethod) {
@@ -90,6 +89,8 @@ class Prepare {
           return bestForAndroid(to: to);
         case 'zypper':
           return bestForOpenSUSE(to: to);
+        case 'swupd':
+          return bestForClearLinux(to: to);
         default:
           leave(message: 'Unknown method: $preferedMethod', exitCode: notFound);
       }
@@ -132,6 +133,12 @@ class Prepare {
       return bestForWindows(to: to);
     }
 
+    if (preferedMethod == 'swupd' ||
+        distro == 'clear-linux-os' ||
+        distroLike == 'clear-linux-os') {
+      return bestForClearLinux(to: to);
+    }
+
     return bestForAny(to: to);
   }
 
@@ -157,6 +164,16 @@ class Prepare {
 
     return bestPack != null
         ? '${to}_pack "$bestPack"'
+        : await bestForAny(to: to);
+  }
+
+  Future<String> bestForClearLinux({String to = 'install'}) async {
+    final swupd = await Executable('swupd').find();
+
+    final String? bestSwupd = swupd;
+
+    return bestSwupd != null
+        ? '${to}_swupd "${Global.sudoPath} $bestSwupd"'
         : await bestForAny(to: to);
   }
 
