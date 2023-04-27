@@ -1,3 +1,4 @@
+import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 import 'package:xpm/utils/version_checker.dart';
 
@@ -9,30 +10,67 @@ void main() {
       versionChecker = VersionChecker();
     });
 
-    test('checkForNewVersion returns new minor version', () async {
-      final packageName = 'test_package';
-      final newVersion = await versionChecker.checkForNewVersion(packageName, type: 'minor');
-      expect(newVersion, isNotNull);
-      expect(newVersion, isA<String>());
+    test('getLatestVersion returns a version', () async {
+      final version = await versionChecker.getLatestVersion('dio');
+      expect(version, isA<Version>());
     });
 
-    test('checkForNewVersion returns new major version', () async {
-      final packageName = 'test_package';
-      final newVersion = await versionChecker.checkForNewVersion(packageName, type: 'major');
-      expect(newVersion, isNotNull);
-      expect(newVersion, isA<String>());
+    test('checkForNewVersion returns null when no update is available',
+        () async {
+      final version = Version.parse('1.2.3');
+      final newVersion = Version.parse('1.2.3');
+      final result = await versionChecker.checkForNewVersion('dio', version,
+          newVersion: newVersion);
+      expect(result, isNull);
     });
 
-    test('checkForNewVersion returns new patch version', () async {
-      final packageName = 'test_package';
-      final newVersion = await versionChecker.checkForNewVersion(packageName, type: 'patch');
-      expect(newVersion, isNotNull);
-      expect(newVersion, isA<String>());
+    test('checkForNewVersion returns a new version when update is available',
+        () async {
+      final version = Version.parse('1.2.3');
+      final newVersion = Version.parse('1.3.0');
+      final result = await versionChecker.checkForNewVersion('dio', version,
+          newVersion: newVersion);
+      expect(result, equals(newVersion));
     });
 
-    test('checkForNewVersion throws ArgumentError for invalid type', () {
-      final packageName = 'test_package';
-      expect(() async => await versionChecker.checkForNewVersion(packageName, type: 'invalid'), throwsA(isA<ArgumentError>()));
+    test('compareVersions returns null when no update is available', () {
+      final current = Version.parse('1.2.3');
+      final newer = Version.parse('1.2.3');
+      final result =
+          versionChecker.compareVersions(current, newer, Types.minor);
+      expect(result, isNull);
+    });
+
+    test('compareVersions returns a new version when update is available', () {
+      final current = Version.parse('1.2.3');
+      final newer = Version.parse('1.3.0');
+      final result =
+          versionChecker.compareVersions(current, newer, Types.minor);
+      expect(result, equals(newer));
+    });
+
+    test('compareVersions returns null when major update is not available', () {
+      final current = Version.parse('1.2.3');
+      final newer = Version.parse('1.3.0');
+      final result =
+          versionChecker.compareVersions(current, newer, Types.major);
+      expect(result, isNull);
+    });
+
+    test('compareVersions returns null when minor update is not available', () {
+      final current = Version.parse('1.2.3');
+      final newer = Version.parse('1.2.3+1');
+      final result =
+          versionChecker.compareVersions(current, newer, Types.minor);
+      expect(result, isNull);
+    });
+
+    test('compareVersions returns null when patch update is not available', () {
+      final current = Version.parse('1.2.3');
+      final newer = Version.parse('1.2.3');
+      final result =
+          versionChecker.compareVersions(current, newer, Types.patch);
+      expect(result, isNull);
     });
   });
 }
