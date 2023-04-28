@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:all_exit_codes/all_exit_codes.dart';
 import 'package:args/command_runner.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:xpm/commands/devs/check.dart';
 import 'package:xpm/commands/devs/checksum.dart';
 import 'package:xpm/commands/devs/file/file.dart';
@@ -20,18 +21,33 @@ import 'package:xpm/setting.dart';
 import 'package:xpm/utils/leave.dart';
 import 'package:xpm/utils/logger.dart';
 import 'package:xpm/xpm.dart';
+import 'package:xpm/utils/version_checker.dart';
 
 void main(List<String> args) async {
   if (args.isNotEmpty && (args.first == '-v' || args.first == '--version')) {
     showVersion(args);
   }
 
-  final bool isExpired = await Setting.get('needs_refresh', defaultValue: true);
-  if (!isExpired) {
+  final bool isRepoOutdated =
+      await Setting.get('needs_refresh', defaultValue: true);
+  if (!isRepoOutdated) {
     // @VERBOSE
     await Repositories.index();
   }
 
+  final bool isXPMOutdated =
+      await Setting.get('needs_uptade', defaultValue: true);
+  if (!isXPMOutdated) {
+    // @VERBOSE
+    final fourDays = DateTime.now().add(Duration(days: 4));
+    final newVersionAvailable = await VersionChecker()
+        .checkForNewVersion(XPM.name, Version.parse(XPM.version));
+    Setting.set('needs_uptade', true, expires: fourDays, lazy: true);
+    if (newVersionAvailable != null) {
+      Logger.info('There is a new version available: $newVersionAvailable');
+      Logger.info('Run: {@green}xpm install xpm{@end} to update.');
+    }
+  }
   await Setting.deleteExpired(lazy: true);
 
   final runner = CommandRunner(XPM.name, XPM.description)
