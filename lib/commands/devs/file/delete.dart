@@ -29,35 +29,35 @@ class FileDeleteCommand extends Command {
   // [run] may also return a Future.
   @override
   void run() async {
-    List<String> args = argResults!.rest;
+    List<String> files = argResults!.rest;
 
-    showUsage(args.isEmpty, () => printUsage());
+    showUsage(files.isEmpty, () => printUsage());
 
-    final filePath = args[0];
-    final file = File(filePath);
-    final oldPath = file.absolute.path;
+    for (String path in files) {
+      final filePath = path;
+      final file = File(filePath);
 
-    if (!file.existsSync()) {
-      out("{@red}File '$filePath' not found{@end}");
-      exit(unableToOpenInputFile);
+      if (!file.existsSync() && !argResults!['force']) {
+        out("{@red}File '$filePath' not found{@end}");
+        exit(unableToOpenInputFile);
+      }
+
+      final run = Run();
+      final deleted = await run.delete(filePath,
+          sudo: argResults!['sudo'],
+          recursive: argResults!['recursive'],
+          force: argResults!['force']);
+
+      if (!deleted || file.existsSync() && !argResults!['force']) {
+        out("{@red}Failed to delete '$filePath'{@end}");
+        exit(ioError);
+      }
+
+      if (argResults!['verbose']) {
+        out("{@green}File deleted: '$filePath'{@end}");
+      }
     }
 
-    final run = Run();
-    final deleted = await run.delete(filePath,
-        sudo: argResults!['sudo'],
-        recursive: argResults!['recursive'],
-        force: argResults!['force']);
-
-    if (!deleted || file.existsSync()) {
-      out("{@red}Failed to delete '$filePath'{@end}");
-      exit(ioError);
-    }
-
-    if (argResults!['verbose']) {
-      out("{@green}File deleted: '$filePath'{@end}");
-    }
-
-    print(oldPath);
     exit(success);
   }
 }

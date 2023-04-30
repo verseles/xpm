@@ -1,5 +1,5 @@
 FROM clearlinux:latest
-RUN swupd bundle-add git curl
+RUN swupd bundle-add git curl jq
 
 # Installs xpm - https://xpm.link
 RUN echo "XTAG: $XTAG"

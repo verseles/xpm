@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:all_exit_codes/all_exit_codes.dart';
 import 'package:args/args.dart';
 import 'package:xpm/os/bash_script.dart';
+import 'package:xpm/os/bin_directory.dart';
 import 'package:xpm/os/executable.dart';
 import 'package:xpm/os/get_archicteture.dart';
 import 'package:xpm/os/os_release.dart';
@@ -354,6 +355,7 @@ validate "$bestValidateExecutable"
 readonly XPM="$executable";
 readonly yARCH="$yARCH";
 readonly yCHANNEL="$yCHANNEL";
+readonly yBIN="${binDirectory().path}";
 readonly ySUDO="${Global.sudoPath}";
 readonly isSnap="${Global.isSnap}";
 readonly isFlatpak="${Global.isFlatpak}";
