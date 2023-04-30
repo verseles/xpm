@@ -32,6 +32,9 @@ class GetCommand extends Command {
         help: "Identification of the software accessing the internet",
         valueHelp: "<string>");
 
+    argParser.addFlag('no-user-agent',
+        help: 'Disable user agent', negatable: false);
+
     argParser.addOption('name',
         abbr: 'n',
         help: 'Define the name of the downloaded file without defining the path'
@@ -132,6 +135,7 @@ class GetCommand extends Command {
       url: url,
       destination: destination,
       userAgent: argResults!['user-agent'],
+      disableUserAgent: argResults!['no-user-agent'],
       onProgress: (progress) {
         actualProgress = int.parse(progress['percentComplete']);
         if (progressBarEnabled &&
