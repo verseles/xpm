@@ -1,11 +1,19 @@
 # Default target
 .DEFAULT_GOAL := compile
 
+# xpm command
 CMD ?= ref
 
-IMG ?= ubuntu # ubuntu, fedora, archlinux, opensuse
-PKG ?= micro # package name
-MET ?= auto # method: auto, any, apt, brew, dnf, pacman, choco, zypper, android
+# ubuntu, fedora, archlinux, opensuse
+IMG ?= ubuntu
+# package name
+PKG ?= micro
+# auto, any, apt, brew, dnf, pacman, zypper
+MET ?= auto
+
+# Get latest release tag
+XTAG ?=$(shell curl -sL https://api.github.com/repos/verseles/xpm/releases/latest | jq -r '.tag_name')
+
 
 compile:
 	mkdir -p build
@@ -18,7 +26,8 @@ test:
 	dart test --concurrency=12 --test-randomize-ordering-seed=random
 
 validate:
-	docker build -f docker/$(IMG)/Dockerfile -t xpm:$(IMG) .
+	echo "Validating package $(PKG) with $(MET) method on $(IMG) image..."
+	docker build --build-arg XTAG=$(XTAG) -t xpm:$(IMG) -f docker/$(IMG)/Dockerfile .
 	docker run -it xpm:$(IMG) xpm install $(PKG) -m $(MET)
 
 validate-all:
@@ -39,6 +48,7 @@ validate-all:
 	$(MAKE) validate IMG=opensuse MET=zypper
 	$(MAKE) validate IMG=clearlinux MET=auto
 	$(MAKE) validate IMG=clearlinux MET=any
+	$(MAKE) validate IMG=clearlinux MET=swupd
 
 
 .PHONY: compile try test validate validate-all
