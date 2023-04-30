@@ -1,3 +1,5 @@
+## v0.18.1
+- upgrade dependencies
 ## v0.18.0
 - update checker
 ## v0.17.0
