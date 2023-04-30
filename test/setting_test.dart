@@ -92,12 +92,12 @@ void main() {
     test('delete expired settings imeadiately', () async {
       // Set the value of a setting with an expiration date of 1 second
       final now = DateTime.now();
-      final expireTime = now.add(Duration(seconds: 1));
+      final expireTime = now.add(Duration(milliseconds: 100));
       await Setting.set('expireme', 'I should be deleted after 1 second',
           expires: expireTime);
 
       // Wait for the setting to expire
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(Duration(milliseconds: 200));
 
       // Delete expired settings
       await Setting.deleteExpired();
@@ -112,18 +112,18 @@ void main() {
     test('delete expired settings at the end of the execution', () async {
       // Set the value of a setting with an expiration date of 1 second
       final now = DateTime.now();
-      final expireTime = now.add(Duration(seconds: 1));
+      final expireTime = now.add(Duration(milliseconds: 100));
       final value = 'I should exist in this test';
-      await Setting.set('expireme', value, expires: expireTime);
+      await Setting.set('lazyexpires', value, expires: expireTime);
 
       // Wait for the setting to expire
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(Duration(microseconds: 100));
 
       // Delete expired settings (lazy)
-      await Setting.deleteExpired(lazy: true);
+      Setting.deleteExpired(lazy: true);
 
       // Get the value of the expired setting
-      final expired = await Setting.get('expireme', cache: false);
+      final expired = await Setting.get('lazyexpires', cache: false);
 
       // Assert that the value still there
       expect(expired, equals(value));
