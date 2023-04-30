@@ -1,3 +1,5 @@
+## v0.18.0
+- update checker
 ## v0.17.0
 - zypper fix, auto refresh every 3 days and many other fixes
 ## v0.16.0
