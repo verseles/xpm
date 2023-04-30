@@ -340,9 +340,15 @@ validate "$bestValidateExecutable"
   Future<String> dynamicCode() async {
     String executable = Platform.resolvedExecutable;
 
-    // If we are running from a dart file, we need to add the path to the
-    // executable to the script.
     if (Platform.script.path.endsWith('.dart')) {
+      // If we are running from a dart file, we need to add the path to the
+      // executable to the script.
+      executable += ' ${Platform.script.path}';
+    }
+    if (executable.endsWith('/dart')) {
+      // Probably running from pub global run, so we need to add the path to
+      Logger.info(
+          'Running from pub global run, adding path to executable. ${Platform.script.path}');
       executable += ' ${Platform.script.path}';
     }
 
