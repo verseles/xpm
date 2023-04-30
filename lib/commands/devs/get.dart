@@ -38,7 +38,7 @@ class GetCommand extends Command {
     argParser.addOption('name',
         abbr: 'n',
         help: 'Define the name of the downloaded file without defining the path'
-            ' (only works with --out)');
+            ' (only works without --out)');
 
     argParser.addFlag('exec',
         abbr: 'x',
