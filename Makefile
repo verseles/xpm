@@ -26,7 +26,7 @@ test:
 	dart test --concurrency=12 --test-randomize-ordering-seed=random
 
 validate:
-	echo "Validating package $(PKG) with $(MET) method on $(IMG) image..."
+	echo "Validating package $(PKG) with $(MET) method on $(IMG) image... XPM"
 	docker build --build-arg XTAG=$(XTAG) -t xpm:$(IMG) -f docker/$(IMG)/Dockerfile .
 	docker run -it xpm:$(IMG) xpm install $(PKG) -m $(MET)
 
