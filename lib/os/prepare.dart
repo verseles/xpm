@@ -14,6 +14,7 @@ import 'package:xpm/xpm.dart';
 import 'package:xpm/utils/leave.dart';
 import 'package:xpm/global.dart';
 
+/// A class that prepares a package for installation.
 class Prepare {
   final String repo, package;
   final ArgResults? args;
@@ -28,8 +29,14 @@ class Prepare {
   late final BashScript packageScript;
   bool booted = false;
 
+  /// Creates a new instance of the [Prepare] class.
+  ///
+  /// The [repo] parameter is the name of the repository that contains the package.
+  /// The [package] parameter is the name of the package to prepare.
+  /// The [args] parameter is an optional [ArgResults] object that contains the command-line arguments.
   Prepare(this.repo, this.package, {this.args});
 
+  /// Initializes the class by setting some properties and loading the package script.
   Future<void> boot() async {
     if (booted) return;
     repoSlug = repo.slugify();
@@ -52,6 +59,9 @@ class Prepare {
     booted = true;
   }
 
+  /// Writes the given script to a file in the cache directory.
+  ///
+  /// The [script] parameter is the script to write.
   Future<File> writeThisBeast(String script) async {
     await boot();
 
@@ -59,6 +69,9 @@ class Prepare {
         .writeAsString(script.trim());
   }
 
+  /// Determines the best installation method based on the user's preferences and the operating system.
+  ///
+  /// The [to] parameter is the installation target.
   Future<String> best({to = 'install'}) async {
     await boot();
 
@@ -143,8 +156,14 @@ class Prepare {
     return bestForAny(to: to);
   }
 
+  /// Determines the best installation method for any operating system.
+  ///
+  /// The [to] parameter is the installation target.
   Future<String> bestForAny({String to = 'install'}) async => '${to}_any';
 
+  /// Determines the best installation method for package managers that work on any operating system.
+  ///
+  /// The [to] parameter is the installation target.
   Future<String> bestForPack({String to = 'install'}) async {
     final String? snap = await Executable('snap').find();
     final String? flatpak = await Executable('flatpak').find();
@@ -168,6 +187,9 @@ class Prepare {
         : await bestForAny(to: to);
   }
 
+  /// Determines the best installation method for Clear Linux OS.
+  ///
+  /// The [to] parameter is the installation target.
   Future<String> bestForClearLinux({String to = 'install'}) async {
     final swupd = await Executable('swupd').find();
 
@@ -178,6 +200,9 @@ class Prepare {
         : await bestForAny(to: to);
   }
 
+  /// Determines the best installation method for Debian-based Linux distributions.
+  ///
+  /// The [to] parameter is the installation target.
   Future<String> bestForApt({String to = 'install'}) async {
     final apt = await Executable('apt').find();
     final aptGet = await Executable('apt-get').find();
@@ -189,6 +214,9 @@ class Prepare {
         : await bestForAny(to: to);
   }
 
+  /// Determines the best installation method for Arch Linux.
+  ///
+  /// The [to] parameter is the installation target.
   Future<String> bestForArch({String to = 'install'}) async {
     final paru = await Executable('paru').find();
     final yay = await Executable('yay').find();
@@ -200,6 +228,9 @@ class Prepare {
         : await bestForAny(to: to);
   }
 
+  /// Determines the best installation method for Fedora.
+  ///
+  /// The [to] parameter is the installation target.
   Future<String> bestForFedora({String to = 'install'}) async {
     final dnf = await Executable('dnf').find();
 
@@ -210,12 +241,18 @@ class Prepare {
         : await bestForAny(to: to);
   }
 
+  /// Determines the best installation method for macOS.
+  ///
+  /// The [to] parameter is the installation target.
   Future<String> bestForMacOS({String to = 'install'}) async {
     final brew = await Executable('brew').find();
 
     return brew != null ? '${to}_macos "$brew"' : await bestForAny(to: to);
   }
 
+  /// Determines the best installation method for OpenSUSE.
+  ///
+  /// The [to] parameter is the installation target.
   Future<String> bestForOpenSUSE({String to = 'install'}) async {
     final zypper = await Executable('zypper').find();
 
@@ -224,6 +261,9 @@ class Prepare {
         : await bestForAny(to: to);
   }
 
+  /// Determines the best installation method for Android.
+  ///
+  /// The [to] parameter is the installation target.
   Future<String> bestForAndroid({String to = 'install'}) async {
     final pkg = await Executable('pkg').find(); // termux
 
@@ -232,6 +272,9 @@ class Prepare {
         : await bestForAny(to: to);
   }
 
+  /// Determines the best installation method for Windows.
+  ///
+  /// The [to] parameter is the installation target.
   Future<String> bestForWindows({String to = 'install'}) async {
     final choco = await Executable('choco').find();
     final scoop = await Executable('scoop').find();
@@ -249,6 +292,9 @@ class Prepare {
         : await bestForAny(to: to);
   }
 
+  /// Generates a script to install the package.
+  ///
+  /// The script is generated based on the current operating system and package manager.
   Future<String> toInstall() async {
     await boot();
 
@@ -269,6 +315,9 @@ ${await best(to: 'install')}
     return togetherFile.path;
   }
 
+  /// Generates a script to remove the package.
+  ///
+  /// The script is generated based on the current operating system and package manager.
   Future<String> toRemove() async {
     await boot();
 
@@ -287,6 +336,11 @@ ${await best(to: 'remove')}
     return (await writeThisBeast(togetherContents)).path;
   }
 
+  /// Generates a script to validate the package installation.
+  ///
+  /// The script is generated based on the current operating system and package manager.
+  ///
+  /// If [removing] is `true`, the script will validate the package removal instead of installation.
   Future<String> toValidate({removing = false}) async {
     await boot();
 
@@ -338,6 +392,10 @@ validate "$bestValidateExecutable"
     return (await writeThisBeast(togetherContents)).path;
   }
 
+  /// Generates the dynamic code that will be added to the script.
+  ///
+  /// This code includes information about the current environment, such as the
+  /// path to the Dart executable, the architecture, and the channel.
   Future<String> dynamicCode() async {
     String executable = Platform.resolvedExecutable;
 
@@ -363,6 +421,10 @@ readonly isAppImage="${Global.isAppImage}";
 ''';
   }
 
+  /// Returns the contents of the base script, if it exists.
+  ///
+  /// The base script is a script that is included with the package and can be
+  /// used to customize the installation process.
   Future<String> baseScriptContents() async {
     if (!await baseScript.exists()) {
       return '';

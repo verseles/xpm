@@ -1,5 +1,6 @@
 import 'dart:io';
 
+/// A class that represents a Bash script file.
 class BashScript {
   final String _filePath;
   BashScript(this._filePath);
@@ -7,29 +8,41 @@ class BashScript {
   bool? _exists;
   File? fileInstance;
 
+  /// Returns `true` if the script file exists.
   Future<bool> exists() async {
     fileInstance ??= File(_filePath);
     _exists ??= await fileInstance!.exists();
     return _exists!;
   }
 
+  /// Returns `true` if the script file exists.
   bool existsSync() {
     fileInstance ??= File(_filePath);
     _exists ??= fileInstance!.existsSync();
     return _exists!;
   }
 
+  /// Returns the contents of the script file.
+  ///
+  /// Returns `null` if the file does not exist.
   Future<String?> contents() async {
     _contents ??= await exists() ? await fileInstance!.readAsString() : null;
     return _contents;
   }
 
-  // contents sync
+  /// Returns the contents of the script file.
+  ///
+  /// Returns `null` if the file does not exist.
   String? contentsSync() {
     _contents ??= existsSync() ? fileInstance!.readAsStringSync() : null;
     return _contents;
   }
 
+  /// Returns the value of a variable in the script file.
+  ///
+  /// The [param] parameter is the name of the variable.
+  ///
+  /// Returns `null` if the variable is not found or the file does not exist.
   Future<String?> get(String param) async {
     final script = await contents();
     if (script == null) {
@@ -80,6 +93,11 @@ class BashScript {
     return value.first;
   }
 
+  /// Returns a map of all variables in the script file.
+  ///
+  /// The keys of the map are the variable names, and the values are the variable values.
+  ///
+  /// Returns `null` if the file does not exist or if no variables are found.
   Future<Map<String, String?>?> variables() async {
     final script = await contents();
     if (script == null) {
@@ -102,6 +120,9 @@ class BashScript {
     return variables;
   }
 
+  /// Returns `true` if the script file contains a function with the given [functionName].
+  ///
+  /// Returns `false` if the file does not exist or if the function is not found.
   Future<bool> hasFunction(String functionName) async {
     final script = await contents();
     if (script == null) {
