@@ -6,17 +6,18 @@ import 'package:xpm/os/run.dart';
 import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/show_usage.dart';
 
+/// A command that moves a file or directory.
 class FileMoveCommand extends Command {
   @override
   final name = "move";
   @override
-  final aliases = ['mv', 'rename'];
+  final aliases = ['mv'];
   @override
-  String get invocation =>
-      '${runner!.executableName} file $name <old path> <new path>';
+  String get invocation => '${runner!.executableName} file $name <old path> <new path>';
   @override
   final description = "Move a file or directory";
 
+  /// Creates a new instance of the [FileMoveCommand] class.
   FileMoveCommand() {
     argParser.addFlag('sudo', abbr: 's', negatable: false, help: 'Run as sudo');
     argParser.addFlag('force', abbr: 'f', negatable: false, help: 'Force move');
@@ -56,3 +57,4 @@ class FileMoveCommand extends Command {
     exit(success);
   }
 }
+

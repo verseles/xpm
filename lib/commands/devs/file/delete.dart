@@ -6,24 +6,33 @@ import 'package:xpm/os/run.dart';
 import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/show_usage.dart';
 
+/// A command that deletes a file or directory.
 class FileDeleteCommand extends Command {
   @override
   final name = "delete";
+
   @override
   final aliases = ['rm', 'del', 'remove'];
+
   @override
   String get invocation => '${runner!.executableName} file $name <file path>';
+
   @override
   final description = "Delete a file or directory";
 
+  /// Creates a new instance of the [FileDeleteCommand] class.
   FileDeleteCommand() {
-    argParser.addFlag('sudo', abbr: 's', negatable: false, help: 'Run as sudo');
+    argParser.addFlag('sudo',
+        abbr: 's', negatable: false, help: 'Run as sudo');
     argParser.addFlag('recursive',
         abbr: 'r', negatable: false, help: 'Delete recursively');
     argParser.addFlag('force',
         abbr: 'f', negatable: false, help: 'Force delete');
     argParser.addFlag('verbose',
-        abbr: 'v', negatable: true, defaultsTo: true, help: 'Verbose output');
+        abbr: 'v',
+        negatable: true,
+        defaultsTo: true,
+        help: 'Verbose output');
   }
 
   // [run] may also return a Future.
@@ -61,3 +70,4 @@ class FileDeleteCommand extends Command {
     exit(success);
   }
 }
+

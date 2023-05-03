@@ -3,6 +3,7 @@ import 'package:xpm/os/repositories.dart';
 import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/show_usage.dart';
 
+/// A command that adds a new git repository to the list of repositories.
 class RepoAddCommand extends Command {
   @override
   final name = "add";
@@ -23,12 +24,16 @@ class RepoAddCommand extends Command {
   void run() async {
     List<String> args = argResults!.rest;
 
+    // Show usage if no arguments are provided.
     showUsage(args.isEmpty, () => printUsage());
 
+    // Get the repository URL from the command line arguments.
     final remote = args[0];
 
+    // Add the repository to the list of repositories.
     Repositories.addRepo(remote);
 
+    // Display a success message.
     out("{@green}Repo added to the list of repos{@end}");
   }
 }

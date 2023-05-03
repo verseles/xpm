@@ -13,58 +13,83 @@ import 'package:xpm/utils/show_usage.dart';
 import 'package:xpm/xpm.dart';
 import 'package:xpm/database/models/package.dart';
 
+/// A command that installs a package.
 class InstallCommand extends Command {
   @override
   final name = 'install';
 
   @override
   String get invocation => '${runner!.executableName} $name <package>';
+
   @override
   final aliases = ['i'];
+
   @override
-  final description = 'Install a package';
+  final description = 'Install a package.';
+
   @override
   final category = 'For humans';
 
   InstallCommand() {
-    argParser.addOption('method',
-        abbr: 'm',
-        help: 'The method to use to install the package.',
-        valueHelp: 'auto',
-        defaultsTo: 'auto',
-        allowed: XPM.installMethods.keys,
-        allowedHelp: XPM.installMethods);
+    // Add the method option.
+    argParser.addOption(
+      'method',
+      abbr: 'm',
+      help: 'The method to use to install the package.',
+      valueHelp: 'auto',
+      defaultsTo: 'auto',
+      allowed: XPM.installMethods.keys,
+      allowedHelp: XPM.installMethods,
+    );
 
-    argParser.addFlag('force-method',
-        negatable: false,
-        help: 'Force the selected method set by --method.'
-            '\nIf not set, the selected method can fallsback to another method or finally to [any].');
+    // Add the force-method flag.
+    argParser.addFlag(
+      'force-method',
+      negatable: false,
+      help: 'Force the selected method set by --method.'
+          '\nIf not set, the selected method can fallback to another method or finally to [any].',
+    );
 
-    argParser.addOption('channel',
-        abbr: 'c', help: 'Inform the prefered channel to install the package.');
+    // Add the channel option.
+    argParser.addOption(
+      'channel',
+      abbr: 'c',
+      help: 'Inform the preferred channel to install the package.',
+    );
 
-    argParser.addMultiOption('flags',
-        abbr: 'f',
-        help: 'Inform custom flags to the script.'
-            '\nUse this option multiple times to pass multiple flags.'
-            '\nExample: --flags="--flag1" --flags="--flag2"');
+    // Add the flags option.
+    argParser.addMultiOption(
+      'flags',
+      abbr: 'f',
+      help: 'Inform custom flags to the script.'
+          '\nUse this option multiple times to pass multiple flags.'
+          '\nExample: --flags="--flag1" --flags="--flag2"',
+    );
 
-    // add verbose flag
-    argParser.addFlag('verbose',
-        negatable: false,
-        help: 'Show more information about what is going on.');
+    // Add the verbose flag.
+    argParser.addFlag(
+      'verbose',
+      negatable: false,
+      help: 'Show more information about what is going on.',
+    );
   }
 
   // [run] may also return a Future.
   @override
   void run() async {
+    // Get the list of packages to install.
     List<String> packagesRequested = argResults!.rest;
     showUsage(packagesRequested.isEmpty, () => printUsage());
 
+    // Get the Bash instance.
     final bash = await XPM.bash;
 
+    // Get the local database instance.
     final db = await DB.instance();
+
+    // Install each package.
     for (String packageRequested in packagesRequested) {
+      // Find the package in the local database.
       final packageInDB =
           await db.packages.filter().nameEqualTo(packageRequested).findFirst();
       if (packageInDB == null) {
@@ -73,8 +98,11 @@ class InstallCommand extends Command {
             exitCode: cantExecute);
       }
 
+      // Prepare to install the package.
       var repoRemote = packageInDB.repo.value!.url;
       final prepare = Prepare(repoRemote, packageRequested, args: argResults);
+
+      // Check if the package is already installed.
       if (packageInDB.installed != null &&
           Executable(packageRequested).existsSync(cache: false)) {
         Logger.info('Reinstalling "$packageRequested"...');
@@ -82,6 +110,7 @@ class InstallCommand extends Command {
         Logger.info('Installing "$packageRequested"...');
       }
 
+      // Run the installation script.
       final runner = Run();
       try {
         await runner
@@ -98,6 +127,7 @@ class InstallCommand extends Command {
         leave(message: error, exitCode: _.result?.exitCode ?? generalError);
       }
 
+      // Check if the package was installed successfully.
       final bashScript = BashScript(packageInDB.script);
       bool hasValidation = await bashScript.hasFunction('validate');
       String? error;
@@ -116,13 +146,14 @@ class InstallCommand extends Command {
         }
       }
 
+      // Update the local database to reflect the installation.
       sharedStdIn.terminate();
-
       await db.writeTxn(() async {
         packageInDB.installed = packageInDB.version;
         await db.packages.put(packageInDB);
       });
 
+      // Log the result of the installation.
       if (error != null) {
         Logger.error(error);
       } else {
