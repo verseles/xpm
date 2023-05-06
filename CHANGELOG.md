@@ -1,3 +1,5 @@
+## v0.21.0
+- Fix: fallsback to any if the best method does not exist in the package script
 ## v0.20.0
 - fix tests
 ## v0.19.0

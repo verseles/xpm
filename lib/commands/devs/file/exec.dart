@@ -51,4 +51,3 @@ class FileExecCommand extends Command {
     exit(success);
   }
 }
-

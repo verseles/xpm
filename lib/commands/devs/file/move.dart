@@ -13,7 +13,8 @@ class FileMoveCommand extends Command {
   @override
   final aliases = ['mv'];
   @override
-  String get invocation => '${runner!.executableName} file $name <old path> <new path>';
+  String get invocation =>
+      '${runner!.executableName} file $name <old path> <new path>';
   @override
   final description = "Move a file or directory";
 
@@ -57,4 +58,3 @@ class FileMoveCommand extends Command {
     exit(success);
   }
 }
-

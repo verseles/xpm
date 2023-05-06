@@ -23,19 +23,14 @@ class FileCopyCommand extends Command {
 
   /// Creates a new instance of the [FileCopyCommand] class.
   FileCopyCommand() {
-    argParser.addFlag('sudo',
-        abbr: 's', negatable: false, help: 'Run as sudo');
+    argParser.addFlag('sudo', abbr: 's', negatable: false, help: 'Run as sudo');
     argParser.addFlag('recursive',
         abbr: 'r', negatable: false, help: 'Copy recursively');
-    argParser.addFlag('force',
-        abbr: 'f', negatable: false, help: 'Force copy');
+    argParser.addFlag('force', abbr: 'f', negatable: false, help: 'Force copy');
     argParser.addFlag('preserve',
         abbr: 'p', negatable: false, help: 'Preserve attributes');
     argParser.addFlag('verbose',
-        abbr: 'v',
-        negatable: true,
-        defaultsTo: true,
-        help: 'Verbose output');
+        abbr: 'v', negatable: true, defaultsTo: true, help: 'Verbose output');
   }
 
   // [run] may also return a Future.
@@ -69,4 +64,3 @@ class FileCopyCommand extends Command {
     exit(success);
   }
 }
-

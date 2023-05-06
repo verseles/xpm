@@ -138,4 +138,3 @@ class RemoveCommand extends Command {
     }
   }
 }
-

@@ -30,4 +30,3 @@ class ListCommand extends Command {
     }
   }
 }
-

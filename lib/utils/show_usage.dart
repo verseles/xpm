@@ -14,4 +14,3 @@ void showUsage(bool show, Function callback) {
 
   exit(64);
 }
-

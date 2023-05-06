@@ -27,4 +27,3 @@ class UpgradeCommand extends Command {
     Logger.warning('Not implemented yet. Soon.');
   }
 }
-

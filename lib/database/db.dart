@@ -50,4 +50,3 @@ class DB {
     return Isar.getInstance(dbName)!;
   }
 }
-
