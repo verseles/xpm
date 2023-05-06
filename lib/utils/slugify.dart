@@ -1,3 +1,8 @@
+/// Converts a string to a slug.
+///
+/// The [text] parameter is the string to be converted to a slug.
+///
+/// Returns the slugified string.
 String slugify(String text) {
   return text
       .trim()
@@ -7,8 +12,11 @@ String slugify(String text) {
       .replaceAll(RegExp(r'^-+|-+$'), '');
 }
 
-// another way: extend the String class
+/// An extension on [String] that provides a method to convert a string to a slug.
 extension Slugify on String {
+  /// Converts the string to a slug.
+  ///
+  /// Returns the slugified string.
   String slugify() {
     return trim()
         .toLowerCase()

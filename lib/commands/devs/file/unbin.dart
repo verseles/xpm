@@ -6,6 +6,7 @@ import 'package:xpm/os/delete_from_bin.dart';
 import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/show_usage.dart';
 
+/// A command that deletes a file from the system bin directory.
 class FileUnbinCommand extends Command {
   @override
   final name = "unbin";
@@ -14,6 +15,7 @@ class FileUnbinCommand extends Command {
   @override
   final description = "Deletes a file from the system bin directory";
 
+  /// Creates a new instance of the [FileUnbinCommand] class.
   FileUnbinCommand() {
     argParser.addFlag('verbose',
         abbr: 'v', negatable: true, defaultsTo: true, help: 'Verbose output');

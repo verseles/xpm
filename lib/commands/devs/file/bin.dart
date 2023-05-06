@@ -8,6 +8,7 @@ import 'package:xpm/os/run.dart';
 import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/show_usage.dart';
 
+/// A command that moves a file to the system bin directory.
 class FileBinCommand extends Command {
   @override
   final name = "bin";
@@ -29,39 +30,53 @@ class FileBinCommand extends Command {
   void run() async {
     List<String> args = argResults!.rest;
 
+    // Show usage if no arguments are provided.
     showUsage(args.isEmpty, () => printUsage());
 
+    // Get the file path from the command line arguments.
     final filePath = args[0];
 
+    // Create a file object from the file path.
     final file = File(filePath);
+
+    // Determine if the command should be run with sudo.
     final sudo = argResults!['sudo'] && await Executable('sudo').exists();
+
+    // Move the file to the system bin directory.
     final moved = await moveToBin(file, sudo: sudo);
 
+    // If the file could not be moved, display an error message and exit.
     if (moved == null) {
       out("{@red}Failed to move '${file.absolute.path}' to bin{@end}");
       exit(unableToOpenOutputFileForWriting);
     }
 
+    // Get the final path of the moved file.
     final finalPath = moved.path;
 
+    // Display a success message if verbose output is enabled.
     if (argResults!['verbose']) {
       out("{@green}File moved to bin: '$finalPath'{@end}");
     }
 
+    // If the file should be marked as executable, mark it.
     if (argResults!['exec']) {
       final run = Run();
       final marked = await run.asExec(finalPath, sudo: sudo);
 
+      // If the file could not be marked as executable, display an error message and exit.
       if (!marked) {
         out("{@red}Failed to mark '$finalPath' as executable{@end}");
         exit(cantExecute);
       }
 
+      // Display a success message if verbose output is enabled.
       if (argResults!['verbose']) {
         out("{@green}File marked as executable: '$finalPath'{@end}");
       }
     }
 
+    // Print the final path of the moved file and exit with a success code.
     print(finalPath);
     exit(success);
   }

@@ -14,7 +14,9 @@ import 'package:xpm/utils/slugify.dart';
 
 import 'package:xpm/xpm.dart';
 
+/// A class that provides utility methods for working with repositories.
 class Repositories {
+  /// Returns working directory
   static final Map<String, Future<Directory>> __dirs = {};
 
   static Future<Directory> dir(String repoSlug, {package = '', create = true}) async {
@@ -28,9 +30,13 @@ class Repositories {
     return dir;
   }
 
+  /// Returns the directory where repositories are stored.
   static Future<Directory> getReposDir() async =>
       __dirs.putIfAbsent('reposDir', () async => (await XPM.dataDir('repos')));
 
+  /// Adds a new repository to the local database and clones it if it does not exist.
+  ///
+  /// The [remote] parameter is the URL of the repository.
   static Future<void> addRepo(String remote) async {
     final localDirectory = await dir(remote);
     final localPath = localDirectory.path;
@@ -47,16 +53,21 @@ class Repositories {
     await db.writeTxn(() async => await db.repos.putByUrl(repo));
   }
 
+  /// Returns a list of all repositories in the local database.
   static Future<List<Repo>> allRepos() async {
     final db = await DB.instance();
     final repos = await db.repos.where().findAll();
     return repos;
   }
 
+  /// Adds the popular repository to the local database and clones it if it does not exist.
   static Future<void> addPopular() async {
     await addRepo('https://github.com/verseles/xpm-popular.git');
   }
 
+  /// Returns the name of the repository from the given URL.
+  ///
+  /// The [url] parameter is the URL of the repository.
   static String repoName(String url) {
     final parts = url.split('/');
     if (parts.length < 2) {
@@ -65,7 +76,7 @@ class Repositories {
     return parts.sublist(parts.length - 2).join('/').replaceAll('.git', '');
   }
 
-  // Pull or clone all repos
+  /// Updates all repositories in the local database by pulling the latest changes from their remote repositories.
   static Future<void> pull() async {
     final Slug loader = Slug(slugStyle: SlugStyle.toggle);
     List<Repo> repos = await allRepos();
@@ -92,14 +103,17 @@ class Repositories {
 
   static index() async {
     final db = await DB.instance();
+
+    // Delete all packages that are not currently installed from the local database.
     await db.writeTxn(() async {
       await db.packages.where().installedIsNull().deleteAll();
     });
 
+    // Pull the latest changes from all remote repositories.
     await pull();
 
+    // Index all packages in each repository.
     final repos = await allRepos();
-
     for (final repo in repos) {
       final remote = repo.url;
       final local = (await dir(remote.slugify())).path;
@@ -111,28 +125,20 @@ class Repositories {
           continue;
         }
 
+        // Read the package's metadata from its Bash script.
         String pathScript = '${packageFolder.path}/$packageBasename.bash';
         final BashScript bashScript = BashScript(pathScript);
-
         if (!await bashScript.exists()) {
           continue;
         }
-
         final desc = bashScript.get('xDESC');
         final version = bashScript.get('xVERSION');
         final title = bashScript.get('xTITLE');
         final url = bashScript.get('xURL');
         final archs = bashScript.getArray('xARCH');
-        final defaults = bashScript.getArray('xDEFAULT');
 
-        final installMethodFutures = XPM.installMethods.keys
-            .toList()
-            .where((method) => method != 'auto')
-            .map((method) => bashScript.hasFunction('install_$method').then((value) => value ? method : null));
-
-        final List<String?> availableMethods = await Future.wait(installMethodFutures);
-
-        final List<dynamic> results = await Future.wait([desc, version, title, url, archs, defaults]);
+        final List<dynamic> results =
+            await Future.wait([desc, version, title, url, archs]);
 
         final Map<String, dynamic> data = {
           'desc': results[0],
@@ -144,7 +150,7 @@ class Repositories {
           'methods': availableMethods.whereType<String>().toList(),
         };
 
-        // @TODO Validate bash file
+        // Add the package's metadata to the local database.
         final package = Package()
           ..repo.value = repo
           ..name = packageBasename
@@ -153,9 +159,7 @@ class Repositories {
           ..version = data['version']
           ..title = data['title']
           ..url = data['url']
-          ..arch = data['arch']
-          ..defaults = data['defaults']
-          ..methods = data['methods'];
+          ..arch = data['arch'];
 
         /// WARN: async is not working and is a hell to debug
         db.writeTxnSync(() {
@@ -163,6 +167,8 @@ class Repositories {
         });
       }
     }
+
+    // Set a flag in the local settings to indicate that the package list needs to be refreshed after three days.
     final threeDays = DateTime.now().add(Duration(days: 3));
     Setting.set('needs_refresh', true, expires: threeDays, lazy: true);
   }

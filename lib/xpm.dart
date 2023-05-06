@@ -5,11 +5,15 @@ import 'package:xpm/os/executable.dart';
 import 'package:xpm/os/run.dart';
 import 'package:xpm/pubspec.dart' as pubspec;
 
+/// A class that provides utility methods for XPM.
 class XPM {
+  /// Returns the name of the package.
   static String get name => pubspec.name;
 
+  /// Returns the version of the package.
   static String get version => pubspec.version;
 
+  /// Returns the description of the package.
   static String get description => pubspec.description.split('.').first;
 
   static Map<String, String> get installMethods => {
@@ -26,6 +30,7 @@ class XPM {
         'swupd': 'Use swupd or swupd-like package manager.'
       };
 
+  /// Returns a map of architecture correspondences.
   static get archCorrespondence => {
         'linux64': 'linux-x86_64',
         'linux32': 'linux-i686',
@@ -73,10 +78,12 @@ class XPM {
     return git;
   }
 
+  /// Returns the value of an environment variable.
   static String? _getEnv(String name, {String? defaultValue}) {
     return Platform.environment[name] ?? defaultValue;
   }
 
+  /// Returns the cache directory.
   static Future<Directory> cacheDir(String? path) async {
     final String cacheBasePath = _getEnv('XDG_CACHE_HOME') ?? '${userHome.path}/.cache';
     return Directory('$cacheBasePath/$name/$path').create(recursive: true);
@@ -97,13 +104,13 @@ class XPM {
     return _bash!;
   }
 
-  /// Returns data directory.
+  /// Returns the data directory.
   static Future<Directory> dataDir(String? path) async {
     final dir = Directory("${userHome.path}/.$name/$path");
     return await dir.create(recursive: true);
   }
 
-  /// Returns system-wide temporary directory
+  /// Returns the system-wide temporary directory.
   static Future<Directory> temp(String? path) async {
     final tmpDir = Directory.systemTemp;
     final dir = Directory("${tmpDir.path}/$name/$path");

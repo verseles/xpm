@@ -12,17 +12,22 @@ import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/show_usage.dart';
 import 'package:xpm/xpm.dart';
 
+/// A command that removes a package.
 class RemoveCommand extends Command {
   @override
   final name = "remove";
+
   @override
   final aliases = ['rm', 'uninstall', 'un', 'r'];
+
   @override
   final description = "Removes a package";
+
   @override
   final category = "For humans";
 
   RemoveCommand() {
+    // Add options and flags for the command.
     argParser.addOption('method',
         abbr: 'm',
         help: 'The method to use to remove the package.',
@@ -44,7 +49,6 @@ class RemoveCommand extends Command {
             '\nUse this option multiple times to pass multiple flags.'
             '\nExample: --flags="--flag1" --flags="--flag2"');
 
-    // add verbose flag
     argParser.addFlag('verbose',
         negatable: false,
         abbr: 'v',
@@ -54,14 +58,20 @@ class RemoveCommand extends Command {
   // [run] may also return a Future.
   @override
   void run() async {
+    // Get the list of packages to remove.
     List<String> packagesRequested = argResults!.rest;
 
     showUsage(packagesRequested.isEmpty, () => printUsage());
 
+    // Get the Bash instance.
     final bash = await XPM.bash;
 
+    // Get the local database instance.
     final db = await DB.instance();
+
+    // Remove each package.
     for (String packageRequested in packagesRequested) {
+      // Find the package in the local database.
       final packageInDB =
           await db.packages.filter().nameEqualTo(packageRequested).findFirst();
       if (packageInDB == null) {
@@ -71,7 +81,7 @@ class RemoveCommand extends Command {
       }
 
       if (packageInDB.installed == null) {
-        // @TODO Check if package is installed in the system but not for me
+        // Check if the package is installed in the system but not for me.
         leave(
             message:
                 'Package "{@gold}$packageRequested{@end}" is not installed.',
@@ -83,6 +93,7 @@ class RemoveCommand extends Command {
       final prepare = Prepare(repo, packageInDB, args: argResults);
       out('Removing "{@blue}$packageRequested{@end}"...');
 
+      // Run the removal script.
       final runner = Run();
       try {
         await runner.simple(bash, ['-c', 'source ${await prepare.toRemove()}']);
@@ -99,6 +110,7 @@ class RemoveCommand extends Command {
         leave(message: error, exitCode: _.result?.exitCode ?? generalError);
       }
 
+      // Validate the removal of the package.
       try {
         await runner.simple(
             bash, ['-c', 'source ${await prepare.toValidate(removing: true)}']);
@@ -115,12 +127,15 @@ class RemoveCommand extends Command {
 
       await sharedStdIn.terminate();
 
+      // Update the local database to reflect the removal.
       await db.writeTxn(() async {
         packageInDB.installed = null;
         await db.packages.put(packageInDB);
       });
 
+      // Log the result of the removal.
       Logger.success('Successfully removed "$packageRequested".');
     }
   }
 }
+

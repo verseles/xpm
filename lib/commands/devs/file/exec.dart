@@ -6,16 +6,21 @@ import 'package:xpm/os/run.dart';
 import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/show_usage.dart';
 
+/// A command that marks a file as executable.
 class FileExecCommand extends Command {
   @override
   final name = "exec";
+
   @override
   final aliases = ['x'];
+
   @override
   String get invocation => '${runner!.executableName} file $name <file path>';
+
   @override
   final description = "Mark a file as executable";
 
+  /// Creates a new instance of the [FileExecCommand] class.
   FileExecCommand() {
     argParser.addFlag('verbose',
         abbr: 'v', negatable: true, defaultsTo: true, help: 'Verbose output');
@@ -46,3 +51,4 @@ class FileExecCommand extends Command {
     exit(success);
   }
 }
+

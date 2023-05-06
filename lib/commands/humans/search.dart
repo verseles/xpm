@@ -69,7 +69,6 @@ class SearchCommand extends Command {
           final unavailable =
               result.arch != null && !result.arch!.contains(platform) ? '[{@red}unavailable for $platform{@end}] ' : '';
 
-          print(result.methods);
           out('$unavailable{@blue}${result.name}{@end} {@green}${result.version}{@end} $installed- ${result.desc}');
         }
       }

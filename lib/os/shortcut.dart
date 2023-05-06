@@ -4,6 +4,7 @@ import 'package:process_run/shell.dart';
 import 'package:xpm/os/run.dart';
 import 'package:xpm/xpm.dart';
 
+/// A class that represents a shortcut to an executable file.
 class Shortcut {
   final String name;
   final String executablePath;
@@ -29,6 +30,7 @@ class Shortcut {
 
   String home = XPM.userHome.path;
 
+  /// Creates the shortcut.
   Future<String> create() async {
     if (Platform.isMacOS) {
       return _createMacOSShortcut();
@@ -39,6 +41,7 @@ class Shortcut {
     return await _createLinuxShortcut();
   }
 
+  /// Creates a shortcut on a Linux-based system.
   Future<String> _createLinuxShortcut() async {
     final runner = Run();
     final dest = destination ?? '/usr/share/applications';
@@ -66,6 +69,7 @@ class Shortcut {
     return filePath;
   }
 
+  /// Creates a shortcut on a macOS system.
   Future<String> _createMacOSShortcut() async {
     final linkPath = "$home/Desktop/$name.lnk";
     final runner = Run();
@@ -75,6 +79,7 @@ class Shortcut {
     return linkPath;
   }
 
+  /// Creates a shortcut on a Windows system.
   Future<String> _createWindowsShortcut() async {
     final linkPath = "$home/Desktop/$name.lnk";
     final command = "cmd /c "
@@ -93,3 +98,4 @@ class Shortcut {
     return linkPath;
   }
 }
+
