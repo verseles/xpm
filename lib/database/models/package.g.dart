@@ -22,38 +22,48 @@ const PackageSchema = CollectionSchema(
       name: r'arch',
       type: IsarType.stringList,
     ),
-    r'desc': PropertySchema(
+    r'defaults': PropertySchema(
       id: 1,
+      name: r'defaults',
+      type: IsarType.stringList,
+    ),
+    r'desc': PropertySchema(
+      id: 2,
       name: r'desc',
       type: IsarType.string,
     ),
     r'installed': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'installed',
       type: IsarType.string,
     ),
+    r'methods': PropertySchema(
+      id: 4,
+      name: r'methods',
+      type: IsarType.stringList,
+    ),
     r'name': PropertySchema(
-      id: 3,
+      id: 5,
       name: r'name',
       type: IsarType.string,
     ),
     r'script': PropertySchema(
-      id: 4,
+      id: 6,
       name: r'script',
       type: IsarType.string,
     ),
     r'title': PropertySchema(
-      id: 5,
+      id: 7,
       name: r'title',
       type: IsarType.string,
     ),
     r'url': PropertySchema(
-      id: 6,
+      id: 8,
       name: r'url',
       type: IsarType.string,
     ),
     r'version': PropertySchema(
-      id: 7,
+      id: 9,
       name: r'version',
       type: IsarType.string,
     )
@@ -116,6 +126,32 @@ const PackageSchema = CollectionSchema(
         )
       ],
     ),
+    r'methods': IndexSchema(
+      id: -8295275548635774836,
+      name: r'methods',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'methods',
+          type: IndexType.hash,
+          caseSensitive: false,
+        )
+      ],
+    ),
+    r'defaults': IndexSchema(
+      id: -2394386331792021166,
+      name: r'defaults',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'defaults',
+          type: IndexType.hash,
+          caseSensitive: false,
+        )
+      ],
+    ),
     r'installed': IndexSchema(
       id: -2396502518995561215,
       name: r'installed',
@@ -125,7 +161,7 @@ const PackageSchema = CollectionSchema(
         IndexPropertySchema(
           name: r'installed',
           type: IndexType.hash,
-          caseSensitive: true,
+          caseSensitive: false,
         )
       ],
     )
@@ -164,6 +200,18 @@ int _packageEstimateSize(
     }
   }
   {
+    final list = object.defaults;
+    if (list != null) {
+      bytesCount += 3 + list.length * 3;
+      {
+        for (var i = 0; i < list.length; i++) {
+          final value = list[i];
+          bytesCount += value.length * 3;
+        }
+      }
+    }
+  }
+  {
     final value = object.desc;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -173,6 +221,18 @@ int _packageEstimateSize(
     final value = object.installed;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final list = object.methods;
+    if (list != null) {
+      bytesCount += 3 + list.length * 3;
+      {
+        for (var i = 0; i < list.length; i++) {
+          final value = list[i];
+          bytesCount += value.length * 3;
+        }
+      }
     }
   }
   bytesCount += 3 + object.name.length * 3;
@@ -205,13 +265,15 @@ void _packageSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeStringList(offsets[0], object.arch);
-  writer.writeString(offsets[1], object.desc);
-  writer.writeString(offsets[2], object.installed);
-  writer.writeString(offsets[3], object.name);
-  writer.writeString(offsets[4], object.script);
-  writer.writeString(offsets[5], object.title);
-  writer.writeString(offsets[6], object.url);
-  writer.writeString(offsets[7], object.version);
+  writer.writeStringList(offsets[1], object.defaults);
+  writer.writeString(offsets[2], object.desc);
+  writer.writeString(offsets[3], object.installed);
+  writer.writeStringList(offsets[4], object.methods);
+  writer.writeString(offsets[5], object.name);
+  writer.writeString(offsets[6], object.script);
+  writer.writeString(offsets[7], object.title);
+  writer.writeString(offsets[8], object.url);
+  writer.writeString(offsets[9], object.version);
 }
 
 Package _packageDeserialize(
@@ -222,14 +284,16 @@ Package _packageDeserialize(
 ) {
   final object = Package();
   object.arch = reader.readStringList(offsets[0]);
-  object.desc = reader.readStringOrNull(offsets[1]);
+  object.defaults = reader.readStringList(offsets[1]);
+  object.desc = reader.readStringOrNull(offsets[2]);
   object.id = id;
-  object.installed = reader.readStringOrNull(offsets[2]);
-  object.name = reader.readString(offsets[3]);
-  object.script = reader.readString(offsets[4]);
-  object.title = reader.readStringOrNull(offsets[5]);
-  object.url = reader.readStringOrNull(offsets[6]);
-  object.version = reader.readStringOrNull(offsets[7]);
+  object.installed = reader.readStringOrNull(offsets[3]);
+  object.methods = reader.readStringList(offsets[4]);
+  object.name = reader.readString(offsets[5]);
+  object.script = reader.readString(offsets[6]);
+  object.title = reader.readStringOrNull(offsets[7]);
+  object.url = reader.readStringOrNull(offsets[8]);
+  object.version = reader.readStringOrNull(offsets[9]);
   return object;
 }
 
@@ -243,18 +307,22 @@ P _packageDeserializeProp<P>(
     case 0:
       return (reader.readStringList(offset)) as P;
     case 1:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readStringList(offset)) as P;
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 4:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringList(offset)) as P;
     case 5:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 6:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 7:
+      return (reader.readStringOrNull(offset)) as P;
+    case 8:
+      return (reader.readStringOrNull(offset)) as P;
+    case 9:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -586,6 +654,136 @@ extension PackageQueryWhere on QueryBuilder<Package, Package, QWhereClause> {
     });
   }
 
+  QueryBuilder<Package, Package, QAfterWhereClause> methodsIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'methods',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> methodsIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'methods',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> methodsEqualTo(
+      List<String>? methods) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'methods',
+        value: [methods],
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> methodsNotEqualTo(
+      List<String>? methods) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'methods',
+              lower: [],
+              upper: [methods],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'methods',
+              lower: [methods],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'methods',
+              lower: [methods],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'methods',
+              lower: [],
+              upper: [methods],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> defaultsIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'defaults',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> defaultsIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'defaults',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> defaultsEqualTo(
+      List<String>? defaults) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'defaults',
+        value: [defaults],
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> defaultsNotEqualTo(
+      List<String>? defaults) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'defaults',
+              lower: [],
+              upper: [defaults],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'defaults',
+              lower: [defaults],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'defaults',
+              lower: [defaults],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'defaults',
+              lower: [],
+              upper: [defaults],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
   QueryBuilder<Package, Package, QAfterWhereClause> installedIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
@@ -877,6 +1075,241 @@ extension PackageQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
         r'arch',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> defaultsIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'defaults',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> defaultsIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'defaults',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> defaultsElementEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'defaults',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition>
+      defaultsElementGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'defaults',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> defaultsElementLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'defaults',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> defaultsElementBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'defaults',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition>
+      defaultsElementStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'defaults',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> defaultsElementEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'defaults',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> defaultsElementContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'defaults',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> defaultsElementMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'defaults',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition>
+      defaultsElementIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'defaults',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition>
+      defaultsElementIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'defaults',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> defaultsLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'defaults',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> defaultsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'defaults',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> defaultsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'defaults',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> defaultsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'defaults',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition>
+      defaultsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'defaults',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> defaultsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'defaults',
         lower,
         includeLower,
         upper,
@@ -1242,6 +1675,241 @@ extension PackageQueryFilter
         property: r'installed',
         value: '',
       ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> methodsIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'methods',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> methodsIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'methods',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> methodsElementEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'methods',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition>
+      methodsElementGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'methods',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> methodsElementLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'methods',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> methodsElementBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'methods',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition>
+      methodsElementStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'methods',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> methodsElementEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'methods',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> methodsElementContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'methods',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> methodsElementMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'methods',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition>
+      methodsElementIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'methods',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition>
+      methodsElementIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'methods',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> methodsLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'methods',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> methodsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'methods',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> methodsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'methods',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> methodsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'methods',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition>
+      methodsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'methods',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> methodsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'methods',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
     });
   }
 
@@ -2156,6 +2824,12 @@ extension PackageQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Package, Package, QDistinct> distinctByDefaults() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'defaults');
+    });
+  }
+
   QueryBuilder<Package, Package, QDistinct> distinctByDesc(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -2167,6 +2841,12 @@ extension PackageQueryWhereDistinct
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'installed', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Package, Package, QDistinct> distinctByMethods() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'methods');
     });
   }
 
@@ -2220,6 +2900,12 @@ extension PackageQueryProperty
     });
   }
 
+  QueryBuilder<Package, List<String>?, QQueryOperations> defaultsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'defaults');
+    });
+  }
+
   QueryBuilder<Package, String?, QQueryOperations> descProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'desc');
@@ -2229,6 +2915,12 @@ extension PackageQueryProperty
   QueryBuilder<Package, String?, QQueryOperations> installedProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'installed');
+    });
+  }
+
+  QueryBuilder<Package, List<String>?, QQueryOperations> methodsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'methods');
     });
   }
 

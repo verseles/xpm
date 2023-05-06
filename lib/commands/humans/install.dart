@@ -40,8 +40,7 @@ class InstallCommand extends Command {
         help: 'Force the selected method set by --method.'
             '\nIf not set, the selected method can fallsback to another method or finally to [any].');
 
-    argParser.addOption('channel',
-        abbr: 'c', help: 'Inform the prefered channel to install the package.');
+    argParser.addOption('channel', abbr: 'c', help: 'Inform the prefered channel to install the package.');
 
     argParser.addMultiOption('flags',
         abbr: 'f',
@@ -50,9 +49,7 @@ class InstallCommand extends Command {
             '\nExample: --flags="--flag1" --flags="--flag2"');
 
     // add verbose flag
-    argParser.addFlag('verbose',
-        negatable: false,
-        help: 'Show more information about what is going on.');
+    argParser.addFlag('verbose', negatable: false, help: 'Show more information about what is going on.');
   }
 
   // [run] may also return a Future.
@@ -65,18 +62,14 @@ class InstallCommand extends Command {
 
     final db = await DB.instance();
     for (String packageRequested in packagesRequested) {
-      final packageInDB =
-          await db.packages.filter().nameEqualTo(packageRequested).findFirst();
+      final packageInDB = await db.packages.filter().nameEqualTo(packageRequested).findFirst();
       if (packageInDB == null) {
-        leave(
-            message: 'Package "{@gold}$packageRequested{@end}" not found.',
-            exitCode: cantExecute);
+        leave(message: 'Package "{@gold}$packageRequested{@end}" not found.', exitCode: cantExecute);
       }
 
-      var repoRemote = packageInDB.repo.value!.url;
-      final prepare = Prepare(repoRemote, packageRequested, args: argResults);
-      if (packageInDB.installed != null &&
-          Executable(packageRequested).existsSync(cache: false)) {
+      var repo = packageInDB.repo.value!;
+      final prepare = Prepare(repo, packageInDB, args: argResults);
+      if (packageInDB.installed != null && Executable(packageRequested).existsSync(cache: false)) {
         Logger.info('Reinstalling "$packageRequested"...');
       } else {
         Logger.info('Installing "$packageRequested"...');
@@ -84,8 +77,7 @@ class InstallCommand extends Command {
 
       final runner = Run();
       try {
-        await runner
-            .simple(bash, ['-c', 'source ${await prepare.toInstall()}']);
+        await runner.simple(bash, ['-c', 'source ${await prepare.toInstall()}']);
       } on ShellException catch (_) {
         sharedStdIn.terminate();
         String error = 'Failed to install "$packageRequested"';
@@ -104,8 +96,7 @@ class InstallCommand extends Command {
       if (hasValidation) {
         Logger.info('Checking installation of $packageRequested...');
         try {
-          await runner
-              .simple(bash, ['-c', 'source ${await prepare.toValidate()}']);
+          await runner.simple(bash, ['-c', 'source ${await prepare.toValidate()}']);
         } on ShellException catch (_) {
           error = 'Package "$packageRequested" installed with errors';
           if (argResults!['verbose'] == true) {
@@ -114,6 +105,8 @@ class InstallCommand extends Command {
             error += '.';
           }
         }
+      } else {
+        Logger.warning('No validation found for $packageRequested.');
       }
 
       sharedStdIn.terminate();

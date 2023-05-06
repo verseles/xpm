@@ -78,9 +78,9 @@ class RemoveCommand extends Command {
             exitCode: cantExecute);
       }
 
-      var repoRemote = packageInDB.repo.value!.url;
+      var repo = packageInDB.repo.value!;
       // @TODO Check if package is already installed
-      final prepare = Prepare(repoRemote, packageRequested, args: argResults);
+      final prepare = Prepare(repo, packageInDB, args: argResults);
       out('Removing "{@blue}$packageRequested{@end}"...');
 
       final runner = Run();

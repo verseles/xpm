@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:all_exit_codes/all_exit_codes.dart';
 import 'package:args/args.dart';
+import 'package:xpm/database/models/package.dart';
+import 'package:xpm/database/models/repo.dart';
 import 'package:xpm/os/bash_script.dart';
 import 'package:xpm/os/bin_directory.dart';
 import 'package:xpm/os/executable.dart';
@@ -15,13 +17,14 @@ import 'package:xpm/utils/leave.dart';
 import 'package:xpm/global.dart';
 
 class Prepare {
-  final String repo, package;
+  final Repo repo;
+  final Package package;
   final ArgResults? args;
 
   static final String distro = osRelease('ID') ?? Platform.operatingSystem;
   static final String distroLike = osRelease('ID_LIKE') ?? '';
 
-  late final String repoSlug;
+  late final String repoSlug, packageName;
   late final Future<Directory> cacheRepoDir;
   late final Future<Directory> packageDir;
   late final File baseScript;
@@ -32,19 +35,18 @@ class Prepare {
 
   Future<void> boot() async {
     if (booted) return;
-    repoSlug = repo.slugify();
-    cacheRepoDir = XPM.cacheDir("repos/$repoSlug/$package");
-    packageDir = Repositories.dir(repo, package: package);
+    repoSlug = repo.url.slugify();
+    packageName = package.name;
+    cacheRepoDir = XPM.cacheDir("repos/$repoSlug/$packageName");
+    packageDir = Repositories.dir(repoSlug, package: packageName);
 
     final String packageDirPath = (await packageDir).path;
     baseScript = File('$packageDirPath/../base.bash');
 
-    packageScript = BashScript('$packageDirPath/$package.bash');
+    packageScript = BashScript(package.script);
 
     if (await packageScript.contents() == null) {
-      leave(
-          message: 'Script for "{@blue}$package{@end}" does not exist.',
-          exitCode: unableToOpenInputFile);
+      leave(message: 'Script for "{@blue}$packageName{@end}" does not exist.', exitCode: unableToOpenInputFile);
     }
 
     Global.sudoPath = await Executable('sudo').find() ?? '';
@@ -55,8 +57,7 @@ class Prepare {
   Future<File> writeThisBeast(String script) async {
     await boot();
 
-    return File('${(await cacheRepoDir).path}/together.bash')
-        .writeAsString(script.trim());
+    return File('${(await cacheRepoDir).path}/together.bash').writeAsString(script.trim());
   }
 
   Future<String> best({to = 'install'}) async {
@@ -64,12 +65,10 @@ class Prepare {
 
     final String preferedMethod = args?['method'] ?? 'auto';
     final bool forceMethod = args!['force-method'];
-    // @FIXME on any "best" function, check if the method is available on the package script
 
     if (forceMethod) {
       if (preferedMethod == 'auto') {
-        leave(
-            message: 'Use --force-method with --method=', exitCode: wrongUsage);
+        leave(message: 'Use --force-method with --method=', exitCode: wrongUsage);
       }
       switch (preferedMethod) {
         case 'any':
@@ -99,9 +98,7 @@ class Prepare {
 
     if (preferedMethod == 'any') return bestForAny(to: to);
 
-    if (preferedMethod == 'apt' ||
-        distro == 'debian' ||
-        distroLike == 'debian') {
+    if (preferedMethod == 'apt' || distro == 'debian' || distroLike == 'debian') {
       return bestForApt(to: to);
     }
 
@@ -109,10 +106,7 @@ class Prepare {
       return bestForArch(to: to);
     }
 
-    if (preferedMethod == 'dnf' ||
-        distro == 'fedora' ||
-        distro == 'rhel' ||
-        distroLike == 'rhel fedora') {
+    if (preferedMethod == 'dnf' || distro == 'fedora' || distro == 'rhel' || distroLike == 'rhel fedora') {
       return bestForFedora(to: to);
     }
 
@@ -120,9 +114,7 @@ class Prepare {
       return bestForAndroid(to: to);
     }
 
-    if (preferedMethod == 'zypper' ||
-        distro == 'opensuse' ||
-        distro == 'sles') {
+    if (preferedMethod == 'zypper' || distro == 'opensuse' || distro == 'sles') {
       return bestForOpenSUSE(to: to);
     }
 
@@ -134,9 +126,7 @@ class Prepare {
       return bestForWindows(to: to);
     }
 
-    if (preferedMethod == 'swupd' ||
-        distro == 'clear-linux-os' ||
-        distroLike == 'clear-linux-os') {
+    if (preferedMethod == 'swupd' || distro == 'clear-linux-os' || distroLike == 'clear-linux-os') {
       return bestForClearLinux(to: to);
     }
 
@@ -163,90 +153,131 @@ class Prepare {
       Global.isAppImage = true;
     }
 
-    return bestPack != null
-        ? '${to}_pack "$bestPack"'
-        : await bestForAny(to: to);
+    return bestPack != null ? '${to}_pack "$bestPack"' : await bestForAny(to: to);
   }
 
   Future<String> bestForClearLinux({String to = 'install'}) async {
-    final swupd = await Executable('swupd').find();
+    final methods = package.methods ?? [];
+    if (methods.contains('swupd')) {
+      final swupd = await Executable('swupd').find();
 
-    final String? bestSwupd = swupd;
+      final String? bestSwupd = swupd;
 
-    return bestSwupd != null
-        ? '${to}_swupd "${Global.sudoPath} $bestSwupd"'
-        : await bestForAny(to: to);
+      if (bestSwupd != null) {
+        return '${to}_swupd "${Global.sudoPath} $bestSwupd"';
+      }
+    }
+
+    return await bestForAny(to: to);
   }
 
   Future<String> bestForApt({String to = 'install'}) async {
-    final apt = await Executable('apt').find();
-    final aptGet = await Executable('apt-get').find();
+    final methods = package.methods ?? [];
+    if (methods.contains('apt')) {
+      final apt = await Executable('apt').find();
+      final aptGet = await Executable('apt-get').find();
 
-    final String? bestApt = apt ?? aptGet;
+      final String? bestApt = apt ?? aptGet;
 
-    return bestApt != null
-        ? '${to}_apt "${Global.sudoPath} $bestApt -y"'
-        : await bestForAny(to: to);
+      if (bestApt != null) {
+        return '${to}_apt "${Global.sudoPath} $bestApt -y"';
+      }
+    }
+
+    return await bestForAny(to: to);
   }
 
   Future<String> bestForArch({String to = 'install'}) async {
-    final paru = await Executable('paru').find();
-    final yay = await Executable('yay').find();
-    final pacman = await Executable('pacman').find();
-    String? bestArchLinux = paru ?? yay ?? pacman;
+    final methods = package.methods ?? [];
+    if (methods.contains('pacman')) {
+      final paru = await Executable('paru').find();
+      final yay = await Executable('yay').find();
+      final pacman = await Executable('pacman').find();
+      String? bestArchLinux = paru ?? yay ?? pacman;
 
-    return bestArchLinux != null
-        ? '${to}_pacman "${Global.sudoPath} $bestArchLinux --noconfirm"'
-        : await bestForAny(to: to);
+      if (bestArchLinux != null) {
+        return '${to}_pacman "${Global.sudoPath} $bestArchLinux --noconfirm"';
+      }
+    }
+
+    return await bestForAny(to: to);
   }
 
   Future<String> bestForFedora({String to = 'install'}) async {
-    final dnf = await Executable('dnf').find();
+    final methods = package.methods ?? [];
+    if (methods.contains('dnf')) {
+      final dnf = await Executable('dnf').find();
 
-    String? bestFedora = dnf;
+      String? bestFedora = dnf;
 
-    return bestFedora != null
-        ? '${to}_dnf "${Global.sudoPath} $bestFedora -y"'
-        : await bestForAny(to: to);
+      if (bestFedora != null) {
+        return '${to}_dnf "${Global.sudoPath} $bestFedora -y"';
+      }
+    }
+
+    return await bestForAny(to: to);
   }
 
   Future<String> bestForMacOS({String to = 'install'}) async {
-    final brew = await Executable('brew').find();
+    final methods = package.methods ?? [];
+    if (methods.contains('brew')) {
+      final brew = await Executable('brew').find();
 
-    return brew != null ? '${to}_macos "$brew"' : await bestForAny(to: to);
+      if (brew != null) {
+        return '${to}_macos "$brew"';
+      }
+    }
+
+    return await bestForAny(to: to);
   }
 
   Future<String> bestForOpenSUSE({String to = 'install'}) async {
-    final zypper = await Executable('zypper').find();
+    final methods = package.methods ?? [];
+    if (methods.contains('zypper')) {
+      final zypper = await Executable('zypper').find();
 
-    return zypper != null
-        ? '${to}_zypper "${Global.sudoPath} $zypper --non-interactive"'
-        : await bestForAny(to: to);
+      if (zypper != null) {
+        return '${to}_zypper "${Global.sudoPath} $zypper --non-interactive"';
+      }
+    }
+
+    return await bestForAny(to: to);
   }
 
   Future<String> bestForAndroid({String to = 'install'}) async {
-    final pkg = await Executable('pkg').find(); // termux
+    final methods = package.methods ?? [];
+    if (methods.contains('termux')) {
+      final pkg = await Executable('pkg').find(); // termux
 
-    return pkg != null
-        ? '${to}_android "${Global.sudoPath} $pkg -y"'
-        : await bestForAny(to: to);
+      if (pkg != null) {
+        return '${to}_android "${Global.sudoPath} $pkg -y"';
+      }
+    }
+
+    return await bestForAny(to: to);
   }
 
   Future<String> bestForWindows({String to = 'install'}) async {
-    final choco = await Executable('choco').find();
-    final scoop = await Executable('scoop').find();
+    final methods = package.methods ?? [];
 
-    late final String? bestWindows;
+    if (methods.contains('choco')) {
+      final choco = await Executable('choco').find();
+      final scoop = await Executable('scoop').find();
 
-    if (choco != null) {
-      bestWindows = '$choco -y';
-    } else if (scoop != null) {
-      bestWindows = '$scoop --yes';
+      late final String? bestWindows;
+
+      if (choco != null) {
+        bestWindows = '$choco -y';
+      } else if (scoop != null) {
+        bestWindows = '$scoop --yes';
+      }
+
+      if (bestWindows != null) {
+        return '${to}_windows "$bestWindows"';
+      }
     }
 
-    return bestWindows != null
-        ? '${to}_windows "$bestWindows"'
-        : await bestForAny(to: to);
+    throw Exception('No package manager found for Windows');
   }
 
   Future<String> toInstall() async {
@@ -294,15 +325,13 @@ ${await best(to: 'remove')}
 
     final String? firstProvides = await packageScript.getFirstProvides();
     if (firstProvides != null) {
-      final firstProvidesExecutable =
-          await Executable(firstProvides).find(cache: false);
+      final firstProvidesExecutable = await Executable(firstProvides).find(cache: false);
       if (firstProvidesExecutable != null) {
         bestValidateExecutable = firstProvidesExecutable;
       }
     }
     if (bestValidateExecutable == null) {
-      final String? nameExecutable =
-          await Executable(package).find(cache: false);
+      final String? nameExecutable = await Executable(packageName).find(cache: false);
       if (nameExecutable != null) {
         bestValidateExecutable = nameExecutable;
       }
@@ -315,10 +344,10 @@ ${await best(to: 'remove')}
 ''';
 
     if (removing && bestValidateExecutable == null) {
-      Logger.info('Validation for removing package $package passed!');
+      Logger.info('Validation for removing package $packageName passed!');
     } else if (bestValidateExecutable == null) {
       leave(
-        message: 'No executable found for $package, validation failed.',
+        message: 'No executable found for $packageName, validation failed.',
         exitCode: notFound,
       );
     } else {
@@ -341,8 +370,7 @@ validate "$bestValidateExecutable"
   Future<String> dynamicCode() async {
     String executable = Platform.resolvedExecutable;
 
-    if (Platform.script.path.endsWith('.dart') ||
-        executable.endsWith('/dart')) {
+    if (Platform.script.path.endsWith('.dart') || executable.endsWith('/dart')) {
       // If we are running from a dart file or from a dart executable, add the
       // executable to the script.
       executable += ' ${Platform.script.path}';

@@ -25,7 +25,13 @@ class Package {
   @Index(caseSensitive: false)
   List<String>? arch;
 
-  @Index()
+  @Index(caseSensitive: false)
+  List<String>? methods;
+
+  @Index(caseSensitive: false)
+  List<String>? defaults;
+
+  @Index(caseSensitive: false)
   String? installed;
 
   final repo = IsarLink<Repo>();

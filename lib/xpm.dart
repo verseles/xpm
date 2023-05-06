@@ -12,7 +12,7 @@ class XPM {
 
   static String get description => pubspec.description.split('.').first;
 
-  static get installMethods => {
+  static Map<String, String> get installMethods => {
         'auto': 'Automatically choose the best method or fallsback to [any].',
         'any': 'Use the generic method. Sometimes this is the best method.',
         'apt': 'Use apt or apt-like package manager.',
@@ -22,7 +22,7 @@ class XPM {
         'dnf': 'Use dnf or dnf-like package manager.',
         'pacman': 'Use pacman or pacman-like package manager.',
         'zypper': 'Use zypper or zypper-like package manager.',
-        'android': 'Use android or android-like package manager.',
+        'termux': 'Use android or android-like package manager.',
         'swupd': 'Use swupd or swupd-like package manager.'
       };
 
@@ -78,8 +78,7 @@ class XPM {
   }
 
   static Future<Directory> cacheDir(String? path) async {
-    final String cacheBasePath =
-        _getEnv('XDG_CACHE_HOME') ?? '${userHome.path}/.cache';
+    final String cacheBasePath = _getEnv('XDG_CACHE_HOME') ?? '${userHome.path}/.cache';
     return Directory('$cacheBasePath/$name/$path').create(recursive: true);
   }
 
@@ -125,10 +124,7 @@ class XPM {
       return _userHome!;
     }
     String dirPath;
-    dirPath = _getEnv('HOME') ??
-        _getEnv('USERPROFILE') ??
-        _getEnv('HOMEPATH') ??
-        Directory.current.absolute.path;
+    dirPath = _getEnv('HOME') ?? _getEnv('USERPROFILE') ?? _getEnv('HOMEPATH') ?? Directory.current.absolute.path;
     _userHome = Directory(dirPath);
     return _userHome!;
   }

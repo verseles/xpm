@@ -102,14 +102,19 @@ class BashScript {
     return variables;
   }
 
-  Future<bool> hasFunction(String functionName) async {
+Future<bool> hasFunction(String functionName) async {
     final script = await contents();
     if (script == null) {
       return false;
     }
-    final regex = RegExp('$functionName\\(.*\\)');
-    final matches = regex.allMatches(script);
 
-    return matches.isNotEmpty;
+    final lines = script.split('\n');
+    for (final line in lines) {
+      if (line.startsWith('$functionName() {')) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }

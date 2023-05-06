@@ -36,13 +36,13 @@ void main(List<String> args) async {
   }
 
   final bool isXPMOutdated =
-      await Setting.get('needs_uptade', defaultValue: true);
+      await Setting.get('needs_update', defaultValue: true);
   if (!isXPMOutdated) {
     // @VERBOSE
     final fourDays = DateTime.now().add(Duration(days: 4));
     final newVersionAvailable = await VersionChecker()
         .checkForNewVersion(XPM.name, Version.parse(XPM.version));
-    Setting.set('needs_uptade', true, expires: fourDays, lazy: true);
+    Setting.set('needs_update', true, expires: fourDays, lazy: true);
     if (newVersionAvailable != null) {
       Logger.info('There is a new version available: $newVersionAvailable');
       Logger.info('Run: {@green}xpm install xpm{@end} to update.');
