@@ -16,7 +16,13 @@ import 'package:xpm/xpm.dart';
 
 /// A class that provides utility methods for working with repositories.
 class Repositories {
-  /// Returns working directory
+  /// Returns the working directory for the given repository and package.
+  ///
+  /// The [repo] parameter is the URL of the repository.
+  ///
+  /// The [package] parameter is the name of the package within the repository.
+  ///
+  /// The [create] parameter indicates whether to create the directory if it does not exist.
   static final Map<String, Future<Directory>> __dirs = {};
 
   static Future<Directory> dir(String repoSlug, {package = '', create = true}) async {
@@ -136,9 +142,16 @@ class Repositories {
         final title = bashScript.get('xTITLE');
         final url = bashScript.get('xURL');
         final archs = bashScript.getArray('xARCH');
+        final defaults = bashScript.getArray('xDEFAULT');
 
-        final List<dynamic> results =
-            await Future.wait([desc, version, title, url, archs]);
+        final installMethodFutures = XPM.installMethods.keys
+            .toList()
+            .where((method) => method != 'auto')
+            .map((method) => bashScript.hasFunction('install_$method').then((value) => value ? method : null));
+
+        final List<String?> availableMethods = await Future.wait(installMethodFutures);
+
+        final List<dynamic> results = await Future.wait([desc, version, title, url, archs, defaults]);
 
         final Map<String, dynamic> data = {
           'desc': results[0],
@@ -159,7 +172,9 @@ class Repositories {
           ..version = data['version']
           ..title = data['title']
           ..url = data['url']
-          ..arch = data['arch'];
+          ..arch = data['arch']
+          ..defaults = data['defaults']
+          ..methods = data['methods'];
 
         /// WARN: async is not working and is a hell to debug
         db.writeTxnSync(() {
