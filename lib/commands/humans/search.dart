@@ -19,13 +19,9 @@ class SearchCommand extends Command {
   final category = "For humans";
 
   SearchCommand() {
-    argParser.addFlag('exact',
-        negatable: false,
-        abbr: 'e',
-        help: 'Search for an exact match of the package name.');
+    argParser.addFlag('exact', negatable: false, abbr: 'e', help: 'Search for an exact match of the package name.');
 
-    argParser.addFlag('all',
-        negatable: false, abbr: 'a', help: 'List all packages available.');
+    argParser.addFlag('all', negatable: false, abbr: 'a', help: 'List all packages available.');
   }
 
   // [run] may also return a Future.
@@ -53,8 +49,7 @@ class SearchCommand extends Command {
             .or()
             .anyOf(words, (q, w) => q.descMatches('*$w*', caseSensitive: false))
             .or()
-            .anyOf(
-                words, (q, w) => q.titleMatches('*$w*', caseSensitive: false))
+            .anyOf(words, (q, w) => q.titleMatches('*$w*', caseSensitive: false))
             .sortByName()
             .thenByTitle()
             .thenByDesc()
@@ -70,12 +65,9 @@ class SearchCommand extends Command {
       } else {
         print('Found ${results.length} packages:');
         for (final result in results) {
-          final installed =
-              result.installed != null ? '[{@green}installed{@end}] ' : '';
+          final installed = result.installed != null ? '[{@green}installed{@end}] ' : '';
           final unavailable =
-              result.arch != null && !result.arch!.contains(platform)
-                  ? '[{@red}unavailable for $platform{@end}] '
-                  : '';
+              result.arch != null && !result.arch!.contains(platform) ? '[{@red}unavailable for $platform{@end}] ' : '';
 
           out('$unavailable{@blue}${result.name}{@end} {@green}${result.version}{@end} $installed- ${result.desc}');
         }

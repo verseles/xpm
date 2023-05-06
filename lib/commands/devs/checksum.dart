@@ -15,8 +15,7 @@ class ChecksumCommand extends Command {
   @override
   final category = "For developers";
   @override
-  String get invocation =>
-      '${runner!.executableName} $name <expectedHash> <file path>';
+  String get invocation => '${runner!.executableName} $name <expectedHash> <file path>';
   @override
   final aliases = ['cs'];
 
@@ -33,10 +32,7 @@ class ChecksumCommand extends Command {
 
   ChecksumCommand() {
     argParser.addOption('type',
-        abbr: 't',
-        help: 'Hash type',
-        allowed: _supportedHashes.keys.toList(),
-        defaultsTo: 'sha1');
+        abbr: 't', help: 'Hash type', allowed: _supportedHashes.keys.toList(), defaultsTo: 'sha1');
   }
 
   @override

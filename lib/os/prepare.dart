@@ -53,9 +53,7 @@ class Prepare {
     packageScript = BashScript(package.script);
 
     if (await packageScript.contents() == null) {
-      leave(
-          message: 'Script for "{@blue}$packageName{@end}" does not exist.',
-          exitCode: unableToOpenInputFile);
+      leave(message: 'Script for "{@blue}$packageName{@end}" does not exist.', exitCode: unableToOpenInputFile);
     }
 
     Global.sudoPath = await Executable('sudo').find() ?? '';
@@ -69,8 +67,7 @@ class Prepare {
   Future<File> writeThisBeast(String script) async {
     await boot();
 
-    return File('${(await cacheRepoDir).path}/together.bash')
-        .writeAsString(script.trim());
+    return File('${(await cacheRepoDir).path}/together.bash').writeAsString(script.trim());
   }
 
   /// Determines the best installation method based on the user's preferences and the operating system.
@@ -84,8 +81,7 @@ class Prepare {
 
     if (forceMethod) {
       if (preferedMethod == 'auto') {
-        leave(
-            message: 'Use --force-method with --method=', exitCode: wrongUsage);
+        leave(message: 'Use --force-method with --method=', exitCode: wrongUsage);
       }
       switch (preferedMethod) {
         case 'any':
@@ -115,9 +111,7 @@ class Prepare {
 
     if (preferedMethod == 'any') return bestForAny(to: to);
 
-    if (preferedMethod == 'apt' ||
-        distro == 'debian' ||
-        distroLike == 'debian') {
+    if (preferedMethod == 'apt' || distro == 'debian' || distroLike == 'debian') {
       return bestForApt(to: to);
     }
 
@@ -125,10 +119,7 @@ class Prepare {
       return bestForArch(to: to);
     }
 
-    if (preferedMethod == 'dnf' ||
-        distro == 'fedora' ||
-        distro == 'rhel' ||
-        distroLike == 'rhel fedora') {
+    if (preferedMethod == 'dnf' || distro == 'fedora' || distro == 'rhel' || distroLike == 'rhel fedora') {
       return bestForFedora(to: to);
     }
 
@@ -136,9 +127,7 @@ class Prepare {
       return bestForAndroid(to: to);
     }
 
-    if (preferedMethod == 'zypper' ||
-        distro == 'opensuse' ||
-        distro == 'sles') {
+    if (preferedMethod == 'zypper' || distro == 'opensuse' || distro == 'sles') {
       return bestForOpenSUSE(to: to);
     }
 
@@ -150,9 +139,7 @@ class Prepare {
       return bestForWindows(to: to);
     }
 
-    if (preferedMethod == 'swupd' ||
-        distro == 'clear-linux-os' ||
-        distroLike == 'clear-linux-os') {
+    if (preferedMethod == 'swupd' || distro == 'clear-linux-os' || distroLike == 'clear-linux-os') {
       return bestForClearLinux(to: to);
     }
 
@@ -185,9 +172,7 @@ class Prepare {
       Global.isAppImage = true;
     }
 
-    return bestPack != null
-        ? '${to}_pack "$bestPack"'
-        : await bestForAny(to: to);
+    return bestPack != null ? '${to}_pack "$bestPack"' : await bestForAny(to: to);
   }
 
   /// Determines the best installation method for Clear Linux OS.
@@ -394,15 +379,13 @@ ${await best(to: 'remove')}
 
     final String? firstProvides = await packageScript.getFirstProvides();
     if (firstProvides != null) {
-      final firstProvidesExecutable =
-          await Executable(firstProvides).find(cache: false);
+      final firstProvidesExecutable = await Executable(firstProvides).find(cache: false);
       if (firstProvidesExecutable != null) {
         bestValidateExecutable = firstProvidesExecutable;
       }
     }
     if (bestValidateExecutable == null) {
-      final String? nameExecutable =
-          await Executable(packageName).find(cache: false);
+      final String? nameExecutable = await Executable(packageName).find(cache: false);
       if (nameExecutable != null) {
         bestValidateExecutable = nameExecutable;
       }
@@ -445,8 +428,7 @@ validate "$bestValidateExecutable"
   Future<String> dynamicCode() async {
     String executable = Platform.resolvedExecutable;
 
-    if (Platform.script.path.endsWith('.dart') ||
-        executable.endsWith('/dart')) {
+    if (Platform.script.path.endsWith('.dart') || executable.endsWith('/dart')) {
       // If we are running from a dart file or from a dart executable, add the
       // executable to the script.
       executable += ' ${Platform.script.path}';

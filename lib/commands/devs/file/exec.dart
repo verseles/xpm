@@ -22,8 +22,7 @@ class FileExecCommand extends Command {
 
   /// Creates a new instance of the [FileExecCommand] class.
   FileExecCommand() {
-    argParser.addFlag('verbose',
-        abbr: 'v', negatable: true, defaultsTo: true, help: 'Verbose output');
+    argParser.addFlag('verbose', abbr: 'v', negatable: true, defaultsTo: true, help: 'Verbose output');
   }
 
   // [run] may also return a Future.

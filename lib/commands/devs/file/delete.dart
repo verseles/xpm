@@ -23,12 +23,9 @@ class FileDeleteCommand extends Command {
   /// Creates a new instance of the [FileDeleteCommand] class.
   FileDeleteCommand() {
     argParser.addFlag('sudo', abbr: 's', negatable: false, help: 'Run as sudo');
-    argParser.addFlag('recursive',
-        abbr: 'r', negatable: false, help: 'Delete recursively');
-    argParser.addFlag('force',
-        abbr: 'f', negatable: false, help: 'Force delete');
-    argParser.addFlag('verbose',
-        abbr: 'v', negatable: true, defaultsTo: true, help: 'Verbose output');
+    argParser.addFlag('recursive', abbr: 'r', negatable: false, help: 'Delete recursively');
+    argParser.addFlag('force', abbr: 'f', negatable: false, help: 'Force delete');
+    argParser.addFlag('verbose', abbr: 'v', negatable: true, defaultsTo: true, help: 'Verbose output');
   }
 
   // [run] may also return a Future.
@@ -49,9 +46,7 @@ class FileDeleteCommand extends Command {
 
       final run = Run();
       final deleted = await run.delete(filePath,
-          sudo: argResults!['sudo'],
-          recursive: argResults!['recursive'],
-          force: argResults!['force']);
+          sudo: argResults!['sudo'], recursive: argResults!['recursive'], force: argResults!['force']);
 
       if (!deleted || file.existsSync() && !argResults!['force']) {
         out("{@red}Failed to delete '$filePath'{@end}");

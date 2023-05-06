@@ -15,61 +15,52 @@ void main() {
       expect(version, isA<Version>());
     });
 
-    test('checkForNewVersion returns null when no update is available',
-        () async {
+    test('checkForNewVersion returns null when no update is available', () async {
       final version = Version.parse('1.2.3');
       final newVersion = Version.parse('1.2.3');
-      final result = await versionChecker.checkForNewVersion('dio', version,
-          newVersion: newVersion);
+      final result = await versionChecker.checkForNewVersion('dio', version, newVersion: newVersion);
       expect(result, isNull);
     });
 
-    test('checkForNewVersion returns a new version when update is available',
-        () async {
+    test('checkForNewVersion returns a new version when update is available', () async {
       final version = Version.parse('1.2.3');
       final newVersion = Version.parse('1.3.0');
-      final result = await versionChecker.checkForNewVersion('dio', version,
-          newVersion: newVersion);
+      final result = await versionChecker.checkForNewVersion('dio', version, newVersion: newVersion);
       expect(result, equals(newVersion));
     });
 
     test('compareVersions returns null when no update is available', () {
       final current = Version.parse('1.2.3');
       final newer = Version.parse('1.2.3');
-      final result =
-          versionChecker.compareVersions(current, newer, Types.minor);
+      final result = versionChecker.compareVersions(current, newer, Types.minor);
       expect(result, isNull);
     });
 
     test('compareVersions returns a new version when update is available', () {
       final current = Version.parse('1.2.3');
       final newer = Version.parse('1.3.0');
-      final result =
-          versionChecker.compareVersions(current, newer, Types.minor);
+      final result = versionChecker.compareVersions(current, newer, Types.minor);
       expect(result, equals(newer));
     });
 
     test('compareVersions returns null when major update is not available', () {
       final current = Version.parse('1.2.3');
       final newer = Version.parse('1.3.0');
-      final result =
-          versionChecker.compareVersions(current, newer, Types.major);
+      final result = versionChecker.compareVersions(current, newer, Types.major);
       expect(result, isNull);
     });
 
     test('compareVersions returns null when minor update is not available', () {
       final current = Version.parse('1.2.3');
       final newer = Version.parse('1.2.3+1');
-      final result =
-          versionChecker.compareVersions(current, newer, Types.minor);
+      final result = versionChecker.compareVersions(current, newer, Types.minor);
       expect(result, isNull);
     });
 
     test('compareVersions returns null when patch update is not available', () {
       final current = Version.parse('1.2.3');
       final newer = Version.parse('1.2.3');
-      final result =
-          versionChecker.compareVersions(current, newer, Types.patch);
+      final result = versionChecker.compareVersions(current, newer, Types.patch);
       expect(result, isNull);
     });
   });

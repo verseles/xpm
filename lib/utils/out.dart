@@ -22,6 +22,5 @@ void out(String message,
     VariableStyle? style,
     VariableResolver? resolver}) {
   final output = error ? stderr : stdout;
-  output.writeln(format(message,
-      args: args, replace: replace, style: style, resolver: resolver));
+  output.writeln(format(message, args: args, replace: replace, style: style, resolver: resolver));
 }

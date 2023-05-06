@@ -15,8 +15,7 @@ class Executable {
     return result;
   }
 
-  Future<bool> exists({bool cache = true}) async =>
-      await find(cache: cache) != null;
+  Future<bool> exists({bool cache = true}) async => await find(cache: cache) != null;
 
   String? findSync({bool cache = true}) {
     if (_whichResults.containsKey(cmd)) {

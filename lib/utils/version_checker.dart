@@ -36,8 +36,7 @@ class VersionChecker {
   /// [packageName] is the name of the package to check for updates.
   /// [currentVersion] is the current version of the package.
   /// [type] is the type of update to check for (major, minor, or patch). Defaults to minor.
-  Future<Version?> checkForNewVersion(
-      String packageName, Version currentVersion,
+  Future<Version?> checkForNewVersion(String packageName, Version currentVersion,
       {Types type = Types.minor, Version? newVersion}) async {
     newVersion ??= await getLatestVersion(packageName);
     final hasUpdate = compareVersions(currentVersion, newVersion, type);
@@ -62,9 +61,7 @@ class VersionChecker {
         }
         break;
       case Types.patch:
-        if (current.patch < newer.patch &&
-            current.minor >= newer.minor &&
-            current.major >= newer.major) {
+        if (current.patch < newer.patch && current.minor >= newer.minor && current.major >= newer.major) {
           return newer;
         }
         break;

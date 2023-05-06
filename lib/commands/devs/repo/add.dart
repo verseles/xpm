@@ -10,8 +10,7 @@ class RepoAddCommand extends Command {
   @override
   final aliases = ['a'];
   @override
-  String get invocation =>
-      '${runner!.executableName} repo $name <repository url>';
+  String get invocation => '${runner!.executableName} repo $name <repository url>';
   @override
   final description = "Add a new git repository to the list of repositories";
 

@@ -28,20 +28,17 @@ void main(List<String> args) async {
     showVersion(args);
   }
 
-  final bool isRepoOutdated =
-      await Setting.get('needs_refresh', defaultValue: true);
+  final bool isRepoOutdated = await Setting.get('needs_refresh', defaultValue: true);
   if (!isRepoOutdated) {
     // @VERBOSE
     await Repositories.index();
   }
 
-  final bool isXPMOutdated =
-      await Setting.get('needs_update', defaultValue: true);
+  final bool isXPMOutdated = await Setting.get('needs_update', defaultValue: true);
   if (!isXPMOutdated) {
     // @VERBOSE
     final fourDays = DateTime.now().add(Duration(days: 4));
-    final newVersionAvailable = await VersionChecker()
-        .checkForNewVersion(XPM.name, Version.parse(XPM.version));
+    final newVersionAvailable = await VersionChecker().checkForNewVersion(XPM.name, Version.parse(XPM.version));
     Setting.set('needs_update', true, expires: fourDays, lazy: true);
     if (newVersionAvailable != null) {
       Logger.info('There is a new version available: $newVersionAvailable');
@@ -51,8 +48,7 @@ void main(List<String> args) async {
   await Setting.deleteExpired(lazy: true);
 
   final runner = CommandRunner(XPM.name, XPM.description)
-    ..argParser.addFlag('version',
-        abbr: 'v', negatable: false, help: 'Prints the version of ${XPM.name}.')
+    ..argParser.addFlag('version', abbr: 'v', negatable: false, help: 'Prints the version of ${XPM.name}.')
     ..addCommand(RefreshCommand())
     ..addCommand(SearchCommand())
     ..addCommand(InstallCommand())
@@ -87,7 +83,5 @@ Never showVersion(args) {
   if (args.first == '-v') {
     leave(message: XPM.version, exitCode: success);
   }
-  leave(
-      message: '${XPM.name} v${XPM.version} - ${XPM.description}',
-      exitCode: success);
+  leave(message: '${XPM.name} v${XPM.version} - ${XPM.description}', exitCode: success);
 }

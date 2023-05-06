@@ -87,8 +87,7 @@ class Run {
   /// If [sudo] is true, the file will be deleted with sudo permissions
   /// If [recursive] is true, the file will be deleted recursively
   /// If [force] is true, the file will be deleted even if it is read-only
-  Future<bool> delete(String filePath,
-      {sudo = false, recursive = false, force = false}) async {
+  Future<bool> delete(String filePath, {sudo = false, recursive = false, force = false}) async {
     final file = File(filePath);
 
     if (!file.existsSync()) {
@@ -117,10 +116,7 @@ class Run {
   /// Rename or move [oldPath] to [newPath]
   /// If [sudo] is true, the file will be moved with sudo permissions
   Future<bool> move(String $oldPath, String $newPath,
-      {sudo = false,
-      force = false,
-      recursive = false,
-      preserve = false}) async {
+      {sudo = false, force = false, recursive = false, preserve = false}) async {
     try {
       if (Platform.isWindows) {
         await File($oldPath).rename($newPath);
@@ -151,10 +147,7 @@ class Run {
   /// If [preserve] is true, the file will be copied preserving the original
   /// permissions
   Future<bool> copy(String oldPath, String newPath,
-      {sudo = false,
-      recursive = false,
-      force = false,
-      preserve = false}) async {
+      {sudo = false, recursive = false, force = false, preserve = false}) async {
     try {
       if (Platform.isWindows) {
         await File(oldPath).copy(newPath);
