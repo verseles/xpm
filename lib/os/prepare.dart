@@ -155,6 +155,8 @@ class Prepare {
   ///
   /// The [to] parameter is the installation target.
   Future<String> bestForPack({String to = 'install'}) async {
+    // @TODO: Add support for hasDefault
+
     final String? snap = await Executable('snap').find();
     final String? flatpak = await Executable('flatpak').find();
     final String? appimage = await Executable('appimage').find();
@@ -180,12 +182,20 @@ class Prepare {
   /// The [to] parameter is the installation target.
   Future<String> bestForClearLinux({String to = 'install'}) async {
     final methods = package.methods ?? [];
-    if (methods.contains('swupd')) {
+    final hasMethod = methods.contains('swupd');
+
+    final defaults = package.defaults ?? [];
+    final hasDefault = defaults.contains('swupd');
+
+    if (hasMethod || hasDefault) {
       final swupd = await Executable('swupd').find();
 
       final String? bestSwupd = swupd;
 
       if (bestSwupd != null) {
+        if (hasMethod) {
+          return '${Global.sudoPath} $bestSwupd bundle-add -y ${package.name}';
+        }
         return '${to}_swupd "${Global.sudoPath} $bestSwupd"';
       }
     }
@@ -198,13 +208,21 @@ class Prepare {
   /// The [to] parameter is the installation target.
   Future<String> bestForApt({String to = 'install'}) async {
     final methods = package.methods ?? [];
-    if (methods.contains('apt')) {
+    final hasMethod = methods.contains('apt');
+
+    final defaults = package.defaults ?? [];
+    final hasDefault = defaults.contains('apt');
+
+    if (hasMethod || hasDefault) {
       final apt = await Executable('apt').find();
       final aptGet = await Executable('apt-get').find();
 
       final String? bestApt = apt ?? aptGet;
 
       if (bestApt != null) {
+        if (hasMethod) {
+          return '${Global.sudoPath} $bestApt install -y ${package.name}';
+        }
         return '${to}_apt "${Global.sudoPath} $bestApt -y"';
       }
     }
@@ -217,13 +235,21 @@ class Prepare {
   /// The [to] parameter is the installation target.
   Future<String> bestForArch({String to = 'install'}) async {
     final methods = package.methods ?? [];
-    if (methods.contains('pacman')) {
+    final hasMethod = methods.contains('pacman');
+
+    final defaults = package.defaults ?? [];
+    final hasDefault = defaults.contains('pacman');
+
+    if (hasMethod || hasDefault) {
       final paru = await Executable('paru').find();
       final yay = await Executable('yay').find();
       final pacman = await Executable('pacman').find();
       String? bestArchLinux = paru ?? yay ?? pacman;
 
       if (bestArchLinux != null) {
+        if (hasDefault) {
+          return '${Global.sudoPath} $bestArchLinux --noconfirm -S ${package.name}';
+        }
         return '${to}_pacman "${Global.sudoPath} $bestArchLinux --noconfirm"';
       }
     }
@@ -236,12 +262,20 @@ class Prepare {
   /// The [to] parameter is the installation target.
   Future<String> bestForFedora({String to = 'install'}) async {
     final methods = package.methods ?? [];
-    if (methods.contains('dnf')) {
+    final hasMethod = methods.contains('dnf');
+
+    final defaults = package.defaults ?? [];
+    final hasDefault = defaults.contains('dnf');
+
+    if (hasMethod || hasDefault) {
       final dnf = await Executable('dnf').find();
 
       String? bestFedora = dnf;
 
       if (bestFedora != null) {
+        if (hasDefault) {
+          return '${Global.sudoPath} $bestFedora -y install ${package.name}';
+        }
         return '${to}_dnf "${Global.sudoPath} $bestFedora -y"';
       }
     }
@@ -254,10 +288,18 @@ class Prepare {
   /// The [to] parameter is the installation target.
   Future<String> bestForMacOS({String to = 'install'}) async {
     final methods = package.methods ?? [];
-    if (methods.contains('brew')) {
+    final hasMethod = methods.contains('brew');
+
+    final defaults = package.defaults ?? [];
+    final hasDefault = defaults.contains('brew');
+
+    if (hasMethod || hasDefault) {
       final brew = await Executable('brew').find();
 
       if (brew != null) {
+        if (hasDefault) {
+          return '$brew install ${package.name}';
+        }
         return '${to}_macos "$brew"';
       }
     }
@@ -270,10 +312,18 @@ class Prepare {
   /// The [to] parameter is the installation target.
   Future<String> bestForOpenSUSE({String to = 'install'}) async {
     final methods = package.methods ?? [];
-    if (methods.contains('zypper')) {
+    final hasMethod = methods.contains('zypper');
+
+    final defaults = package.defaults ?? [];
+    final hasDefault = defaults.contains('zypper');
+
+    if (hasMethod || hasDefault) {
       final zypper = await Executable('zypper').find();
 
       if (zypper != null) {
+        if (hasDefault) {
+          return '${Global.sudoPath} $zypper --non-interactive install ${package.name}';
+        }
         return '${to}_zypper "${Global.sudoPath} $zypper --non-interactive"';
       }
     }
@@ -286,10 +336,18 @@ class Prepare {
   /// The [to] parameter is the installation target.
   Future<String> bestForAndroid({String to = 'install'}) async {
     final methods = package.methods ?? [];
-    if (methods.contains('termux')) {
+    final hasMethod = methods.contains('zypper');
+
+    final defaults = package.defaults ?? [];
+    final hasDefault = defaults.contains('zypper');
+
+    if (hasMethod || hasDefault) {
       final pkg = await Executable('pkg').find(); // termux
 
       if (pkg != null) {
+        if (hasDefault) {
+          return '${Global.sudoPath} $pkg install -y ${package.name}';
+        }
         return '${to}_android "${Global.sudoPath} $pkg -y"';
       }
     }
@@ -302,8 +360,12 @@ class Prepare {
   /// The [to] parameter is the installation target.
   Future<String> bestForWindows({String to = 'install'}) async {
     final methods = package.methods ?? [];
+    final hasMethod = methods.contains('choco');
 
-    if (methods.contains('choco')) {
+    final defaults = package.defaults ?? [];
+    final hasDefault = defaults.contains('choco');
+
+    if (hasMethod || hasDefault) {
       final choco = await Executable('choco').find();
       final scoop = await Executable('scoop').find();
 
@@ -311,7 +373,11 @@ class Prepare {
 
       if (choco != null) {
         bestWindows = '$choco -y';
+        if (hasDefault) {
+          return '$choco install -y ${package.name}';
+        }
       } else if (scoop != null) {
+        // @TODO add support for hasDefault "scoop"
         bestWindows = '$scoop --yes';
       }
 
