@@ -23,7 +23,7 @@ class Prepare {
   final ArgResults? args;
 
   static final String distro = osRelease('ID') ?? Platform.operatingSystem;
-  static final String distroLike = osRelease('ID_LIKE') ?? '';
+  static final List distroLike = (osRelease('ID_LIKE') ?? '').split(" ");
 
   late final String repoSlug, packageName;
   late final Future<Directory> cacheRepoDir;
@@ -111,15 +111,15 @@ class Prepare {
 
     if (preferedMethod == 'any') return bestForAny(to: to);
 
-    if (preferedMethod == 'apt' || distro == 'debian' || distroLike == 'debian') {
+    if (preferedMethod == 'apt' || distro == 'debian' || distroLike.contains('debian')) {
       return bestForApt(to: to);
     }
 
-    if (preferedMethod == 'pacman' || distroLike == 'arch') {
+    if (preferedMethod == 'pacman' || distroLike.contains('arch')) {
       return bestForArch(to: to);
     }
 
-    if (preferedMethod == 'dnf' || distro == 'fedora' || distro == 'rhel' || distroLike == 'rhel fedora') {
+    if (preferedMethod == 'dnf' || distro == 'fedora' || distro == 'rhel' || distroLike.contains('rhel') || distroLike.contains('fedora')) {
       return bestForFedora(to: to);
     }
 
@@ -139,7 +139,7 @@ class Prepare {
       return bestForWindows(to: to);
     }
 
-    if (preferedMethod == 'swupd' || distro == 'clear-linux-os' || distroLike == 'clear-linux-os') {
+    if (preferedMethod == 'swupd' || distro == 'clear-linux-os' || distroLike.contains('clear-linux-os')) {
       return bestForClearLinux(to: to);
     }
 
