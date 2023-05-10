@@ -53,7 +53,9 @@ class Prepare {
     packageScript = BashScript(package.script);
 
     if (await packageScript.contents() == null) {
-      leave(message: 'Script for "{@blue}$packageName{@end}" does not exist.', exitCode: unableToOpenInputFile);
+      leave(
+          message: 'Script for "{@blue}$packageName{@end}" does not exist.',
+          exitCode: unableToOpenInputFile);
     }
 
     Global.sudoPath = await Executable('sudo').find() ?? '';
@@ -67,7 +69,8 @@ class Prepare {
   Future<File> writeThisBeast(String script) async {
     await boot();
 
-    return File('${(await cacheRepoDir).path}/together.bash').writeAsString(script.trim());
+    return File('${(await cacheRepoDir).path}/together.bash')
+        .writeAsString(script.trim());
   }
 
   /// Determines the best installation method based on the user's preferences and the operating system.
@@ -81,7 +84,8 @@ class Prepare {
 
     if (forceMethod) {
       if (preferedMethod == 'auto') {
-        leave(message: 'Use --force-method with --method=', exitCode: wrongUsage);
+        leave(
+            message: 'Use --force-method with --method=', exitCode: wrongUsage);
       }
       switch (preferedMethod) {
         case 'any':
@@ -111,7 +115,9 @@ class Prepare {
 
     if (preferedMethod == 'any') return bestForAny(to: to);
 
-    if (preferedMethod == 'apt' || distro == 'debian' || distroLike.contains('debian')) {
+    if (preferedMethod == 'apt' ||
+        distro == 'debian' ||
+        distroLike.contains('debian')) {
       return bestForApt(to: to);
     }
 
@@ -119,7 +125,11 @@ class Prepare {
       return bestForArch(to: to);
     }
 
-    if (preferedMethod == 'dnf' || distro == 'fedora' || distro == 'rhel' || distroLike.contains('rhel') || distroLike.contains('fedora')) {
+    if (preferedMethod == 'dnf' ||
+        distro == 'fedora' ||
+        distro == 'rhel' ||
+        distroLike.contains('rhel') ||
+        distroLike.contains('fedora')) {
       return bestForFedora(to: to);
     }
 
@@ -127,7 +137,9 @@ class Prepare {
       return bestForAndroid(to: to);
     }
 
-    if (preferedMethod == 'zypper' || distro == 'opensuse' || distro == 'sles') {
+    if (preferedMethod == 'zypper' ||
+        distro == 'opensuse' ||
+        distro == 'sles') {
       return bestForOpenSUSE(to: to);
     }
 
@@ -139,7 +151,9 @@ class Prepare {
       return bestForWindows(to: to);
     }
 
-    if (preferedMethod == 'swupd' || distro == 'clear-linux-os' || distroLike.contains('clear-linux-os')) {
+    if (preferedMethod == 'swupd' ||
+        distro == 'clear-linux-os' ||
+        distroLike.contains('clear-linux-os')) {
       return bestForClearLinux(to: to);
     }
 
@@ -174,7 +188,9 @@ class Prepare {
       Global.isAppImage = true;
     }
 
-    return bestPack != null ? '${to}_pack "$bestPack"' : await bestForAny(to: to);
+    return bestPack != null
+        ? '${to}_pack "$bestPack"'
+        : await bestForAny(to: to);
   }
 
   /// Determines the best installation method for Clear Linux OS.
@@ -193,10 +209,11 @@ class Prepare {
       final String? bestSwupd = swupd;
 
       if (bestSwupd != null) {
+        final String update = '${Global.sudoPath} $bestSwupd update';
         if (hasMethod) {
-          return '${Global.sudoPath} $bestSwupd bundle-add -y ${package.name}';
+          return '$update \n ${Global.sudoPath} $bestSwupd bundle-add -y ${package.name}';
         }
-        return '${to}_swupd "${Global.sudoPath} $bestSwupd"';
+        return '$update \n ${to}_swupd "${Global.sudoPath} $bestSwupd"';
       }
     }
 
@@ -220,10 +237,11 @@ class Prepare {
       final String? bestApt = apt ?? aptGet;
 
       if (bestApt != null) {
+        final String update = '${Global.sudoPath} $bestApt update';
         if (hasMethod) {
-          return '${Global.sudoPath} $bestApt install -y ${package.name}';
+          return '$update \n ${Global.sudoPath} $bestApt install -y ${package.name}';
         }
-        return '${to}_apt "${Global.sudoPath} $bestApt -y"';
+        return '$update \n ${to}_apt "${Global.sudoPath} $bestApt -y"';
       }
     }
 
@@ -247,10 +265,11 @@ class Prepare {
       String? bestArchLinux = paru ?? yay ?? pacman;
 
       if (bestArchLinux != null) {
+        final String update = '${Global.sudoPath} $bestArchLinux -Sy';
         if (hasDefault) {
-          return '${Global.sudoPath} $bestArchLinux --noconfirm -S ${package.name}';
+          return '$update \n ${Global.sudoPath} $bestArchLinux --noconfirm -S ${package.name}';
         }
-        return '${to}_pacman "${Global.sudoPath} $bestArchLinux --noconfirm"';
+        return '$update \n ${to}_pacman "${Global.sudoPath} $bestArchLinux --noconfirm"';
       }
     }
 
@@ -273,10 +292,11 @@ class Prepare {
       String? bestFedora = dnf;
 
       if (bestFedora != null) {
+        final String update = '${Global.sudoPath} $bestFedora check-update';
         if (hasDefault) {
-          return '${Global.sudoPath} $bestFedora -y install ${package.name}';
+          return '$update \n ${Global.sudoPath} $bestFedora -y install ${package.name}';
         }
-        return '${to}_dnf "${Global.sudoPath} $bestFedora -y"';
+        return '$update \n ${to}_dnf "${Global.sudoPath} $bestFedora -y"';
       }
     }
 
@@ -297,10 +317,11 @@ class Prepare {
       final brew = await Executable('brew').find();
 
       if (brew != null) {
+        final String update = '$brew update';
         if (hasDefault) {
-          return '$brew install ${package.name}';
+          return '$update \n $brew install ${package.name}';
         }
-        return '${to}_macos "$brew"';
+        return '$update \n ${to}_macos "$brew"';
       }
     }
 
@@ -321,10 +342,11 @@ class Prepare {
       final zypper = await Executable('zypper').find();
 
       if (zypper != null) {
+        final String update = '${Global.sudoPath} $zypper refresh';
         if (hasDefault) {
-          return '${Global.sudoPath} $zypper --non-interactive install ${package.name}';
+          return '$update \n ${Global.sudoPath} $zypper --non-interactive install ${package.name}';
         }
-        return '${to}_zypper "${Global.sudoPath} $zypper --non-interactive"';
+        return '$update \n ${to}_zypper "${Global.sudoPath} $zypper --non-interactive"';
       }
     }
 
@@ -345,10 +367,11 @@ class Prepare {
       final pkg = await Executable('pkg').find(); // termux
 
       if (pkg != null) {
+        final String update = '${Global.sudoPath} $pkg update';
         if (hasDefault) {
-          return '${Global.sudoPath} $pkg install -y ${package.name}';
+          return '$update \n ${Global.sudoPath} $pkg install -y ${package.name}';
         }
-        return '${to}_android "${Global.sudoPath} $pkg -y"';
+        return '$update \n ${to}_android "${Global.sudoPath} $pkg -y"';
       }
     }
 
@@ -445,13 +468,15 @@ ${await best(to: 'remove')}
 
     final String? firstProvides = await packageScript.getFirstProvides();
     if (firstProvides != null) {
-      final firstProvidesExecutable = await Executable(firstProvides).find(cache: false);
+      final firstProvidesExecutable =
+          await Executable(firstProvides).find(cache: false);
       if (firstProvidesExecutable != null) {
         bestValidateExecutable = firstProvidesExecutable;
       }
     }
     if (bestValidateExecutable == null) {
-      final String? nameExecutable = await Executable(packageName).find(cache: false);
+      final String? nameExecutable =
+          await Executable(packageName).find(cache: false);
       if (nameExecutable != null) {
         bestValidateExecutable = nameExecutable;
       }
@@ -494,7 +519,8 @@ validate "$bestValidateExecutable"
   Future<String> dynamicCode() async {
     String executable = Platform.resolvedExecutable;
 
-    if (Platform.script.path.endsWith('.dart') || executable.endsWith('/dart')) {
+    if (Platform.script.path.endsWith('.dart') ||
+        executable.endsWith('/dart')) {
       // If we are running from a dart file or from a dart executable, add the
       // executable to the script.
       executable += ' ${Platform.script.path}';
