@@ -1,3 +1,5 @@
+## v0.23.0
+- some minor updates
 ## v0.22.0
 - Now we support xDEFAULT variable on bash
 ## v0.21.1
