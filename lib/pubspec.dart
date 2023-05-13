@@ -2,11 +2,11 @@
 const name = 'xpm';
 const description =
     'Universal package manager for any unix-like distro including macOS. Also experimental Windows support.';
-const version = '0.24.0';
+const version = '0.25.0';
 const homepage = 'https://xpm.link';
 const repository = 'https://github.com/verseles/xpm';
 const executables = '{xpm: null}';
-const environment = '{sdk: >=2.18.2 <3.1.0}';
+const environment = '{sdk: >=2.19.0 <3.1.0}';
 const devDependencies =
     '{build_runner: ^2.3.3, isar_generator: ^3.0.5, lints: ^2.0.0, test: ^1.16.0, var_dump: ^0.5.0, yaml: ^3.1.1}';
 const dependencies =

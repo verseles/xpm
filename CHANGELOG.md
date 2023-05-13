@@ -1,3 +1,5 @@
+## v0.25.0
+- pub fix and upgrade
 ## v0.24.0
 - build fix
 ## v0.23.0
