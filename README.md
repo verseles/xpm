@@ -9,7 +9,7 @@ XPM is a package manager for unix systems like Linux, BSD, MacOS, etc. It can be
 - No questions asked, can run in a non-interactive way
 - Easy to create new installers or a full repository
 - Be agnostic, following unix standards and relying on very known tools
-- Include all popular distros, and macOS
+- Include many popular distros, and macOS
 - Prefer native pm way and falls back to xpm way
   
 ## Installation
@@ -36,13 +36,15 @@ xpm r <package>
 ```
 > For all commands, run `xpm --help`
 ## How it works
-XPM provides a set of tools to let community create their installers, or a group of installers (repository). The only requirement is to follow the [xpm spec](https://github.com/verseles/xpm-popular/blob/main/micro/micro.bash). The spec is a set of bash functions that must be implemented in order to be a valid installer. The required methods are: `install_any`, `remove_any`, `validate`. The rest are optional, but highly recommended. The others can be: `install_apt`, `install_pacman`, [etc](https://github.com/verseles/xpm-popular/blob/main/micro/micro.bash).
+XPM provides a set of tools to let community create their installers, or a group of installers (repository). The only requirement is to follow the [xpm spec](https://github.com/verseles/xpm-popular/blob/main/micro/micro.bash). The spec is a set of bash functions that must be implemented in order to be a valid installer. The only required methods in the bash file is `validate` the others are optional but highly recommended: `install_any`, `remove_any`, `install_apt`, `install_pacman`, [etc](https://github.com/verseles/xpm-popular/blob/main/micro/micro.bash).
 ## Architecture
-XPM takes care of detecting the operating system and the package manager, and then it calls the installer. The installer is a bash script that follows the [xpm spec]. Before call the bash script, it provides important variables to the script, like the package manager available, xpm commands to let download files, move to binary system folder, change permissions, move|copy|delete files, and even create shortcuts. All of this without need to know or rely in the operating system.
+XPM takes care of detecting the operating system and the package manager, and then it calls the installer. The installer is a bash script that follows the [xpm spec]. Before call the bash script, it provides important variables to the script, like the package manager available, xpm commands to let download files, move to binary system folder, change permissions, move, copy, delete files, and even create shortcuts. All of this without need to know or rely in the operating system.
 
-XPM tries to use the native package manager way, but if it's not available, it will use its own way. For example, if you are using a debian based distro, and you want to install `micro`, it will use `apt` to install it. But if you are using a distro that doesn't have `apt`, it will use `xpm` to install it. The same happens with `pacman` and `dnf`, etc. If you want to know more about how it works, you can read the [xpm spec](https://github.com/verseles/xpm-popular/blob/main/micro/micro.bash).
-## Contribute with installers
-We have a main repository with many popular installers, but we need more. If you want to contribute with an installer, you can make a PR to [xpm-popular](https://github.com/verseles/xpm-popular). If you want to create a repository with your own installers, you can do it. Just follow the [xpm spec](https://github.com/verseles/xpm-popular/blob/main/micro/micro.bash).
+XPM tries to use the native package manager way, but if it's not available, it will use its own way. For example, if you are using a debian based distro, and you want to install `micro` (an text editor in terminal), it will use `apt` to install it. But if you are using a distro that doesn't have `apt`, it will use `xpm` to install it. The same happens with `pacman` and `dnf`, and others. If you want to know more about how it works, you can read the [xpm spec](https://github.com/verseles/xpm-popular/blob/main/micro/micro.bash).
+
+## Contribute with installer scripts
+We have a main repository with many popular installer scripts, but we need more. If you want to contribute with an installer script, you can make a PR to [xpm-popular](https://github.com/verseles/xpm-popular). The installer script are bash script. If you want to create a repository with your own installers, you can do it. Just follow the [xpm spec](https://github.com/verseles/xpm-popular/blob/main/micro/micro.bash).
+
 ## Contribute to XPM
 [![CI tests](https://github.com/verseles/xpm/actions/workflows/ci.yml/badge.svg)](https://github.com/verseles/xpm/actions/workflows/ci.yml)
 
@@ -57,4 +59,167 @@ The binaries are automatically generated and published in the [releases](https:/
 Our code uses [BSD 4-Clause “Original” or “Old” License](LICENSE.md)
 
 Dart SDK and his own packages are licensed under the [BSD 3-Clause "New" or "Revised" License](https://github.com/dart-lang/sdk/blob/main/LICENSE)
+
+## XPM Specification
+The xpm spec is a set of bash functions that must be implemented in order to be a valid installer. The only required methods in the bash file is `validate` the others are optional but highly recommended: `install_any`, `remove_any`, `install_apt`, `install_pacman`, and others see below.
+
+The main house of the installer scripts are the repository [xpm-popular](https://github.com/verseles/xpm-popular). Every program has its own folder, and inside of it, there is a bash file that implements the xpm spec. For example, the [micro](https://github.com/verseles/xpm-popular/blob/main/micro/micro.bash) installer script. Optionally, the root directory of the repository can have a `base.bash` file with common code for all installers, its is included in every installer script.
+
+Every script should follow the specs and be considered valid to be included in the repository. The specs are:
+
+### Read-only variables
+The following variables should be informed by the installer script, in the example below, the micro installer script:
+```bash
+# The name of the package
+readonly xNAME="micro"
+# The version of the package
+readonly xVERSION="2.0.11"
+# A short friendly title of the package
+readonly xTITLE="Micro Text Editor"
+# A description of the package
+readonly xDESC="A modern and intuitive terminal-based text editor"
+# The url of the package (OPTIONAL)
+readonly xURL="https://micro-editor.github.io"
+# The architecture supported by the package
+readonly xARCH=('linux64' 'linux32' 'linux-arm' 'linux-arm64' 'macos-arm64' 'macos' 'win32' 'win64' 'freebsd64' 'freebsd32' 'openbsd64' 'openbsd32' 'netbsd64' 'netbsd32')
+# The license of the package (OPTIONAL)
+readonly xLICENSE="https://raw.githubusercontent.com/zyedidia/micro/v$xVERSION/LICENSE"
+# The name(s) of the binary file(s) generated (OPTIONAL)
+# If not informed, the xNAME variable will be used in validate() function
+readonly xPROVIDES=("micro")
+
+# If you inform here, there is no need to implement install_apt() and remove_apt(), the same for pacman, dnf, etc. Because xpm will use the xDEFAULT variable to call the most standard command to install. 
+readonly xDEFAULT=('apt' 'pacman' 'dnf' 'choco' 'brew' 'termux')
+```
+### Variables available
+The following variables are provided by xpm to the installer script, and are optional to use:
+
+`$1` inside every function which starts with `install_` or `remove_`. 
+Returns path to the package manager binary available (apt, pacman, dnf, xpm) it comes with some flags like -y and add sudo if available.
+
+example:
+```bash
+install_apt() {
+	$1 install $xNAME # with -y, with sudo if available
+}
+```
+
+`$XPM`
+Returns the path to the xpm binary.
+
+`$yCHANNEL`
+Returns the channel of the package, if it's a stable version, or a beta version, or a nightly version. Default is empty which means latest stable.
+
+`$yARCH`
+Returns the current architecture of the system. For example: `x86_64`, `arm64`, `arm`, etc.
+
+`$yOS`
+Returns the current operating system. For example: `linux`, `macos`, `windows`, `android`, etc.
+
+`$yBIN`
+Returns the binary folder of the system. For example: `/usr/bin`, `/usr/local/bin`, `/data/data/com.termux/files/usr/bin`, etc.
+
+`$yHOME`
+Returns the home folder of the system. For example: `/home/user`, `/data/data/com.termux/files/home`, `/Users/user`, `/root`, etc.
+
+`$yTMP`
+Returns the temporary folder of the system. For example: `/tmp`, `/data/data/com.termux/files/usr/tmp`, `/var/tmp`, etc.
+
+`$ySUDO`
+Returns the sudo command if available, otherwise returns empty.
+
+`$isSnap`
+Returns `true` if the system has snap installed, otherwise returns `false`.
+
+`$isFlatpak`
+Returns `true` if the system has flatpak installed, otherwise returns `false`.
+
+`$isAppImage`
+Returns `true` if the system has appimage installed, otherwise returns `false`.
+
+### Functions available
+`validate()`
+This function is required and must be implemented. It should validate if the package is installed or not. If the package is installed, it should return 0, otherwise, it should return non-zero.
+
+The following functions can be used by the installer script, and are optional to use:
+
+`install_any()` and `remove_any()`
+These functions are called if no better option is available. It is the most techinical function because let you use anything to install/uninstall in any unix-like system and should not rely in any other package manager, only XPM and its commands available. We recommend to use well known unix tools like, `cp`, `mv`, `wget`, `curl`, `tar`, `gzip`, etc.
+
+`install_apt()` and `remove_apt()`
+These functions are called if the system has `apt` package manager installed. It should install/uninstall the package using apt. `$1` is the path to the `apt` (or similar) binary, and alread includes `-y` and `sudo` if available.
+
+`install_pacman()` and `remove_pacman()`
+Same as above, but for pacman/paru/yay.
+
+`install_dnf()` and `remove_dnf()`
+Same as above, but for dnf.
+
+`install_brew()` and `remove_brew()`
+Same as above, but for brew.
+
+`install_choco()` and `remove_choco()`
+Same as above, but for choco (or scoop).
+
+`install_termux()` and `remove_termux()`
+Same as above, but for termux.
+
+`install_pack` and `remove_pack`
+These functions are called if the system has `snap` or `flatpak` or `appimage` installed. It should install/uninstall the package using snap/flatpak/appimage. `$1` is the path to the snap/flatpak/appimage binary. You should check what is available in the system before using it. Example:
+```bash
+if [[ $isFlatpack == true ]]; then 
+    $1 uninstall $xNAME # with --assumeyes
+    exit 1
+elif [[ $isAppimage == true ]]; then 
+    rm -f $yHOME/.local/share/appimagekit/$xNAME
+    exit 1
+else
+    $1 remove $xNAME # snap with --yes
+fi
+```
+
+`install_zypper()` and `remove_zypper()`
+Same as above, but for zypper. `$1` includes `--non-interactive`, with `sudo` if available.
+
+`install_swupd()` and `remove_swupd()`
+Same as above, but for swupd. `$1` with `sudo` if available. But NOT includes `-y` because it comes after `bundle-add`/`bundle-remove` command.
+
+### XPM commands available
+The commands available to use in the installer script by calling `$XPM <command>`. Below the list of commands available by calling `$XPM help`:
+
+```
+Universal package manager for any unix-like distro including macOS
+
+Usage: xpm <command> [arguments]
+
+Global options:
+-h, --help       Print this usage information.
+-v, --version    Prints the version of xpm.
+
+Available commands:
+
+For developers
+  check      Checks the build.sh package file specified
+  checksum   Check the checksum of a file
+  file       File operations like copy, move, delete, make executable, etc.
+  get        Download file from the internet
+  log        Output info, warning, and error messages
+  make       Makes a build.sh package file
+  repo       Manage registered repositories
+  shortcut   Create a shortcut on the system/desktop
+
+For humans
+  install    Install a package.
+  refresh    Refresh the package list
+  remove     Removes a package
+  search     Search for a package
+  upgrade    Upgrade one, many or all packages
+
+Run "xpm help <command>" for more information about a command.
+```
+> As you can see, the commands available for developers are the same available for humans, but the commands for developers are more technical and can be used to create a package.
+
+> $XPM returns dinamically the path to the xpm binary, so you can use it in your script.
+
+
 
