@@ -1,3 +1,5 @@
+## v0.24.0
+- build fix
 ## v0.23.0
 - some minor updates
 ## v0.22.0
