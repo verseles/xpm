@@ -98,7 +98,7 @@ class GetCommand extends Command {
       destination = File(argResults!["out"]);
       fileName = destination.path.split("/").last;
     } else {
-      Directory tempDir = await XPM.temp('');
+      Directory tempDir = await XPM.temp('downloads');
       destination = File(tempDir.path + fileName);
     }
     Logger.info("Destination: ${destination.path}");

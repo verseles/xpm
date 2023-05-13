@@ -119,7 +119,11 @@ class Prepare {
       return bestForArch(to: to);
     }
 
-    if (preferedMethod == 'dnf' || distro == 'fedora' || distro == 'rhel' || distroLike.contains('rhel') || distroLike.contains('fedora')) {
+    if (preferedMethod == 'dnf' ||
+        distro == 'fedora' ||
+        distro == 'rhel' ||
+        distroLike.contains('rhel') ||
+        distroLike.contains('fedora')) {
       return bestForFedora(to: to);
     }
 
@@ -500,14 +504,20 @@ validate "$bestValidateExecutable"
       executable += ' ${Platform.script.path}';
     }
 
+    String yOS = Platform.operatingSystem;
     String yARCH = getArchitecture();
     String yCHANNEL = args!['channel'] ?? '';
 
+    String yTMP = (await XPM.temp(packageName)).path;
+
     return '''
 readonly XPM="$executable";
+readonly yOS="$yOS";
 readonly yARCH="$yARCH";
 readonly yCHANNEL="$yCHANNEL";
 readonly yBIN="${binDirectory().path}";
+readonly yHOME="${XPM.userHome.path}";
+readonly yTMP="$yTMP";
 readonly ySUDO="${Global.sudoPath}";
 readonly isSnap="${Global.isSnap}";
 readonly isFlatpak="${Global.isFlatpak}";
