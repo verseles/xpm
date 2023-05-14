@@ -1,6 +1,10 @@
+import 'dart:io';
+
+import 'package:all_exit_codes/all_exit_codes.dart';
 import 'package:args/command_runner.dart';
 
 import 'package:xpm/os/shortcut.dart';
+import 'package:xpm/utils/logger.dart';
 
 class ShortcutCommand extends Command {
   @override
@@ -21,6 +25,9 @@ class ShortcutCommand extends Command {
 
     argParser.addMultiOption("category",
         abbr: "c", help: "Categories, multiple times or once using comma", valueHelp: 'category[,category2]');
+
+    // sudo true by default
+    argParser.addFlag('sudo', abbr: 's', help: 'Run as sudo', negatable: true, defaultsTo: true);
   }
 
   @override
@@ -34,6 +41,8 @@ class ShortcutCommand extends Command {
     var shortcut = Shortcut(
         name: name, executablePath: executablePath, icon: icon, comment: description, categories: category.join(';'));
 
-    shortcut.create();
+    await shortcut.create();
+    Logger.info("Shortcut created successfully!");
+    exit(success);
   }
 }
