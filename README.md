@@ -82,7 +82,7 @@ readonly xDESC="A modern and intuitive terminal-based text editor"
 readonly xURL="https://micro-editor.github.io"
 # The architecture supported by the package
 readonly xARCH=('linux64' 'linux32' 'linux-arm' 'linux-arm64' 'macos-arm64' 'macos' 'win32' 'win64' 'freebsd64' 'freebsd32' 'openbsd64' 'openbsd32' 'netbsd64' 'netbsd32')
-# The license of the package (OPTIONAL)
+# The license of the package, can be an url or a initialisms like MIT, BSD, etc.
 readonly xLICENSE="https://raw.githubusercontent.com/zyedidia/micro/v$xVERSION/LICENSE"
 # The name(s) of the binary file(s) generated (OPTIONAL)
 # If not informed, the xNAME variable will be used in validate() function
