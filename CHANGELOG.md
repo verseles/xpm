@@ -1,3 +1,5 @@
+## v0.26.0
+- fixes
 ## v0.25.0
 - pub fix and upgrade
 ## v0.24.0
