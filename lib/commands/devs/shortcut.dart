@@ -26,7 +26,6 @@ class ShortcutCommand extends Command {
     argParser.addMultiOption("category",
         abbr: "c", help: "Categories, multiple times or once using comma", valueHelp: 'category[,category2]');
 
-    // sudo true by default
     argParser.addFlag('sudo', abbr: 's', help: 'Run as sudo', negatable: true, defaultsTo: true);
   }
 
@@ -37,11 +36,18 @@ class ShortcutCommand extends Command {
     final String? icon = argResults!['icon'];
     final String? description = argResults!['description'];
     final List<String> category = argResults!['category'];
+    final bool sudo = argResults!['sudo'];
 
     var shortcut = Shortcut(
-        name: name, executablePath: executablePath, icon: icon, comment: description, categories: category.join(';'));
+        name: name,
+        executablePath: executablePath,
+        icon: icon,
+        comment: description,
+        categories: category.join(';'),
+        sudo: sudo);
 
     await shortcut.create();
+
     Logger.info("Shortcut created successfully!");
     exit(success);
   }
