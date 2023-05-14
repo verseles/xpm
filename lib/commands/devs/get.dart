@@ -6,6 +6,7 @@ import 'package:args/command_runner.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dloader/dloader.dart';
 import 'package:interact/interact.dart' show Progress, Theme, ProgressState;
+import 'package:path/path.dart';
 import 'package:xpm/os/executable.dart';
 import 'package:xpm/os/move_to_bin.dart';
 import 'package:xpm/os/run.dart';
@@ -99,7 +100,7 @@ class GetCommand extends Command {
       fileName = destination.path.split("/").last;
     } else {
       Directory tempDir = await XPM.temp('downloads');
-      destination = File(tempDir.path + fileName);
+      destination = File(join(tempDir.path, fileName));
     }
     Logger.info("Destination: ${destination.path}");
 
