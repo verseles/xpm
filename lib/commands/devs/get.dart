@@ -60,9 +60,9 @@ class GetCommand extends Command {
 
     final String url = argResults!.rest[0];
 
-    final Aria2Adapter aria2Adapter = Aria2Adapter();
-    final CurlAdapter curlAdapter = CurlAdapter();
-    final WgetAdapter wgetAdapter = WgetAdapter();
+    // final Aria2Adapter aria2Adapter = Aria2Adapter();
+    // final CurlAdapter curlAdapter = CurlAdapter();
+    // final WgetAdapter wgetAdapter = WgetAdapter();
     final DioAdapter dioAdapter = DioAdapter();
 
     late final DloaderAdapter adapter;
