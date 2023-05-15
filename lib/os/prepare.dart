@@ -264,6 +264,12 @@ class Prepare {
       }
     }
 
+    print("hasMethod: $hasMethod");
+    print("package: ${package.name}");
+    print("methods: ${package.methods}");
+    print("defaults: ${package.defaults}");
+    print("hasDefault: ${package.defaults?.contains('pacman')}");
+
     return await bestForAny(to: to);
   }
 
