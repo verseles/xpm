@@ -17,7 +17,7 @@ class ShortcutCommand extends Command {
   ShortcutCommand() {
     argParser.addOption("name", abbr: "n", help: "Name of the application", valueHelp: 'name', mandatory: true);
 
-    argParser.addOption("path", abbr: "p", help: "Path of the executable", valueHelp: 'path', mandatory: true);
+    argParser.addOption("path", abbr: "p", help: "Path of the executable", valueHelp: 'path');
 
     argParser.addOption("icon", abbr: "i", help: "Name or path of the icon", valueHelp: 'name|path');
 
@@ -27,16 +27,20 @@ class ShortcutCommand extends Command {
         abbr: "c", help: "Categories, multiple times or once using comma", valueHelp: 'category[,category2]');
 
     argParser.addFlag('sudo', abbr: 's', help: 'Run as sudo', negatable: true, defaultsTo: true);
+
+    // Remove shortcut flag
+    argParser.addFlag('remove', abbr: 'r', help: 'Remove shortcut', negatable: false);
   }
 
   @override
   void run() async {
     final String name = argResults!['name'];
-    final String executablePath = argResults!['path'];
+    final String? executablePath = argResults!['path'];
     final String? icon = argResults!['icon'];
     final String? description = argResults!['description'];
     final List<String> category = argResults!['category'];
     final bool sudo = argResults!['sudo'];
+    final bool remove = argResults!['remove'];
 
     var shortcut = Shortcut(
         name: name,
@@ -46,9 +50,15 @@ class ShortcutCommand extends Command {
         categories: category.join(';'),
         sudo: sudo);
 
-    await shortcut.create();
+    if (remove) {
+      await shortcut.delete();
 
-    Logger.info("Shortcut created successfully!");
+      Logger.info("Shortcut removed.");
+    } else {
+      await shortcut.create();
+
+      Logger.info("Shortcut created.");
+    }
     exit(success);
   }
 }
