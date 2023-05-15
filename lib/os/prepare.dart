@@ -199,7 +199,8 @@ class Prepare {
       if (bestSwupd != null) {
         final String update = '${Global.sudoPath} $bestSwupd update';
         if (hasMethod) {
-          return '$update \n ${Global.sudoPath} $bestSwupd bundle-add -y ${package.name}';
+          final operation = to == 'install' ? 'bundle-add' : 'bundle-remove';
+          return '$update \n ${Global.sudoPath} $bestSwupd $operation -y ${package.name}';
         }
         return '$update \n ${to}_swupd "${Global.sudoPath} $bestSwupd"';
       }
@@ -227,7 +228,8 @@ class Prepare {
       if (bestApt != null) {
         final String update = '${Global.sudoPath} $bestApt update';
         if (hasMethod) {
-          return '$update \n ${Global.sudoPath} $bestApt install -y ${package.name}';
+          final operation = to == 'install' ? 'install' : 'remove';
+          return '$update \n ${Global.sudoPath} $bestApt $operation -y ${package.name}';
         }
         return '$update \n ${to}_apt "${Global.sudoPath} $bestApt -y"';
       }
@@ -255,7 +257,8 @@ class Prepare {
       if (bestArchLinux != null) {
         final String update = '${Global.sudoPath} $bestArchLinux -Sy';
         if (hasDefault) {
-          return '$update \n ${Global.sudoPath} $bestArchLinux --noconfirm -S ${package.name}';
+          final operation = to == 'install' ? '-S' : '-R';
+          return '$update \n ${Global.sudoPath} $bestArchLinux --noconfirm $operation ${package.name}';
         }
         return '$update \n ${to}_pacman "${Global.sudoPath} $bestArchLinux --noconfirm"';
       }
@@ -282,7 +285,8 @@ class Prepare {
       if (bestFedora != null) {
         final String update = '${Global.sudoPath} $bestFedora check-update';
         if (hasDefault) {
-          return '$update \n ${Global.sudoPath} $bestFedora -y install ${package.name}';
+          final operation = to == 'install' ? 'install' : 'remove';
+          return '$update \n ${Global.sudoPath} $bestFedora -y $operation ${package.name}';
         }
         return '$update \n ${to}_dnf "${Global.sudoPath} $bestFedora -y"';
       }
@@ -307,7 +311,8 @@ class Prepare {
       if (brew != null) {
         final String update = '$brew update';
         if (hasDefault) {
-          return '$update \n $brew install ${package.name}';
+          final operation = to == 'install' ? 'install' : 'uninstall';
+          return '$update \n $brew $operation ${package.name}';
         }
         return '$update \n ${to}_macos "$brew"';
       }
@@ -332,7 +337,8 @@ class Prepare {
       if (zypper != null) {
         final String update = '${Global.sudoPath} $zypper refresh';
         if (hasDefault) {
-          return '$update \n ${Global.sudoPath} $zypper --non-interactive install ${package.name}';
+          final operation = to == 'install' ? 'install' : 'remove';
+          return '$update \n ${Global.sudoPath} $zypper --non-interactive $operation ${package.name}';
         }
         return '$update \n ${to}_zypper "${Global.sudoPath} $zypper --non-interactive"';
       }
@@ -346,10 +352,10 @@ class Prepare {
   /// The [to] parameter is the installation target.
   Future<String> bestForAndroid({String to = 'install'}) async {
     final methods = package.methods ?? [];
-    final hasMethod = methods.contains('zypper');
+    final hasMethod = methods.contains('termux');
 
     final defaults = package.defaults ?? [];
-    final hasDefault = defaults.contains('zypper');
+    final hasDefault = defaults.contains('termux');
 
     if (hasMethod || hasDefault) {
       final pkg = await Executable('pkg').find(); // termux
@@ -357,7 +363,8 @@ class Prepare {
       if (pkg != null) {
         final String update = '${Global.sudoPath} $pkg update';
         if (hasDefault) {
-          return '$update \n ${Global.sudoPath} $pkg install -y ${package.name}';
+          final operation = to == 'install' ? 'install' : 'uninstall';
+          return '$update \n ${Global.sudoPath} $pkg $operation -y ${package.name}';
         }
         return '$update \n ${to}_android "${Global.sudoPath} $pkg -y"';
       }
@@ -385,7 +392,8 @@ class Prepare {
       if (choco != null) {
         bestWindows = '$choco -y';
         if (hasDefault) {
-          return '$choco install -y ${package.name}';
+          final operation = to == 'install' ? 'install' : 'uninstall';
+          return '$choco $operation -y ${package.name}';
         }
       } else if (scoop != null) {
         // @TODO add support for hasDefault "scoop"
@@ -537,9 +545,7 @@ readonly isAppImage="${Global.isAppImage}";
   /// The base script is a script that is included with the package and can be
   /// used to customize the installation process.
   Future<String> baseScriptContents() async {
-    if (!await baseScript.exists()) {
-      return '';
-    }
+    if (!await baseScript.exists()) return '';
 
     return await baseScript.readAsString();
   }
