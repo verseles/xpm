@@ -1,3 +1,5 @@
+## v0.31.0
+- fix apt bug hasDefault
 ## v0.28.0
 - refactor(get.dart): comment out unused adapter instances and change the declaration of adapter to be late-initialized
 ## v0.27.0
