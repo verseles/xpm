@@ -227,7 +227,7 @@ class Prepare {
 
       if (bestApt != null) {
         final String update = '${Global.sudoPath} $bestApt update';
-        if (hasMethod) {
+        if (hasDefault) {
           final operation = to == 'install' ? 'install' : 'remove';
           return '$update \n ${Global.sudoPath} $bestApt $operation -y ${package.name}';
         }
@@ -263,12 +263,6 @@ class Prepare {
         return '$update \n ${to}_pacman "${Global.sudoPath} $bestArchLinux --noconfirm"';
       }
     }
-
-    print("hasMethod: $hasMethod");
-    print("package: ${package.name}");
-    print("methods: ${package.methods}");
-    print("defaults: ${package.defaults}");
-    print("hasDefault: ${package.defaults?.contains('pacman')}");
 
     return await bestForAny(to: to);
   }
