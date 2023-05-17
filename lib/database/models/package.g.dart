@@ -2749,7 +2749,7 @@ extension PackageQuerySortThenBy on QueryBuilder<Package, Package, QSortThenBy> 
 }
 
 extension PackageQueryWhereDistinct on QueryBuilder<Package, Package, QDistinct> {
-  QueryBuilder<Package, Package, QDistinct> distinctByArch() {
+  QueryBuilder<Package, Package, QDistinct> distinctBxARCH() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'arch');
     });

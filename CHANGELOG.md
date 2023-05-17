@@ -1,3 +1,5 @@
+## v0.32.0
+- change Y variable to X; no more auto sudo for methods of install and remove
 ## v0.31.0
 - fix apt bug hasDefault
 ## v0.28.0

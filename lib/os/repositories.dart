@@ -141,7 +141,7 @@ class Repositories {
         final version = bashScript.get('xVERSION');
         final title = bashScript.get('xTITLE');
         final url = bashScript.get('xURL');
-        final archs = bashScript.getArray('xARCH');
+        final archs = bashScript.getArray('xARCHS');
         final defaults = bashScript.getArray('xDEFAULT');
 
         final installMethodFutures = XPM.installMethods.keys

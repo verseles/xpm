@@ -159,7 +159,7 @@ class Prepare {
   ///
   /// The [to] parameter is the installation target.
   Future<String> bestForPack({String to = 'install'}) async {
-    // @TODO: Add support for hasDefault
+    // @TODO: Add support for hasDefault and xSUDO and global update.
 
     final String? snap = await Executable('snap').find();
     final String? flatpak = await Executable('flatpak').find();
@@ -169,13 +169,13 @@ class Prepare {
 
     if (snap != null) {
       bestPack = snap;
-      Global.isSnap = true;
+      Global.hasSnap = true;
     } else if (flatpak != null) {
       bestPack = '$flatpak --assumeyes';
-      Global.isFlatpak = true;
+      Global.hasFlatpak = true;
     } else if (appimage != null) {
       bestPack = appimage;
-      Global.isAppImage = true;
+      Global.hasAppImage = true;
     }
 
     return bestPack != null ? '${to}_pack "$bestPack"' : await bestForAny(to: to);
@@ -198,11 +198,12 @@ class Prepare {
 
       if (bestSwupd != null) {
         final String update = '${Global.sudoPath} $bestSwupd update';
-        if (hasMethod) {
+        Global.updateCommand = update;
+        if (hasDefault) {
           final operation = to == 'install' ? 'bundle-add' : 'bundle-remove';
-          return '$update \n ${Global.sudoPath} $bestSwupd $operation -y ${package.name}';
+          return '${Global.sudoPath} $bestSwupd $operation -y ${package.name}';
         }
-        return '$update \n ${to}_swupd "${Global.sudoPath} $bestSwupd"';
+        return '${to}_swupd "$bestSwupd"';
       }
     }
 
@@ -227,11 +228,12 @@ class Prepare {
 
       if (bestApt != null) {
         final String update = '${Global.sudoPath} $bestApt update';
+        Global.updateCommand = update;
         if (hasDefault) {
           final operation = to == 'install' ? 'install' : 'remove';
-          return '$update \n ${Global.sudoPath} $bestApt $operation -y ${package.name}';
+          return '${Global.sudoPath} $bestApt $operation -y ${package.name}';
         }
-        return '$update \n ${to}_apt "${Global.sudoPath} $bestApt -y"';
+        return '${to}_apt "$bestApt -y"';
       }
     }
 
@@ -256,11 +258,12 @@ class Prepare {
 
       if (bestArchLinux != null) {
         final String update = '${Global.sudoPath} $bestArchLinux -Sy';
+        Global.updateCommand = update;
         if (hasDefault) {
           final operation = to == 'install' ? '-S' : '-R';
-          return '$update \n ${Global.sudoPath} $bestArchLinux --noconfirm $operation ${package.name}';
+          return '${Global.sudoPath} $bestArchLinux --noconfirm $operation ${package.name}';
         }
-        return '$update \n ${to}_pacman "${Global.sudoPath} $bestArchLinux --noconfirm"';
+        return '${to}_pacman "$bestArchLinux --noconfirm"';
       }
     }
 
@@ -284,11 +287,12 @@ class Prepare {
 
       if (bestFedora != null) {
         final String update = '${Global.sudoPath} $bestFedora check-update';
+        Global.updateCommand = update;
         if (hasDefault) {
           final operation = to == 'install' ? 'install' : 'remove';
-          return '$update \n ${Global.sudoPath} $bestFedora -y $operation ${package.name}';
+          return '${Global.sudoPath} $bestFedora -y $operation ${package.name}';
         }
-        return '$update \n ${to}_dnf "${Global.sudoPath} $bestFedora -y"';
+        return '${to}_dnf "$bestFedora -y"';
       }
     }
 
@@ -310,11 +314,12 @@ class Prepare {
 
       if (brew != null) {
         final String update = '$brew update';
+        Global.updateCommand = update;
         if (hasDefault) {
           final operation = to == 'install' ? 'install' : 'uninstall';
-          return '$update \n $brew $operation ${package.name}';
+          return '$brew $operation ${package.name}';
         }
-        return '$update \n ${to}_macos "$brew"';
+        return '${to}_macos "$brew"';
       }
     }
 
@@ -336,11 +341,12 @@ class Prepare {
 
       if (zypper != null) {
         final String update = '${Global.sudoPath} $zypper refresh';
+        Global.updateCommand = update;
         if (hasDefault) {
           final operation = to == 'install' ? 'install' : 'remove';
-          return '$update \n ${Global.sudoPath} $zypper --non-interactive $operation ${package.name}';
+          return '${Global.sudoPath} $zypper --non-interactive $operation ${package.name}';
         }
-        return '$update \n ${to}_zypper "${Global.sudoPath} $zypper --non-interactive"';
+        return '${to}_zypper "$zypper --non-interactive"';
       }
     }
 
@@ -362,11 +368,12 @@ class Prepare {
 
       if (pkg != null) {
         final String update = '${Global.sudoPath} $pkg update';
+        Global.updateCommand = update;
         if (hasDefault) {
           final operation = to == 'install' ? 'install' : 'uninstall';
-          return '$update \n ${Global.sudoPath} $pkg $operation -y ${package.name}';
+          return '${Global.sudoPath} $pkg $operation -y ${package.name}';
         }
-        return '$update \n ${to}_android "${Global.sudoPath} $pkg -y"';
+        return '${to}_android "$pkg -y"';
       }
     }
 
@@ -377,6 +384,8 @@ class Prepare {
   ///
   /// The [to] parameter is the installation target.
   Future<String> bestForWindows({String to = 'install'}) async {
+    // @TODO add support for global update (if possible)
+
     final methods = package.methods ?? [];
     final hasMethod = methods.contains('choco');
 
@@ -422,6 +431,8 @@ ${await dynamicCode()}
 ${await baseScriptContents()}
 
 ${await packageScript.contents()}
+
+${Global.updateCommand};
 
 ${await best(to: 'install')}
 ''';
@@ -519,24 +530,24 @@ validate "$bestValidateExecutable"
       executable += ' ${Platform.script.path}';
     }
 
-    String yOS = Platform.operatingSystem;
-    String yARCH = getArchitecture();
-    String yCHANNEL = args!['channel'] ?? '';
+    String xOS = Platform.operatingSystem;
+    String xARCH = getArchitecture();
+    String xCHANNEL = args!['channel'] ?? '';
 
-    String yTMP = (await XPM.temp(packageName)).path;
+    String xTMP = (await XPM.temp(packageName)).path;
 
     return '''
 readonly XPM="$executable";
-readonly yOS="$yOS";
-readonly yARCH="$yARCH";
-readonly yCHANNEL="$yCHANNEL";
-readonly yBIN="${binDirectory().path}";
-readonly yHOME="${XPM.userHome.path}";
-readonly yTMP="$yTMP";
-readonly ySUDO="${Global.sudoPath}";
-readonly isSnap="${Global.isSnap}";
-readonly isFlatpak="${Global.isFlatpak}";
-readonly isAppImage="${Global.isAppImage}";
+readonly xOS="$xOS";
+readonly xARCH="$xARCH";
+readonly xCHANNEL="$xCHANNEL";
+readonly xBIN="${binDirectory().path}";
+readonly xHOME="${XPM.userHome.path}";
+readonly xTMP="$xTMP";
+readonly xSUDO="${Global.sudoPath}";
+readonly hasSnap="${Global.hasSnap}";
+readonly hasFlatpak="${Global.hasFlatpak}";
+readonly hasAppImage="${Global.hasAppImage}";
 ''';
   }
 

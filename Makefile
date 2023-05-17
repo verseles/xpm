@@ -11,13 +11,14 @@ PKG ?= micro
 # auto, any, apt, brew, dnf, pacman, zypper
 MET ?= auto
 
-CACHE ?= 1
+# NO CACHE
+NC ?= false
 
 # Get latest release tag
 XTAG ?=$(shell curl -sL https://api.github.com/repos/verseles/xpm/releases/latest | jq -r '.tag_name')
 
 
-compile:
+build:
 	mkdir -p build
 	dart compile exe bin/xpm.dart -o build/xpm
 
@@ -29,8 +30,8 @@ test:
 
 validate:
 	echo "Validating package $(PKG) with $(MET) method on $(IMG) image... XPM"
-	docker build --build-arg XTAG=$(XTAG) -t xpm:$(IMG) -f docker/$(IMG)/Dockerfile . --no-cache=$(CACHE == 0)
-	docker run -it xpm:$(IMG) xpm install $(PKG) -m $(MET)
+	docker build --build-arg XTAG=$(XTAG) -t xpm:$(IMG) -f docker/$(IMG)/Dockerfile . $(if $(NC == true),--no-cache)
+	docker run -it xpm:$(IMG) /bin/sh -c "xpm ref && xpm install $(PKG) -m $(MET)"
 
 validate-all:
 	$(MAKE) validate IMG=ubuntu MET=auto
@@ -53,4 +54,4 @@ validate-all:
 	$(MAKE) validate IMG=clearlinux MET=swupd
 
 
-.PHONY: compile try test validate validate-all
+.PHONY: build try test validate validate-all

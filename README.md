@@ -81,7 +81,7 @@ readonly xDESC="A modern and intuitive terminal-based text editor"
 # The url of the package (OPTIONAL)
 readonly xURL="https://micro-editor.github.io"
 # The architecture supported by the package
-readonly xARCH=('linux64' 'linux32' 'linux-arm' 'linux-arm64' 'macos-arm64' 'macos' 'win32' 'win64' 'freebsd64' 'freebsd32' 'openbsd64' 'openbsd32' 'netbsd64' 'netbsd32')
+readonly xARCHS=('linux64' 'linux32' 'linux-arm' 'linux-arm64' 'macos-arm64' 'macos' 'win32' 'win64' 'freebsd64' 'freebsd32' 'openbsd64' 'openbsd32' 'netbsd64' 'netbsd32')
 # The license of the package, can be an url or a initialisms like MIT, BSD, etc.
 readonly xLICENSE="https://raw.githubusercontent.com/zyedidia/micro/v$xVERSION/LICENSE"
 # The name(s) of the binary file(s) generated (OPTIONAL)
@@ -107,34 +107,34 @@ install_apt() {
 `$XPM`
 Returns the path to the xpm binary.
 
-`$yCHANNEL`
+`$xCHANNEL`
 Returns the channel of the package, if it's a stable version, or a beta version, or a nightly version. Default is empty which means latest stable.
 
-`$yARCH`
+`$xARCH`
 Returns the current architecture of the system. For example: `x86_64`, `arm64`, `arm`, etc.
 
-`$yOS`
+`$xOS`
 Returns the current operating system. For example: `linux`, `macos`, `windows`, `android`, etc.
 
-`$yBIN`
+`$xBIN`
 Returns the binary folder of the system. For example: `/usr/bin`, `/usr/local/bin`, `/data/data/com.termux/files/usr/bin`, etc.
 
-`$yHOME`
+`$xHOME`
 Returns the home folder of the system. For example: `/home/user`, `/data/data/com.termux/files/home`, `/Users/user`, `/root`, etc.
 
-`$yTMP`
+`$xTMP`
 Returns the temporary folder of the system. For example: `/tmp`, `/data/data/com.termux/files/usr/tmp`, `/var/tmp`, etc.
 
-`$ySUDO`
+`$xSUDO`
 Returns the sudo command if available, otherwise returns empty.
 
-`$isSnap`
+`$hasSnap`
 Returns `true` if the system has snap installed, otherwise returns `false`.
 
-`$isFlatpak`
+`$hasFlatpak`
 Returns `true` if the system has flatpak installed, otherwise returns `false`.
 
-`$isAppImage`
+`$hasAppImage`
 Returns `true` if the system has appimage installed, otherwise returns `false`.
 
 ### Functions available
@@ -170,8 +170,8 @@ These functions are called if the system has `snap` or `flatpak` or `appimage` i
 if [[ $isFlatpack == true ]]; then 
     $1 uninstall $xNAME # with --assumeyes
     exit 1
-elif [[ $isAppimage == true ]]; then 
-    rm -f $yHOME/.local/share/appimagekit/$xNAME
+elif [[ $hasAppImage == true ]]; then 
+    rm -f $xHOME/.local/share/appimagekit/$xNAME
     exit 1
 else
     $1 remove $xNAME # snap with --yes
@@ -273,7 +273,7 @@ readonly xVERSION="113.0.1"
 readonly xTITLE="Mozilla Firefox"
 readonly xDESC="A free and open-source web browser developed by the Mozilla Foundation and its subsidiary, the Mozilla Corporation"
 readonly xURL="https://www.mozilla.org/firefox"
-readonly xARCH=('linux64' 'linux32' 'linux-arm' 'linux-arm64' 'macos-arm64' 'macos' 'win32' 'win64' 'freebsd64' 'freebsd32' 'openbsd64' 'openbsd32' 'netbsd64' 'netbsd32')
+readonly xARCHS=('linux64' 'linux32' 'linux-arm' 'linux-arm64' 'macos-arm64' 'macos' 'win32' 'win64' 'freebsd64' 'freebsd32' 'openbsd64' 'openbsd32' 'netbsd64' 'netbsd32')
 readonly xLICENSE="MPL GPL LGPL"
 readonly xPROVIDES=("firefox")
 
@@ -286,15 +286,15 @@ validate() {
 install_any() {
     local file
     file="$($XPM get "http://archive.mozilla.org/pub/firefox/releases/$xVERSION/linux-x86_64/en-US/firefox-$xVERSION.tar.bz2" --no-progress --no-user-agent --name="$xNAME-$xVERSION.tar.bz2")"
-    $ySUDO mkdir -p "/opt/$xNAME"
-    $ySUDO tar xvf "$file" -C "/opt"
-    $ySUDO ln -sf "/opt/$xNAME/$xNAME" "$yBIN/$xNAME"
+    $xSUDO mkdir -p "/opt/$xNAME"
+    $xSUDO tar xvf "$file" -C "/opt"
+    $xSUDO ln -sf "/opt/$xNAME/$xNAME" "$xBIN/$xNAME"
     $XPM shortcut --name="$xNAME" --path="$xNAME" --icon="/opt/$xNAME/browser/chrome/icons/default/default128.png" --description="$xDESC" --category="Network"
 }
 
 remove_any() {
-    $ySUDO rm -rf "/opt/$xNAME"
-    $ySUDO rm -f "$yBIN/$xNAME"
+    $xSUDO rm -rf "/opt/$xNAME"
+    $xSUDO rm -f "$xBIN/$xNAME"
     $XPM shortcut --remove --name="$xNAME"
 }
 
@@ -316,7 +316,7 @@ readonly xVERSION="2.0.11"
 readonly xTITLE="Micro Text Editor"
 readonly xDESC="A modern and intuitive terminal-based text editor"
 readonly xURL="https://micro-editor.github.io"
-readonly xARCH=('linux64' 'linux32' 'linux-arm' 'linux-arm64' 'macos-arm64' 'macos' 'win32' 'win64' 'freebsd64' 'freebsd32' 'openbsd64' 'openbsd32' 'netbsd64' 'netbsd32')
+readonly xARCHS=('linux64' 'linux32' 'linux-arm' 'linux-arm64' 'macos-arm64' 'macos' 'win32' 'win64' 'freebsd64' 'freebsd32' 'openbsd64' 'openbsd32' 'netbsd64' 'netbsd32')
 readonly xLICENSE="https://raw.githubusercontent.com//v$xVERSION/LICENSE"
 readonly xPROVIDES=("micro")
 
@@ -326,14 +326,14 @@ readonly xPROVIDES=("micro")
 readonly xDEFAULT=('apt' 'pacman' 'dnf' 'choco' 'brew' 'termux')
 
 # variables which is dinamically set and available for use
-# $yCHANNEL
+# $xCHANNEL
 #  the default channel is empty, which means the latest stable version
 #  user can change using -c or --channel flag
-# $isSnap, $isFlatpack, $isAppimage
+# $hasSnap, $isFlatpack, $hasAppImage
 #  these boolean variables are set to true if the package manager is available and selected
 # $XPM is the path to xpm executable
-# $ySUDO is the sudo command, if available. Most commands already add sudo if available
-# $yBIN is the path to first bin folder on PATH.
+# $xSUDO is the sudo command, if available. Most commands already add sudo if available
+# $xBIN is the path to first bin folder on PATH.
 
 # the only required function is validate. install_any and remove_any are very important, but not required.
 validate() { # $1 is the path to executable from $xPROVIDES (if defined) or $xNAME
@@ -379,12 +379,12 @@ remove_dnf() {       # $1 means dnf compatible with -y, with sudo if available
 
 # update commands will be called before install_pack and remove_pack
 install_pack() { # $1 means an executable compatible with snap, flatpack or appimage
-	# $isSnap, $isFlatpack, $isAppimage are available as boolean
+	# $hasSnap, $isFlatpack, $hasAppImage are available as boolean
 	# shellcheck disable=SC2154
 	if [[ $isFlatpack == true ]]; then # actually micro is not available on flatpack
 		# $1 install $xNAME                   # with --assumeyes
 		return 1
-	elif [[ $isAppimage == true ]]; then # actually micro is not available on appimage
+	elif [[ $hasAppImage == true ]]; then # actually micro is not available on appimage
 		# $1 install $xNAME
 		return 1
 	else # snap
@@ -393,12 +393,12 @@ install_pack() { # $1 means an executable compatible with snap, flatpack or appi
 }
 
 remove_pack() {
-	# $isSnap, $isFlatpack, $isAppimage are available as boolean
+	# $hasSnap, $isFlatpack, $hasAppImage are available as boolean
 	# shellcheck disable=SC2154
 	if [[ $isFlatpack == true ]]; then # actually micro is not available on flatpack
 		# $1 uninstall $xNAME                 # with --assumeyes
 		exit 1
-	elif [[ $isAppimage == true ]]; then # actually micro is not available on appimage
+	elif [[ $hasAppImage == true ]]; then # actually micro is not available on appimage
 		# rm -f ~/.local/share/appimagekit/$xNAME
 		exit 1
 	else
