@@ -1,3 +1,5 @@
+## v0.33.0
+- add support for sudo when using pacman package manager in bestForArch method; working update command
 ## v0.32.0
 - change Y variable to X; no more auto sudo for methods of install and remove
 ## v0.31.0

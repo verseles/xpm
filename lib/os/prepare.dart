@@ -244,6 +244,8 @@ class Prepare {
   ///
   /// The [to] parameter is the installation target.
   Future<String> bestForArch({String to = 'install'}) async {
+    String needsSudo = '';
+
     final methods = package.methods ?? [];
     final hasMethod = methods.contains('pacman');
 
@@ -257,13 +259,16 @@ class Prepare {
       String? bestArchLinux = paru ?? yay ?? pacman;
 
       if (bestArchLinux != null) {
+        if (bestArchLinux == pacman) {
+          needsSudo = Global.sudoPath;
+        }
         final String update = '${Global.sudoPath} $bestArchLinux -Sy';
         Global.updateCommand = update;
         if (hasDefault) {
           final operation = to == 'install' ? '-S' : '-R';
-          return '${Global.sudoPath} $bestArchLinux --noconfirm $operation ${package.name}';
+          return '$needsSudo $bestArchLinux --noconfirm $operation ${package.name}';
         }
-        return '${to}_pacman "$bestArchLinux --noconfirm"';
+        return '${to}_pacman "$needsSudo $bestArchLinux --noconfirm"';
       }
     }
 
@@ -423,18 +428,26 @@ class Prepare {
   Future<String> toInstall() async {
     await boot();
 
+    final dynamicCode = await this.dynamicCode();
+
+    final baseScriptContents = await this.baseScriptContents();
+
+    final packageScriptContents = await packageScript.contents();
+
+    final bestFor = await best(to: 'install');
+
     String togetherContents = '''
 #!/usr/bin/env bash
 
-${await dynamicCode()}
+$dynamicCode
 
-${await baseScriptContents()}
+$baseScriptContents
 
-${await packageScript.contents()}
+$packageScriptContents
 
-${Global.updateCommand};
+${Global.updateCommand}
 
-${await best(to: 'install')}
+$bestFor
 ''';
 
     final togetherFile = await writeThisBeast(togetherContents);
