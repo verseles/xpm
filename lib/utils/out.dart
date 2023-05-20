@@ -22,5 +22,8 @@ void out(String message,
     VariableStyle? style,
     VariableResolver? resolver}) {
   final output = error ? stderr : stdout;
+
   output.writeln(format(message, args: args, replace: replace, style: style, resolver: resolver));
+
+  // exit does not work here since the write process is non-blocking (async)
 }

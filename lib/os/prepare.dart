@@ -25,6 +25,9 @@ class Prepare {
   static final String distro = osRelease('ID') ?? Platform.operatingSystem;
   static final List distroLike = (osRelease('ID_LIKE') ?? '').split(" ");
 
+  late final String preferredMethod;
+  late final bool forceMethod;
+
   late final String repoSlug, packageName;
   late final Future<Directory> cacheRepoDir;
   late final Future<Directory> packageDir;
@@ -42,6 +45,10 @@ class Prepare {
   /// Initializes the class by setting some properties and loading the package script.
   Future<void> boot() async {
     if (booted) return;
+
+    preferredMethod = args?['method'] ?? 'auto';
+    forceMethod = args!['force-method'];
+
     repoSlug = repo.url.slugify();
     packageName = package.name;
     cacheRepoDir = XPM.cacheDir("repos/$repoSlug/$packageName");
@@ -76,14 +83,11 @@ class Prepare {
   Future<String> best({to = 'install'}) async {
     await boot();
 
-    final String preferedMethod = args?['method'] ?? 'auto';
-    final bool forceMethod = args!['force-method'];
-
     if (forceMethod) {
-      if (preferedMethod == 'auto') {
+      if (preferredMethod == 'auto') {
         leave(message: 'Use --force-method with --method=', exitCode: wrongUsage);
       }
-      switch (preferedMethod) {
+      switch (preferredMethod) {
         case 'any':
           return bestForAny(to: to);
         case 'pack':
@@ -105,21 +109,21 @@ class Prepare {
         case 'swupd':
           return bestForClearLinux(to: to);
         default:
-          leave(message: 'Unknown method: $preferedMethod', exitCode: notFound);
+          leave(message: 'Unknown method: $preferredMethod', exitCode: notFound);
       }
     }
 
-    if (preferedMethod == 'any') return bestForAny(to: to);
+    if (preferredMethod == 'any') return bestForAny(to: to);
 
-    if (preferedMethod == 'apt' || distro == 'debian' || distroLike.contains('debian')) {
+    if (preferredMethod == 'apt' || distro == 'debian' || distroLike.contains('debian')) {
       return bestForApt(to: to);
     }
 
-    if (preferedMethod == 'pacman' || distroLike.contains('arch')) {
+    if (preferredMethod == 'pacman' || distroLike.contains('arch')) {
       return bestForArch(to: to);
     }
 
-    if (preferedMethod == 'dnf' ||
+    if (preferredMethod == 'dnf' ||
         distro == 'fedora' ||
         distro == 'rhel' ||
         distroLike.contains('rhel') ||
@@ -127,23 +131,23 @@ class Prepare {
       return bestForFedora(to: to);
     }
 
-    if (preferedMethod == 'android' || distro == 'android') {
+    if (preferredMethod == 'android' || distro == 'android') {
       return bestForAndroid(to: to);
     }
 
-    if (preferedMethod == 'zypper' || distro == 'opensuse' || distro == 'sles') {
+    if (preferredMethod == 'zypper' || distro == 'opensuse' || distro == 'sles') {
       return bestForOpenSUSE(to: to);
     }
 
-    if (preferedMethod == 'brew' || distro == 'macos') {
+    if (preferredMethod == 'brew' || distro == 'macos') {
       return bestForMacOS(to: to);
     }
 
-    if (preferedMethod == 'choco' || distro == 'windows') {
+    if (preferredMethod == 'choco' || distro == 'windows') {
       return bestForWindows(to: to);
     }
 
-    if (preferedMethod == 'swupd' || distro == 'clear-linux-os' || distroLike.contains('clear-linux-os')) {
+    if (preferredMethod == 'swupd' || distro == 'clear-linux-os' || distroLike.contains('clear-linux-os')) {
       return bestForClearLinux(to: to);
     }
 
@@ -178,7 +182,13 @@ class Prepare {
       Global.hasAppImage = true;
     }
 
-    return bestPack != null ? '${to}_pack "$bestPack"' : await bestForAny(to: to);
+    if (bestPack != null) {
+      return '${to}_pack "$bestPack"';
+    }
+
+    stopIfForcedMethodNotFound();
+
+    return await bestForAny(to: to);
   }
 
   /// Determines the best installation method for Clear Linux OS.
@@ -206,6 +216,8 @@ class Prepare {
         return '${to}_swupd "$bestSwupd"';
       }
     }
+
+    stopIfForcedMethodNotFound();
 
     return await bestForAny(to: to);
   }
@@ -237,6 +249,8 @@ class Prepare {
       }
     }
 
+    stopIfForcedMethodNotFound();
+
     return await bestForAny(to: to);
   }
 
@@ -244,6 +258,7 @@ class Prepare {
   ///
   /// The [to] parameter is the installation target.
   Future<String> bestForArch({String to = 'install'}) async {
+    /// Here can be the path to sudo if the package manager is pacman, others ask for sudo automatically.
     String needsSudo = '';
 
     final methods = package.methods ?? [];
@@ -271,6 +286,8 @@ class Prepare {
         return '${to}_pacman "$needsSudo $bestArchLinux --noconfirm"';
       }
     }
+
+    stopIfForcedMethodNotFound();
 
     return await bestForAny(to: to);
   }
@@ -301,6 +318,8 @@ class Prepare {
       }
     }
 
+    stopIfForcedMethodNotFound();
+
     return await bestForAny(to: to);
   }
 
@@ -327,6 +346,8 @@ class Prepare {
         return '${to}_macos "$brew"';
       }
     }
+
+    stopIfForcedMethodNotFound();
 
     return await bestForAny(to: to);
   }
@@ -355,6 +376,10 @@ class Prepare {
       }
     }
 
+    if (forceMethod) {
+      leave(message: 'No suitable package manager found. [FORCED: $preferredMethod]', exitCode: notFound);
+    }
+
     return await bestForAny(to: to);
   }
 
@@ -381,6 +406,8 @@ class Prepare {
         return '${to}_android "$pkg -y"';
       }
     }
+
+    stopIfForcedMethodNotFound();
 
     return await bestForAny(to: to);
   }
@@ -418,6 +445,8 @@ class Prepare {
         return '${to}_windows "$bestWindows"';
       }
     }
+
+    stopIfForcedMethodNotFound();
 
     throw Exception('No package manager found for Windows');
   }
@@ -572,5 +601,11 @@ readonly hasAppImage="${Global.hasAppImage}";
     if (!await baseScript.exists()) return '';
 
     return await baseScript.readAsString();
+  }
+
+  void stopIfForcedMethodNotFound() {
+    if (forceMethod) {
+      Logger.error('No method found for forced installation using $preferredMethod.', exitCode: notFound);
+    }
   }
 }
