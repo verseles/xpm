@@ -1,12 +1,11 @@
 name: Releases
 
 on:
-  push:
-    tags:
-      - "v[0-9]+.[0-9]+.[0-9]+*"
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
 
 jobs:
-
   build:
     runs-on: ${{ matrix.os }}
     permissions:
@@ -21,10 +20,10 @@ jobs:
         uses: dart-lang/setup-dart@v1
       - name: Get dependencies
         run: dart pub get
-      - name: Analyze
-        run: dart analyze
-      - name: Test
-        run: dart test --exclude-tags=skip-ci
+      # - name: Analyze
+      #   run: dart analyze
+      # - name: Test
+      #   run: dart test --exclude-tags=skip-ci
 
       - name: Compile on ${{ matrix.os }}
         if: runner.os != 'Windows'
@@ -47,3 +46,13 @@ jobs:
           fail_on_unmatched_files: false
           append_body: true
           files: build/xpm-*
+  notify:
+    name: Notify the commit on Telegram
+    runs-on: ubuntu-latest
+    if: always()
+    needs: build
+    steps:
+      - uses: EverythingSuckz/github-telegram-notify@main
+        with:
+          bot_token: "${{ secrets.BOT_TOKEN }}"
+          chat_id: "${{ secrets.CHAT_ID }}"
