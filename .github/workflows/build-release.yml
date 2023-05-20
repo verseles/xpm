@@ -46,13 +46,3 @@ jobs:
           fail_on_unmatched_files: false
           append_body: true
           files: build/xpm-*
-  notify:
-    name: Notify the commit on Telegram
-    runs-on: ubuntu-latest
-    if: always()
-    needs: build
-    steps:
-      - uses: EverythingSuckz/github-telegram-notify@main
-        with:
-          bot_token: "${{ secrets.BOT_TOKEN }}"
-          chat_id: "${{ secrets.CHAT_ID }}"
