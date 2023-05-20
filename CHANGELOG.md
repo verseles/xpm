@@ -1,3 +1,5 @@
+## v0.35.0
+- Testing new build release system
 ## v0.34.0
 - better error messages when forced method not found
 ## v0.33.0
