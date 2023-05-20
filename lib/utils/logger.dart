@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:all_exit_codes/all_exit_codes.dart';
 import 'package:xpm/utils/out.dart';
 
 /// A class for logging messages to the console.
@@ -45,14 +44,14 @@ class Logger {
   /// Logs an error [message] in red.
   /// If [error] is true, the message will be output to stderr.
   /// If [exitCode] is not null, the process will exit with the given exit code.
-  static String error(String message, {bool error = true, int? exitCode = generalError}) {
+  static String error(String message, {bool error = true, int? exitCode}) {
     String output = '{@red}[ERROR] $message{@end}';
     out(output, error: error);
 
     if (exitCode != null) {
       exit(exitCode);
     }
-    
+
     // Return for testing.
     return output;
   }

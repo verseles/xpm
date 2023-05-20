@@ -1,3 +1,5 @@
+## v0.34.0
+- better error messages when forced method not found
 ## v0.33.0
 - add support for sudo when using pacman package manager in bestForArch method; working update command
 ## v0.32.0
