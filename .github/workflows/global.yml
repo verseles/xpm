@@ -25,7 +25,8 @@ jobs:
       contents: write
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        # os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
