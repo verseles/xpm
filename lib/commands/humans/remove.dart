@@ -111,9 +111,6 @@ class RemoveCommand extends Command {
       } on ShellException catch (_) {
         // If the package is not installed, the validation should pass
       }
-
-      await sharedStdIn.terminate();
-
       // Update the local database to reflect the removal.
       await db.writeTxn(() async {
         packageInDB.installed = null;
@@ -123,5 +120,6 @@ class RemoveCommand extends Command {
       // Log the result of the removal.
       Logger.success('Successfully removed "$packageRequested".');
     }
+    sharedStdIn.terminate();
   }
 }

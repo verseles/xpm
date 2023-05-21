@@ -130,7 +130,6 @@ class InstallCommand extends Command {
       }
 
       // Update the local database to reflect the installation.
-      sharedStdIn.terminate();
       await db.writeTxn(() async {
         packageInDB.installed = packageInDB.version;
         await db.packages.put(packageInDB);
@@ -143,5 +142,6 @@ class InstallCommand extends Command {
         Logger.success('Successfully installed "$packageRequested".');
       }
     }
+    sharedStdIn.terminate();
   }
 }
