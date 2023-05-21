@@ -76,7 +76,7 @@ class RemoveCommand extends Command {
         leave(message: 'Package "{@gold}$packageRequested{@end}" not found.', exitCode: cantExecute);
       }
 
-      if (packageInDB.installed == null) {
+      if (packageInDB.installed == null && !argResults!['force']) {
         // Check if the package is installed in the system but not for me.
         leave(message: 'Package "{@gold}$packageRequested{@end}" is not installed.', exitCode: cantExecute);
       }

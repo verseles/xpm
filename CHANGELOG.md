@@ -1,3 +1,5 @@
+## v0.40.0
+- Implemented -f --force option to force removal of apps
 ## v0.39.0
 - Added -f --force option to force removal of apps
 ## v0.38.0
