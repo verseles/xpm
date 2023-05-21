@@ -5,12 +5,14 @@ XPM is a package manager for unix systems like Linux, BSD, MacOS, etc. It can be
 
 ### Our key values
 
-- Easy to install, update, remove and search (and filter)
+- Easy to install, update, upgrade, remove, search (and filter)
 - No questions asked, can run in a non-interactive way
 - Easy to create new installers or a full repository
 - Be agnostic, following unix standards and relying on very known tools
-- Include many popular distros, and macOS
+- Include many popular distros, including macOS and Android (termux)
 - Prefer native pm way and falls back to xpm way
+
+> Consider XPM as **release candidate** in Linux, **beta** in macOS, and **alpha** in Windows. It's not ready for production, but it's ready for testing and feedback.
   
 ## Installation
 
@@ -85,22 +87,22 @@ readonly xARCHS=('linux64' 'linux32' 'linux-arm' 'linux-arm64' 'macos-arm64' 'ma
 # The license of the package, can be an url or a initialisms like MIT, BSD, etc.
 readonly xLICENSE="https://raw.githubusercontent.com/zyedidia/micro/v$xVERSION/LICENSE"
 # The name(s) of the binary file(s) generated (OPTIONAL)
-# If not informed, the xNAME variable will be used in validate() function
+# If not informed, the xNAME variable will be used in validate() function as $1
 readonly xPROVIDES=("micro")
 
-# If you inform here, there is no need to implement install_apt() and remove_apt(), the same for pacman, dnf, etc. Because xpm will use the xDEFAULT variable to call the most standard command to install. 
+# If you inform here, there is no need to implement install_apt() and remove_apt(), the same for pacman, dnf, etc. Because xpm will use the xDEFAULT variable to call the most standard command to install. This is optional, but highly recommended. And will be helpful in the future for bulk installs.
 readonly xDEFAULT=('apt' 'pacman' 'dnf' 'choco' 'brew' 'termux')
 ```
 ### Variables available
 The following variables are provided by xpm to the installer script, and are optional to use:
 
 `$1` inside every function which starts with `install_` or `remove_`. 
-Returns path to the package manager binary available (apt, pacman, dnf, xpm) it comes with some flags like -y and add sudo if available.
+Returns path to the package manager binary available (apt, pacman, dnf, etc) it comes with some flags like -y for non-interactive install, sudo is automatically added for pacman, and for most update commands. For example: `apt install -y micro` or `sudo pacman -S micro`.
 
 example:
 ```bash
 install_apt() {
-	$1 install $xNAME # with -y, with sudo if available
+	$1 install $xNAME # with -y, with sudo (specially case for pacman)
 }
 ```
 
@@ -116,6 +118,18 @@ Returns the current architecture of the system. For example: `x86_64`, `arm64`, 
 `$xOS`
 Returns the current operating system. For example: `linux`, `macos`, `windows`, `android`, etc.
 
+`$isLinux`
+Returns `true` if the system is linux, otherwise returns `false`.
+
+`$isMacOS`
+Returns `true` if the system is macos, otherwise returns `false`.
+
+`$isWindows`
+Returns `true` if the system is windows, otherwise returns `false`.
+
+`$isAndroid`
+Returns `true` if the system is android, otherwise returns `false`.
+
 `$xBIN`
 Returns the binary folder of the system. For example: `/usr/bin`, `/usr/local/bin`, `/data/data/com.termux/files/usr/bin`, etc.
 
@@ -123,28 +137,26 @@ Returns the binary folder of the system. For example: `/usr/bin`, `/usr/local/bi
 Returns the home folder of the system. For example: `/home/user`, `/data/data/com.termux/files/home`, `/Users/user`, `/root`, etc.
 
 `$xTMP`
-Returns the temporary folder of the system. For example: `/tmp`, `/data/data/com.termux/files/usr/tmp`, `/var/tmp`, etc.
+Returns a the temporary folder of the system. For example: `/tmp/[package]`, `/data/data/com.termux/files/usr/tmp/[package]`, `/var/tmp/[package]`, etc.
 
 `$xSUDO`
 Returns the sudo command if available, otherwise returns empty.
 
-`$hasSnap`
-Returns `true` if the system has snap installed, otherwise returns `false`.
-
 `$hasFlatpak`
-Returns `true` if the system has flatpak installed, otherwise returns `false`.
+Returns `true` if the system has flatpak installed, otherwise returns `false`. If `true`, the `$1` variable is the path to the flatpak binary. If flatpak and snap are installed, flatpak takes precedence.
 
-`$hasAppImage`
-Returns `true` if the system has appimage installed, otherwise returns `false`.
+`$hasSnap`
+Returns `true` if the system has snap installed, otherwise returns `false`. If `true`, the `$1` variable is the path to the snap binary.
+
 
 ### Functions available
 `validate()`
-This function is required and must be implemented. It should validate if the package is installed or not. If the package is installed, it should return 0, otherwise, it should return non-zero.
+This function is the only required and must be implemented. It should validate if the package is installed or not. If the package is installed, it should return 0, otherwise, it should return non-zero. $1 is $xNAME, or $xPROVIDES if it is informed.
 
 The following functions can be used by the installer script, and are optional to use:
 
 `install_any()` and `remove_any()`
-These functions are called if no better option is available. It is the most techinical function because let you use anything to install/uninstall in any unix-like system and should not rely in any other package manager, only XPM and its commands available. We recommend to use well known unix tools like, `cp`, `mv`, `wget`, `curl`, `tar`, `gzip`, etc.
+These functions are called if no better option is available. It is the most techinical function because let you use anything to install/uninstall in any unix-like system and should not rely in any other package manager, only XPM and its commands available. We recommend to use well known unix tools like, `cp`, `mv`, `wget`, `curl`, `tar`, `gzip`, etc. And you can always use $XPM commands that keeping growing.
 
 `install_apt()` and `remove_apt()`
 These functions are called if the system has `apt` package manager installed. It should install/uninstall the package using apt. `$1` is the path to the `apt` (or similar) binary, and alread includes `-y` and `sudo` if available.
@@ -165,16 +177,12 @@ Same as above, but for choco (or scoop).
 Same as above, but for termux.
 
 `install_pack` and `remove_pack`
-These functions are called if the system has `snap` or `flatpak` or `appimage` installed. It should install/uninstall the package using snap/flatpak/appimage. `$1` is the path to the snap/flatpak/appimage binary. You should check what is available in the system before using it. Example:
+These functions are called if the system has `flatpak` or `snap` installed. It should install/uninstall the package using flatpak/snap. `$1` is the path to the flatpak/snap binary. You should check what is available in the system before using it. If one or another is not available for the current app you should remove/adapt the function. For example:
 ```bash
 if [[ $hasFlatpak == true ]]; then 
     $1 uninstall $xNAME # with --assumeyes
-    exit 1
-elif [[ $hasAppImage == true ]]; then 
-    rm -f $xHOME/.local/share/appimagekit/$xNAME
-    exit 1
-else
-    $1 remove $xNAME # snap with --yes
+elif [[ $hasSnap == true ]]; then 
+	$1 remove $xNAME # snap with --yes   
 fi
 ```
 
@@ -329,7 +337,7 @@ readonly xDEFAULT=('apt' 'pacman' 'dnf' 'choco' 'brew' 'termux')
 # $xCHANNEL
 #  the default channel is empty, which means the latest stable version
 #  user can change using -c or --channel flag
-# $hasSnap, $hasFlatpak, $hasAppImage
+# $hasFlatpak, $hasSnap, 
 #  these boolean variables are set to true if the package manager is available and selected
 # $XPM is the path to xpm executable
 # $xSUDO is the sudo command, if available. Most commands already add sudo if available
@@ -378,31 +386,18 @@ remove_dnf() {       # $1 means dnf compatible with -y, with sudo if available
 }
 
 # update commands will be called before install_pack and remove_pack
-install_pack() { # $1 means an executable compatible with snap, flatpack or appimage
-	# $hasSnap, $hasFlatpak, $hasAppImage are available as boolean
+install_pack() { # $1 means an executable compatible with flatpack or snap
+	# $hasSnap and $hasFlatpak are available as boolean
 	# shellcheck disable=SC2154
-	if [[ $hasFlatpak == true ]]; then # actually micro is not available on flatpack
-		# $1 install $xNAME                   # with --assumeyes
-		return 1
-	elif [[ $hasAppImage == true ]]; then # actually micro is not available on appimage
-		# $1 install $xNAME
-		return 1
-	else # snap
-		$1 install $xNAME
+	if [[ $hasSnap == true ]]; then
+		$1 install --classic $xNAME  # with --assumeyes
 	fi
 }
 
 remove_pack() {
-	# $hasSnap, $hasFlatpak, $hasAppImage are available as boolean
 	# shellcheck disable=SC2154
-	if [[ $hasFlatpak == true ]]; then # actually micro is not available on flatpack
-		# $1 uninstall $xNAME                 # with --assumeyes
-		exit 1
-	elif [[ $hasAppImage == true ]]; then # actually micro is not available on appimage
-		# rm -f ~/.local/share/appimagekit/$xNAME
-		exit 1
-	else
-		$1 remove $xNAME
+	if [[ $hasSnap == true ]]; then
+		$1 remove $xNAME # with --assumeyes
 	fi
 }
 

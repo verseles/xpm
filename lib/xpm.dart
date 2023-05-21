@@ -20,7 +20,7 @@ class XPM {
         'auto': 'Automatically choose the best method or fallsback to [any].',
         'any': 'Use the generic method. Sometimes this is the best method.',
         'apt': 'Use apt or apt-like package manager.',
-        'pack': 'Use snap, flatpak or appimage.',
+        'pack': 'Use flatpak or snap (automatically).',
         'brew': 'Use brew or brew-like package manager.',
         'choco': 'Use choco or choco-like package manager.',
         'dnf': 'Use dnf or dnf-like package manager.',

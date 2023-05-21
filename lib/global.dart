@@ -4,9 +4,6 @@ bool _hasSnap = false;
 /// A boolean value indicating whether the current environment is a Flatpak environment.
 bool _hasFlatpak = false;
 
-/// A boolean value indicating whether the current environment is an AppImage environment.
-bool _hasAppImage = false;
-
 /// The path to the sudo command.
 String _sudoPath = '';
 
@@ -20,7 +17,6 @@ class Global {
     _hasSnap = value;
     if (value) {
       _hasFlatpak = false;
-      _hasAppImage = false;
     }
   }
 
@@ -30,17 +26,6 @@ class Global {
     _hasFlatpak = value;
     if (value) {
       _hasSnap = false;
-      _hasAppImage = false;
-    }
-  }
-
-  /// Gets or sets a value indicating whether the current environment is an AppImage environment.
-  static bool get hasAppImage => _hasAppImage;
-  static set hasAppImage(bool value) {
-    _hasAppImage = value;
-    if (value) {
-      _hasSnap = false;
-      _hasFlatpak = false;
     }
   }
 

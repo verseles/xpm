@@ -1,3 +1,5 @@
+## v0.50.0
+- completely removed appimage weird support and updated readme. fix #97
 ## v0.49.0
 - fix support for macos
 ## v0.48.0

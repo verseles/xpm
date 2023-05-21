@@ -177,15 +177,11 @@ class Prepare {
 
     final String? snap = await Executable('snap').find();
     final String? flatpak = await Executable('flatpak').find();
-    final String? appimage = await Executable('appimage').find();
 
     late final String? bestPack;
     if (flatpak != null) {
       bestPack = '$flatpak --noninteractive';
       Global.hasFlatpak = true;
-    } else if (appimage != null) {
-      bestPack = appimage;
-      Global.hasAppImage = true;
     } else if (snap != null) {
       bestPack = snap;
       Global.hasSnap = true;
@@ -570,6 +566,11 @@ validate "$bestValidateExecutable"
     }
 
     String xOS = Platform.operatingSystem;
+    bool isWindows = xOS == 'windows';
+    bool isLinux = xOS == 'linux';
+    bool isMacOS = xOS == 'macos';
+    bool isAndroid = xOS == 'android';
+
     String xARCH = getArchitecture();
     String xCHANNEL = args!['channel'] ?? '';
 
@@ -578,6 +579,10 @@ validate "$bestValidateExecutable"
     return '''
 readonly XPM="$executable";
 readonly xOS="$xOS";
+readonly isWindows="$isWindows";
+readonly isLinux="$isLinux";
+readonly isMacOS="$isMacOS";
+readonly isAndroid="$isAndroid";
 readonly xARCH="$xARCH";
 readonly xCHANNEL="$xCHANNEL";
 readonly xBIN="${binDirectory().path}";
@@ -586,7 +591,6 @@ readonly xTMP="$xTMP";
 readonly xSUDO="${Global.sudoPath}";
 readonly hasSnap="${Global.hasSnap}";
 readonly hasFlatpak="${Global.hasFlatpak}";
-readonly hasAppImage="${Global.hasAppImage}";
 ''';
   }
 
