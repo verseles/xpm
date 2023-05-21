@@ -176,16 +176,15 @@ class Prepare {
     final String? appimage = await Executable('appimage').find();
 
     late final String? bestPack;
-
-    if (snap != null) {
-      bestPack = snap;
-      Global.hasSnap = true;
-    } else if (flatpak != null) {
-      bestPack = '$flatpak --assumeyes';
+    if (flatpak != null) {
+      bestPack = '$flatpak --noninteractive';
       Global.hasFlatpak = true;
     } else if (appimage != null) {
       bestPack = appimage;
       Global.hasAppImage = true;
+    } else if (snap != null) {
+      bestPack = snap;
+      Global.hasSnap = true;
     }
 
     if (bestPack != null) {
