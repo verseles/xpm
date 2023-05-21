@@ -1,3 +1,5 @@
+## v0.42.0
+- Prioritize flatpak over appimage and snap
 ## v0.41.0
 - Fixed support for distros like opensuse
 ## v0.40.0
