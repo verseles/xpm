@@ -1,3 +1,5 @@
+## v0.39.0
+- Added -f --force option to force removal of apps
 ## v0.38.0
 - Catching trivial errors on bash
 ## v0.37.0
