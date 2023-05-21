@@ -1,3 +1,5 @@
+## v0.38.0
+- Catching trivial errors on bash
 ## v0.37.0
 - Testing new build release system
 ## v0.36.1
