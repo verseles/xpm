@@ -24,6 +24,7 @@ class Prepare {
 
   static final String distro = osRelease('ID') ?? Platform.operatingSystem;
   static final List distroLike = (osRelease('ID_LIKE') ?? '').split(" ");
+  static final errorOnUpdate = 'echo -e "\\\\033[38;5;208m Errors on update repositores. Proceeding... \\\\033[0m"';
 
   late final String preferredMethod;
   late final bool forceMethod;
@@ -207,8 +208,7 @@ class Prepare {
       final String? bestSwupd = swupd;
 
       if (bestSwupd != null) {
-        final String update = '${Global.sudoPath} $bestSwupd update';
-        Global.updateCommand = update;
+        Global.updateCommand = '${Global.sudoPath} $bestSwupd update || $errorOnUpdate';
         if (hasDefault) {
           final operation = to == 'install' ? 'bundle-add' : 'bundle-remove';
           return '${Global.sudoPath} $bestSwupd $operation -y ${package.name}';
@@ -239,8 +239,7 @@ class Prepare {
       final String? bestApt = apt ?? aptGet;
 
       if (bestApt != null) {
-        final String update = '${Global.sudoPath} $bestApt update';
-        Global.updateCommand = update;
+        Global.updateCommand = '${Global.sudoPath} $bestApt update || $errorOnUpdate';
         if (hasDefault) {
           final operation = to == 'install' ? 'install' : 'remove';
           return '${Global.sudoPath} $bestApt $operation -y ${package.name}';
@@ -277,8 +276,7 @@ class Prepare {
         if (bestArchLinux == pacman) {
           needsSudo = Global.sudoPath;
         }
-        final String update = '${Global.sudoPath} $bestArchLinux -Sy';
-        Global.updateCommand = update;
+        Global.updateCommand = '${Global.sudoPath} $bestArchLinux -Sy || $errorOnUpdate';
         if (hasDefault) {
           final operation = to == 'install' ? '-S' : '-R';
           return '$needsSudo $bestArchLinux --noconfirm $operation ${package.name}';
@@ -308,8 +306,7 @@ class Prepare {
       String? bestFedora = dnf;
 
       if (bestFedora != null) {
-        final String update = '${Global.sudoPath} $bestFedora check-update';
-        Global.updateCommand = update;
+        Global.updateCommand = '${Global.sudoPath} $bestFedora check-update || $errorOnUpdate';
         if (hasDefault) {
           final operation = to == 'install' ? 'install' : 'remove';
           return '${Global.sudoPath} $bestFedora -y $operation ${package.name}';
@@ -337,8 +334,7 @@ class Prepare {
       final brew = await Executable('brew').find();
 
       if (brew != null) {
-        final String update = '$brew update';
-        Global.updateCommand = update;
+        Global.updateCommand = '$brew update || $errorOnUpdate';
         if (hasDefault) {
           final operation = to == 'install' ? 'install' : 'uninstall';
           return '$brew $operation ${package.name}';
@@ -366,8 +362,7 @@ class Prepare {
       final zypper = await Executable('zypper').find();
 
       if (zypper != null) {
-        final String update = '${Global.sudoPath} $zypper refresh';
-        Global.updateCommand = update;
+        Global.updateCommand = '${Global.sudoPath} $zypper refresh || $errorOnUpdate';
         if (hasDefault) {
           final operation = to == 'install' ? 'install' : 'remove';
           return '${Global.sudoPath} $zypper --non-interactive $operation ${package.name}';
@@ -397,8 +392,7 @@ class Prepare {
       final pkg = await Executable('pkg').find(); // termux
 
       if (pkg != null) {
-        final String update = '${Global.sudoPath} $pkg update';
-        Global.updateCommand = update;
+        Global.updateCommand = '${Global.sudoPath} $pkg update || $errorOnUpdate';
         if (hasDefault) {
           final operation = to == 'install' ? 'install' : 'uninstall';
           return '${Global.sudoPath} $pkg $operation -y ${package.name}';
