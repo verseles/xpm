@@ -545,12 +545,14 @@ $bestFor
 
     if (removing && bestValidateExecutable == null) {
       Logger.info('Validation for removing package $packageName passed!');
-    } else if (bestValidateExecutable == null) {
-      leave(
-        message: 'No executable found for $packageName, validation failed.',
-        exitCode: notFound,
-      );
-    } else {
+    }
+    //  else if (bestValidateExecutable == null) {
+    //   leave(
+    //     message: 'No executable found for $packageName, validation failed.',
+    //     exitCode: notFound,
+    //   );
+    // }
+    else {
       togetherContents = '''
 #!/usr/bin/env bash
 

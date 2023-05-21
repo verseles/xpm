@@ -1,3 +1,5 @@
+## v0.44.0
+- Fix problems with validation of remove
 ## v0.43.0
 - Fix problems with pack method
 ## v0.42.0

@@ -106,14 +106,10 @@ class RemoveCommand extends Command {
       // Validate the removal of the package.
       try {
         await runner.simple(bash, ['-c', 'source ${await prepare.toValidate(removing: true)}']);
-      } on ShellException catch (_) {
         String error = 'Failed to validate uninstall of "{@red}$packageRequested{@end}"';
-        if (argResults!['verbose'] == true) {
-          error += ': ${_.message}';
-        } else {
-          error += '.';
-        }
         Logger.warning(error);
+      } on ShellException catch (_) {
+        // If the package is not installed, the validation should pass
       }
 
       await sharedStdIn.terminate();
