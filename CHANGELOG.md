@@ -1,3 +1,5 @@
+## v0.45.0
+- Fix problems with validation of remove
 ## v0.44.0
 - Fix problems with validation of remove
 ## v0.43.0

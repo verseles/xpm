@@ -540,22 +540,6 @@ $bestFor
     String togetherContents = '''
 #!/usr/bin/env bash
 
-# no need to validate using bash
-''';
-
-    if (removing && bestValidateExecutable == null) {
-      Logger.info('Validation for removing package $packageName passed!');
-    }
-    //  else if (bestValidateExecutable == null) {
-    //   leave(
-    //     message: 'No executable found for $packageName, validation failed.',
-    //     exitCode: notFound,
-    //   );
-    // }
-    else {
-      togetherContents = '''
-#!/usr/bin/env bash
-
 ${await dynamicCode()}
 
 ${await baseScriptContents()}
@@ -564,7 +548,6 @@ ${await packageScript.contents()}
 
 validate "$bestValidateExecutable"
 ''';
-    }
 
     return (await writeThisBeast(togetherContents)).path;
   }
