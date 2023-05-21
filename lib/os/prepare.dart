@@ -463,8 +463,6 @@ class Prepare {
 
     final packageScriptContents = await packageScript.contents();
 
-
-
     String togetherContents = '''
 #!/usr/bin/env bash
 
@@ -497,8 +495,6 @@ $bestFor
     final baseScriptContents = await this.baseScriptContents();
 
     final packageScriptContents = await packageScript.contents();
-
-
 
     String togetherContents = '''
 #!/usr/bin/env bash
