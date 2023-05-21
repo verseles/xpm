@@ -455,13 +455,15 @@ class Prepare {
   Future<String> toInstall() async {
     await boot();
 
+    final bestFor = await best(to: 'install');
+
     final dynamicCode = await this.dynamicCode();
 
     final baseScriptContents = await this.baseScriptContents();
 
     final packageScriptContents = await packageScript.contents();
 
-    final bestFor = await best(to: 'install');
+
 
     String togetherContents = '''
 #!/usr/bin/env bash
@@ -488,16 +490,28 @@ $bestFor
   Future<String> toRemove() async {
     await boot();
 
+    final bestFor = await best(to: 'remove');
+
+    final dynamicCode = await this.dynamicCode();
+
+    final baseScriptContents = await this.baseScriptContents();
+
+    final packageScriptContents = await packageScript.contents();
+
+
+
     String togetherContents = '''
 #!/usr/bin/env bash
 
-${await dynamicCode()}
+$dynamicCode
 
-${await baseScriptContents()}
+$baseScriptContents
 
-${await packageScript.contents()}
+$packageScriptContents
 
-${await best(to: 'remove')}
+${Global.updateCommand}
+
+$bestFor
 ''';
 
     return (await writeThisBeast(togetherContents)).path;
