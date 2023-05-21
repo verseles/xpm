@@ -145,7 +145,11 @@ class Prepare {
       return bestForOpenSUSE(to: to);
     }
 
-    if (preferredMethod == 'brew' || distro == 'macos') {
+    if (preferredMethod == 'brew' ||
+        distro == 'macos' ||
+        distro == 'darwin' ||
+        distroLike.contains('darwin') ||
+        distroLike.contains('macos')) {
       return bestForMacOS(to: to);
     }
 

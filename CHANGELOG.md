@@ -1,3 +1,5 @@
+## v0.49.0
+- fix support for macos
 ## v0.48.0
 - fix support for macos x86_64
 ## v0.47.0
