@@ -1,3 +1,5 @@
+## v0.47.0
+- enable macos build
 ## v0.46.0
 - fix: terminate sharedStdIn after database write in install.dart and remove.dart commands to prevent hanging processes
 ## v0.45.0
