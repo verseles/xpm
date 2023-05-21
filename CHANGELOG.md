@@ -1,3 +1,5 @@
+## v0.41.0
+- Fixed support for distros like opensuse
 ## v0.40.0
 - Implemented -f --force option to force removal of apps
 ## v0.39.0

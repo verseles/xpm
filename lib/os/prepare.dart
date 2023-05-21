@@ -136,7 +136,12 @@ class Prepare {
       return bestForAndroid(to: to);
     }
 
-    if (preferredMethod == 'zypper' || distro == 'opensuse' || distro == 'sles') {
+    if (preferredMethod == 'zypper' ||
+        distro == 'opensuse' ||
+        distro == 'sles' ||
+        distroLike.contains('sles') ||
+        distroLike.contains('opensuse') ||
+        distroLike.contains('suse')) {
       return bestForOpenSUSE(to: to);
     }
 
