@@ -1,3 +1,5 @@
+## v0.37.0
+- Testing new build release system
 ## v0.36.1
 - Testing new build release system
 ## v0.36.0
