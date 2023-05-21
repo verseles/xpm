@@ -55,7 +55,7 @@ class InstallCommand extends Command {
     // Add the flags option.
     argParser.addMultiOption(
       'flags',
-      abbr: 'f',
+      abbr: 'e',
       help: 'Inform custom flags to the script.'
           '\nUse this option multiple times to pass multiple flags.'
           '\nExample: --flags="--flag1" --flags="--flag2"',

@@ -37,13 +37,16 @@ class RemoveCommand extends Command {
 
     argParser.addFlag('force-method',
         negatable: false,
-        help: 'Force the selected method set by --prefer.'
+        help: 'Force the selected method set by --method.'
             '\nIf not set, the selected method can fallsback to another method or finally to [any].');
 
     argParser.addOption('channel', abbr: 'c', help: 'Inform the prefered channel to install the package.');
 
+    argParser.addFlag('force',
+        negatable: false, abbr: 'f', help: 'Force the removal of the package even if it is not installed.');
+
     argParser.addMultiOption('flags',
-        abbr: 'f',
+        abbr: 'e',
         help: 'Inform custom flags to the script.'
             '\nUse this option multiple times to pass multiple flags.'
             '\nExample: --flags="--flag1" --flags="--flag2"');
