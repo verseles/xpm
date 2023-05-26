@@ -40,7 +40,7 @@ xpm r <package>
 ## How it works
 XPM provides a set of tools to let community create their installers, or a group of installers (repository). The only requirement is to follow the [xpm spec](#xpm-specification). The spec is a set of bash functions that must be implemented in order to be a valid installer. The only required methods in the bash file is `validate` the others are optional but highly recommended: `install_any`, `remove_any`, `install_apt`, `install_pacman`, [etc](#xpm-specification).
 ## Architecture
-XPM takes care of detecting the operating system and the package manager, and then it calls the installer. The installer is a bash script that follows the [xpm spec]. Before call the bash script, it provides important variables to the script, like the package manager available, xpm commands to let download files, move to binary system folder, change permissions, move, copy, delete files, and even create shortcuts. All of this without need to know or rely in the operating system.
+XPM takes care of detecting the operating system and the package manager, and then it calls the installer. The installer is a bash script that follows the [xpm spec]. Before call the bash script, it provides important variables to the script, like the package manager available, xpm [commands](#xpm-commands-available) to let download files, move to binary system folder, change permissions, move, copy, delete files, and even create shortcuts. All of this without need to know or rely in the operating system.
 
 XPM tries to use the native package manager way, but if it's not available, it will use its own way. For example, if you are using a debian based distro, and you want to install `micro` (an text editor in terminal), it will use `apt` to install it. But if you are using a distro that doesn't have `apt`, it will use `xpm` to install it. The same happens with `pacman` and `dnf`, and others. If you want to know more about how it works, you can read the [xpm spec](#xpm-specification).
 
@@ -97,12 +97,12 @@ readonly xDEFAULT=('apt' 'pacman' 'dnf' 'choco' 'brew' 'termux')
 The following variables are provided by xpm to the installer script, and are optional to use:
 
 `$1` inside every function which starts with `install_` or `remove_`. 
-Returns path to the package manager binary available (apt, pacman, dnf, etc) it comes with some flags like -y for non-interactive install, sudo is automatically added for pacman, and for most update commands. For example: `apt install -y micro` or `sudo pacman -S micro`.
+Returns path to the package manager binary available (apt, pacman, dnf, etc) it comes with some flags like -y for non-interactive install, sudo is automatically added, and for most update commands. For example: `sudo apt install -y micro` or `sudo pacman -S micro`.
 
 example:
 ```bash
 install_apt() {
-	$1 install $xNAME # with -y, with sudo (specially case for pacman)
+	$1 install $xNAME # with -y, with sudo if available
 }
 ```
 
@@ -149,7 +149,7 @@ Returns `true` if the system has flatpak installed, otherwise returns `false`. I
 Returns `true` if the system has snap installed, otherwise returns `false`. If `true`, the `$1` variable is the path to the snap binary.
 
 
-### Functions available
+### Methods available
 `validate()`
 This function is the only required and must be implemented. It should validate if the package is installed or not. If the package is installed, it should return 0, otherwise, it should return non-zero. $1 is $xNAME, or $xPROVIDES if it is informed.
 
@@ -176,16 +176,14 @@ Same as above, but for choco (or scoop).
 `install_termux()` and `remove_termux()`
 Same as above, but for termux.
 
-`install_pack` and `remove_pack`
-These functions are called if the system has `flatpak` or `snap` installed. It should install/uninstall the package using flatpak/snap. `$1` is the path to the flatpak/snap binary. You should check what is available in the system before using it. If one or another is not available for the current app you should remove/adapt the function. For example:
-```bash
-if [[ $hasFlatpak == true ]]; then 
-    $1 uninstall $xNAME # with --assumeyes
-elif [[ $hasSnap == true ]]; then 
-	$1 remove $xNAME # snap with --yes   
-fi
-```
+`install_flatpak()` and `remove_flatpak`
+Same as above, but for flatpak. `$1` is the path to the flatpak binary.
 
+`install_snap()` and `remove_snap()`
+Same as above, but for snap. `$1` is the path to the snap binary.
+
+`install_appimage()` and `remove_appimage()`
+AppImage has no install/uninstall command, so you just download the AppImage file and move it to the `$xBIN` folder. You can also use $XPM [commands](#xpm-commands-available) to help you. For example: `$XPM get http://url/to/appimage --bin --name $xNAME --no-progress`
 `install_zypper()` and `remove_zypper()`
 Same as above, but for zypper. `$1` includes `--non-interactive`, with `sudo` if available.
 
@@ -274,7 +272,7 @@ Usage: xpm shortcut [arguments]
 ### Full example for firefox browser
 ```bash
 #!/usr/bin/env bash
-# shellcheck disable=SC2034
+# shellcheck disable=SC2034 disable=SC2154 disable=SC2164 disable=SC2103
 
 readonly xNAME="firefox"
 readonly xVERSION="113.0.1"
@@ -285,10 +283,18 @@ readonly xARCHS=('linux64' 'linux32' 'linux-arm' 'linux-arm64' 'macos-arm64' 'ma
 readonly xLICENSE="MPL GPL LGPL"
 readonly xPROVIDES=("firefox")
 
-readonly xDEFAULT=('apt' 'pacman' 'dnf' 'choco' 'brew' 'termux')
+# by using xDEFAULT, it uses $xNAME as the package name and there is no need to use separate functions for each package manager
+readonly xDEFAULT=('apt' 'pacman' 'dnf' 'choco' 'brew' 'snap')
 
 validate() {
-    $1 --version
+    if [[ $hasFlatpak == true && $(flatpak list | grep $xNAME) ]]; then
+        exit 0
+    fi
+    if [[ -x "$(command -v "$1")" ]]; then
+        exit 0
+    fi
+
+    exit 1
 }
 
 install_any() {
@@ -306,18 +312,27 @@ remove_any() {
     $XPM shortcut --remove --name="$xNAME"
 }
 
-install_zypper() { # $1 means [sudo] zypper -y install [package]
+install_zypper() { # $1 means zypper with sudo if available, so: [sudo] zypper --non-interactive install [package]
     $1 install mozillaFirefox
 }
 
-remove_zypper() { # $1 means [sudo] zypper -y remove [package]
+remove_zypper() { # $1 means zypper with sudo if available, so: [sudo] zypper --non-interactive remove [package]
     $1 remove mozillaFirefox
+}
+
+install_flatpak() { # $1 means flatpak with sudo if available
+    $1 install flathub org.mozilla.firefox
+}
+
+remove_flatpak() {
+    $1 remove org.mozilla.firefox
 }
 ```
 ### Full example for micro text editor
 ```bash
 #!/usr/bin/env bash
 # shellcheck disable=SC2034
+# USE THIS FILE AS TEMPLATE FOR YOUR SCRIPT
 
 readonly xNAME="micro"
 readonly xVERSION="2.0.11"
@@ -325,7 +340,7 @@ readonly xTITLE="Micro Text Editor"
 readonly xDESC="A modern and intuitive terminal-based text editor"
 readonly xURL="https://micro-editor.github.io"
 readonly xARCHS=('linux64' 'linux32' 'linux-arm' 'linux-arm64' 'macos-arm64' 'macos' 'win32' 'win64' 'freebsd64' 'freebsd32' 'openbsd64' 'openbsd32' 'netbsd64' 'netbsd32')
-readonly xLICENSE="https://raw.githubusercontent.com//v$xVERSION/LICENSE"
+readonly xLICENSE="https://raw.githubusercontent.com/zyedidia/micro/v$xVERSION/LICENSE"
 readonly xPROVIDES=("micro")
 
 # Here you can inform if this package is well-known to some package manager and is installed using xNAME
@@ -337,15 +352,22 @@ readonly xDEFAULT=('apt' 'pacman' 'dnf' 'choco' 'brew' 'termux')
 # $xCHANNEL
 #  the default channel is empty, which means the latest stable version
 #  user can change using -c or --channel flag
-# $hasFlatpak, $hasSnap, 
+# $hasSnap, $isFlatpack
 #  these boolean variables are set to true if the package manager is available and selected
 # $XPM is the path to xpm executable
 # $xSUDO is the sudo command, if available. Most commands already add sudo if available
 # $xBIN is the path to first bin folder on PATH.
 
 # the only required function is validate. install_any and remove_any are very important, but not required.
-validate() { # $1 is the path to executable from $xPROVIDES (if defined) or $xNAME
-	$1 --version
+validate() {
+    if [[ $hasFlatpak == true && $(flatpak list | grep $xNAME) ]]; then
+        exit 0
+    fi
+    if [[ -x "$(command -v "$1")" ]]; then
+        exit 0
+    fi
+
+    exit 1
 }
 
 install_any() {
@@ -369,11 +391,11 @@ remove_apt() {    # $1 means apt compatible, with sudo if available
 
 # pacman -Syu will be called before install_pacman and remove_pacman
 install_pacman() { # $1 means an executable compatible with pacman (Arch Linux)
-	$1 -S $xNAME      # with --noconfirm, with sudo if available
+	$1 -S $xNAME      # with --noconfirm, with sudo if available only for pacman
 }
 
 remove_pacman() { # $1 means pacman compatible
-	$1 -R $xNAME     # with --noconfirm, with sudo if available
+	$1 -R $xNAME     # with --noconfirm, with sudo if available only for pacman
 }
 
 # dnf update will be called before install_dnf and remove_dnf
@@ -385,20 +407,20 @@ remove_dnf() {       # $1 means dnf compatible with -y, with sudo if available
 	$1 remove -y $xNAME # with -y, with sudo if available
 }
 
-# update commands will be called before install_pack and remove_pack
-install_pack() { # $1 means an executable compatible with flatpack or snap
-	# $hasSnap and $hasFlatpak are available as boolean
-	# shellcheck disable=SC2154
-	if [[ $hasSnap == true ]]; then
-		$1 install --classic $xNAME  # with --assumeyes
-	fi
+install_snap() { # $1 means an executable compatible with snap
+	$1 install $xNAME --classic
 }
 
-remove_pack() {
-	# shellcheck disable=SC2154
-	if [[ $hasSnap == true ]]; then
-		$1 remove $xNAME # with --assumeyes
-	fi
+remove_snap() { # $1 means snap compatible
+	$1 remove $xNAME
+}
+
+install_flatpak() { # $1 means an executable compatible with flatpak
+	$xSUDO $1 install flathub io.github.zyedidia.micro
+}
+
+remove_flatpak() { # $1 means flatpak compatible
+	$xSUDO $1 remove io.github.zyedidia.micro
 }
 
 # choco update will be called before install_choco and remove_choco
@@ -445,6 +467,167 @@ remove_swupd() { # $1 means swupd compatible with -y, with sudo if available
 	remove_any
 }
 ```
+
 > This is a full example of a package installer script. It is the installer script of [micro](https://micro-editor.github.io), a terminal-based text editor.
 
-> This script is available in the [xpm-popular](https://github.com/verseles/xpm-popular) repository, where you can find the installer script of the most popular packages. You can use it as a reference to create your own installer script. Keep in mind that if you informed the a package manager in the `xDEFAULT` variable (bash array), you can safely remove the `install_(PM)` and `remove_(PM)` functions.
+
+### Full example for Stremio
+```bash
+#!/usr/bin/env bash
+# shellcheck disable=SC2034 disable=SC2154 disable=SC2164 disable=SC2103
+# thanks to https://github.com/alexandru-balan/Stremio-Install-Scripts
+
+readonly xNAME="stremio"
+readonly xVERSION="4.4.159"
+readonly xTITLE="Stremio"
+readonly xDESC="A modern media center that's a one-stop solution for your video entertainment"
+readonly xURL="https://www.stremio.com/"
+readonly xARCHS=('linux64' 'linux32' 'linux-arm' 'linux-arm64' 'macos-arm64' 'macos' 'win32' 'win64' 'freebsd64' 'freebsd32' 'openbsd64' 'openbsd32' 'netbsd64' 'netbsd32')
+readonly xLICENSE="GPL-3.0"
+
+readonly xDEFAULT=('brew')
+
+validate() {
+    if [[ $hasFlatpak == true && $(flatpak list | grep $xNAME) ]]; then
+        exit 0
+    fi
+    if [[ -d "/Applications/Stremio.app" ]]; then
+        exit 0
+    fi
+    if [[ -x "$(command -v "$1")" ]]; then
+        exit 0
+    fi
+
+    exit 1
+}
+
+install_any() {
+    cd "$xTMP"
+    # git clone only if directory doesn't exist
+    [[ ! -d stremio-shell ]] && git clone --recurse-submodules -j8 https://github.com/Stremio/stremio-shell.git
+    cd stremio-shell
+    git pull --recurse-submodules -j8
+    make -f release.makefile
+    $xSUDO make -f release.makefile install
+    $xSUDO ./dist-utils/common/postinstall
+}
+
+remove_any() {
+    $xSUDO rm -rf /usr/local/share/applications/smartcode-stremio.desktop /usr/share/applications/smartcode-stremio.desktop /usr/bin/stremio /opt/stremio
+}
+
+install_apt() {
+    # @TODO support beta version
+    # $1 is apt with sudo if available
+    $1 install git wget cmake librsvg2-bin qtcreator qt5-qmake g++ pkgconf libssl-dev libmpv-dev libqt5webview5-dev libkf5webengineviewer-dev qml-module-qtwebchannel qml-module-qt-labs-platform qml-module-qtwebengine qml-module-qtquick-dialogs qml-module-qtquick-controls qtdeclarative5-dev qml-module-qt-labs-settings qml-module-qt-labs-folderlistmodel
+
+    install_any "$@"
+}
+
+remove_apt() {
+    remove_any "$@"
+}
+
+install_pacman() {
+    # $1 has sudo if $1 is pacman
+    $1 -S "$xNAME-beta"
+}
+
+remove_pacman() {
+    $1 -R "$xNAME-beta"
+}
+
+install_dnf() {
+    # $1 is dnf with sudo if available
+    $1 install git nodejs wget librsvg2-devel librsvg2-tools mpv-libs-devel qt5-qtbase-devel qt5-qtwebengine-devel qt5-qtquickcontrols qt5-qtquickcontrols2 openssl-devel gcc g++ make glibc-devel kernel-headers binutils
+
+    install_any "$@"
+}
+
+remove_dnf() {
+    remove_any "$@"
+}
+
+install_swupd() {
+    # $1 is swupd with sudo if available
+    $1 bundle-add -y git nodejs-basic wget mpv qt-basic-dev devpkg-qtwebengine lib-qt5webengine c-basic
+
+    install_any "$@"
+}
+
+remove_swupd() {
+    remove_any "$@"
+}
+
+install_zypper() {
+    # $1 is zypper with sudo if available
+    $1 install git nodejs20 mpv-devel rsvg-convert wget libqt5-qtbase-devel libqt5-qtwebengine-devel \
+        wget libqt5-qtquickcontrols libopenssl-devel gcc gcc-c++ make glibc-devel kernel-devel binutils ||
+        echo "zypper says some packages are already installed. Proceeding..."
+
+    install_any "$@"
+}
+
+remove_zypper() {
+    remove_any "$@"
+}
+
+install_flatpak() { # $1 means an executable compatible with flatpack with sudo if available
+    $1 install flathub com.stremio.Stremio
+}
+
+remove_flatpak() { # $1 means an executable compatible with flatpack with sudo if available
+    $1 uninstall com.stremio.Stremio 
+}
+```
+
+### Full example for VLC
+```bash
+#!/usr/bin/env bash
+# shellcheck disable=SC2034 disable=SC2154 disable=SC2164 disable=SC2103
+
+readonly xNAME="vlc"
+readonly xVERSION="3.0.18"
+readonly xTITLE="VLC media player"
+readonly xDESC="A free and open-source, portable, cross-platform media player software and streaming media server"
+readonly xURL="https://www.videolan.org/vlc"
+readonly xARCHS=('linux64' 'linux32' 'linux-arm' 'linux-arm64' 'macos-arm64' 'macos' 'win32' 'win64' 'freebsd64' 'freebsd32' 'openbsd64' 'openbsd32' 'netbsd64' 'netbsd32')
+readonly xLICENSE="GPL-2.0-only"
+
+readonly xDEFAULT=('apt' 'pacman' 'dnf' 'choco' 'brew' 'zypper' 'snap')
+
+validate() {
+    if [[ $hasFlatpak == true && $(flatpak list | grep $xNAME) ]]; then
+        exit 0
+    fi
+    if [[ -x "$(command -v "$1")" ]]; then
+        exit 0
+    fi
+
+    exit 1
+}
+
+install_flatpak() {
+    # $1 is flatpak with sudo if available
+    $1 install flathub org.videolan.VLC
+}
+
+remove_flatpak() {
+    # $1 is flatpak with sudo if available
+    $1 remove org.videolan.VLC
+}
+
+install_appimage() {
+    local binary="https://github.com/ivan-hc/VLC-appimage/releases/download/continuous/VLC_media_player-3.0.19-20230521-with-plugins-x86_64.AppImage"
+    local sha256="b892ddab8120ad117073ca4c89b5b079abd09f6d8eabdcf49578df25d4e2b762"
+    $XPM get --no-progress --no-user-agent --name="$xNAME" --exec --bin --sha256="$sha256"
+    $XPM shortcut --name="$xNAME" --path="$xBIN/$xNAME" --description="$xDESC" --category="Multimedia"
+}
+
+remove_appimage() {
+    $XPM file unbin $xNAME --sudo --force
+    $XPM shortcut --remove --name="$xNAME" --sudo
+}
+```
+
+> These scripts are available in the [xpm-popular](https://github.com/verseles/xpm-popular) repository, where you can find the installer script of the most popular packages. You can use it as a reference to create your own installer script. Keep in mind that if you informed the a package manager in the `xDEFAULT` variable (bash array), you can safely remove the `install_(PM)` and `remove_(PM)` functions.

@@ -13,6 +13,8 @@ MET ?= auto
 
 # NO CACHE
 NC ?= false
+# FORCE METHOD
+FM ?= false
 
 # Get latest release tag
 XTAG ?=$(shell curl -sL https://api.github.com/repos/verseles/xpm/releases/latest | jq -r '.tag_name')
@@ -31,27 +33,22 @@ test:
 validate:
 	echo "Validating package $(PKG) with $(MET) method on $(IMG) image... XPM"
 	docker build --build-arg XTAG=$(XTAG) -t xpm:$(IMG) -f docker/$(IMG)/Dockerfile . $(if $(NC == true),--no-cache)
-	docker run -it xpm:$(IMG) /bin/sh -c "xpm ref && xpm install $(PKG) -m $(MET)"
+	docker run -it xpm:$(IMG) /bin/sh -c "xpm ref && xpm install $(PKG) -m $(MET) $(if $(FM == true),--force-method)"
 
 validate-all:
-	$(MAKE) validate IMG=ubuntu MET=auto
-	$(MAKE) validate IMG=ubuntu MET=any
-	$(MAKE) validate IMG=ubuntu MET=apt
-	$(MAKE) validate IMG=brew MET=auto
-	$(MAKE) validate IMG=brew MET=brew
-	$(MAKE) validate IMG=brew MET=any
-	$(MAKE) validate IMG=fedora MET=auto
-	$(MAKE) validate IMG=fedora MET=any
-	$(MAKE) validate IMG=fedora MET=dnf
-	$(MAKE) validate IMG=archlinux MET=auto
-	$(MAKE) validate IMG=archlinux MET=any
-	$(MAKE) validate IMG=archlinux MET=pacman
-	$(MAKE) validate IMG=opensuse MET=auto
-	$(MAKE) validate IMG=opensuse MET=any
-	$(MAKE) validate IMG=opensuse MET=zypper
-	$(MAKE) validate IMG=clearlinux MET=auto
-	$(MAKE) validate IMG=clearlinux MET=any
-	$(MAKE) validate IMG=clearlinux MET=swupd
+	$(MAKE) validate IMG=ubuntu MET=apt FM=true NC=$(NC)
+	$(MAKE) validate IMG=brew MET=brew FM=true NC=$(NC)
+	$(MAKE) validate IMG=fedora MET=dnf FM=true NC=$(NC)
+	$(MAKE) validate IMG=fedora MET=pack FM=true NC=$(NC)
+	$(MAKE) validate IMG=archlinux MET=pacman FM=true NC=$(NC)
+	$(MAKE) validate IMG=opensuse MET=zypper FM=true NC=$(NC)
+	$(MAKE) validate IMG=clearlinux MET=swupd FM=true NC=$(NC)
+	$(MAKE) validate IMG=ubuntu MET=auto NC=$(NC)
+	$(MAKE) validate IMG=fedora MET=auto NC=$(NC)
+	$(MAKE) validate IMG=archlinux MET=auto NC=$(NC)
+	$(MAKE) validate IMG=opensuse MET=auto NC=$(NC)
+	$(MAKE) validate IMG=clearlinux MET=auto NC=$(NC)
+	$(MAKE) validate IMG=ubuntu MET=any NC=$(NC)
 
 
 .PHONY: build try test validate validate-all

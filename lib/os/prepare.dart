@@ -65,6 +65,8 @@ class Prepare {
     }
 
     Global.sudoPath = await Executable('sudo').find() ?? '';
+    Global.hasFlatpak = await Executable('flatpak').find() != null;
+    Global.hasSnap = await Executable('snap').find() != null;
 
     booted = true;
   }
@@ -91,8 +93,12 @@ class Prepare {
       switch (preferredMethod) {
         case 'any':
           return bestForAny(to: to);
-        case 'pack':
-          return bestForPack(to: to);
+        case 'flatpak':
+          return bestForFlatpak(to: to);
+        case 'snap':
+          return bestForSnap(to: to);
+        case 'appimage':
+          return bestForAppImage(to: to);
         case 'apt':
           return bestForApt(to: to);
         case 'brew':
@@ -169,26 +175,75 @@ class Prepare {
   /// The [to] parameter is the installation target.
   Future<String> bestForAny({String to = 'install'}) async => '${to}_any';
 
+  /// Determines the best installation method for Flatpak.
+  ///
+  /// The [to] parameter is the installation target.
+  Future<String> bestForFlatpak({String to = 'install'}) async {
+    // @TODO: Add support for hasDefault and xSUDO and global update.
+
+    final methods = package.methods ?? [];
+    final hasMethod = methods.contains('flatpak');
+
+    if (hasMethod) {
+      final String? flatpak = await Executable('flatpak').find();
+
+      final String? bestFlatpak = flatpak;
+
+      if (bestFlatpak != null) {
+        // no update command available, only upgrade
+        return '${to}_flatpak "${Global.sudoPath} $bestFlatpak --noninteractive"';
+      }
+    }
+
+    stopIfForcedMethodNotFound();
+
+    return await bestForAny(to: to);
+  }
+
   /// Determines the best installation method for package managers that work on any operating system.
   ///
   /// The [to] parameter is the installation target.
-  Future<String> bestForPack({String to = 'install'}) async {
+  Future<String> bestForSnap({String to = 'install'}) async {
     // @TODO: Add support for hasDefault and xSUDO and global update.
+    final methods = package.methods ?? [];
+    final hasMethod = methods.contains('snap');
 
-    final String? snap = await Executable('snap').find();
-    final String? flatpak = await Executable('flatpak').find();
+    final defaults = package.defaults ?? [];
+    final hasDefault = defaults.contains('snap');
 
-    late final String? bestPack;
-    if (flatpak != null) {
-      bestPack = '$flatpak --noninteractive';
-      Global.hasFlatpak = true;
-    } else if (snap != null) {
-      bestPack = snap;
-      Global.hasSnap = true;
+    if (hasMethod) {
+      final String? snap = await Executable('snap').find();
+
+      final String? bestSnap = snap;
+
+      if (bestSnap != null) {
+        // no update command available, only upgrade
+
+        if (hasDefault) {
+          return '${Global.sudoPath} $bestSnap $to ${package.name}';
+        }
+        return '${to}_snap "${Global.sudoPath} $bestSnap"';
+      }
     }
 
-    if (bestPack != null) {
-      return '${to}_pack "$bestPack"';
+    stopIfForcedMethodNotFound();
+
+    return await bestForAny(to: to);
+  }
+
+  /// Determines the best installation method for package managers that work on any operating system.
+  ///
+  /// The [to] parameter is the installation target.
+  Future<String> bestForAppImage({String to = 'install'}) async {
+    // @TODO: Research if there is something to do here.
+
+    final methods = package.methods ?? [];
+    final hasMethod = methods.contains('appimage');
+
+    if (hasMethod) {
+      final String bestAppImage = 'echo "AppImage has no executable"';
+
+      return '${to}_appimage "$bestAppImage"';
     }
 
     stopIfForcedMethodNotFound();
@@ -217,7 +272,7 @@ class Prepare {
           final operation = to == 'install' ? 'bundle-add' : 'bundle-remove';
           return '${Global.sudoPath} $bestSwupd $operation -y ${package.name}';
         }
-        return '${to}_swupd "$bestSwupd"';
+        return '${to}_swupd "${Global.sudoPath} $bestSwupd"';
       }
     }
 
@@ -245,10 +300,9 @@ class Prepare {
       if (bestApt != null) {
         Global.updateCommand = '${Global.sudoPath} $bestApt update || $errorOnUpdate';
         if (hasDefault) {
-          final operation = to == 'install' ? 'install' : 'remove';
-          return '${Global.sudoPath} $bestApt $operation -y ${package.name}';
+          return '${Global.sudoPath} $bestApt $to -y ${package.name}';
         }
-        return '${to}_apt "$bestApt -y"';
+        return '${to}_apt "${Global.sudoPath} $bestApt -y"';
       }
     }
 
@@ -312,10 +366,9 @@ class Prepare {
       if (bestFedora != null) {
         Global.updateCommand = '${Global.sudoPath} $bestFedora check-update || $errorOnUpdate';
         if (hasDefault) {
-          final operation = to == 'install' ? 'install' : 'remove';
-          return '${Global.sudoPath} $bestFedora -y $operation ${package.name}';
+          return '${Global.sudoPath} $bestFedora -y $to ${package.name}';
         }
-        return '${to}_dnf "$bestFedora -y"';
+        return '${to}_dnf "${Global.sudoPath} $bestFedora -y"';
       }
     }
 
@@ -340,8 +393,7 @@ class Prepare {
       if (brew != null) {
         Global.updateCommand = '$brew update || $errorOnUpdate';
         if (hasDefault) {
-          final operation = to == 'install' ? 'install' : 'uninstall';
-          return '$brew $operation ${package.name}';
+          return '$brew $to ${package.name}';
         }
         return '${to}_macos "$brew"';
       }
@@ -368,10 +420,9 @@ class Prepare {
       if (zypper != null) {
         Global.updateCommand = '${Global.sudoPath} $zypper refresh || $errorOnUpdate';
         if (hasDefault) {
-          final operation = to == 'install' ? 'install' : 'remove';
-          return '${Global.sudoPath} $zypper --non-interactive $operation ${package.name}';
+          return '${Global.sudoPath} $zypper --non-interactive $to ${package.name}';
         }
-        return '${to}_zypper "$zypper --non-interactive"';
+        return '${to}_zypper "${Global.sudoPath} $zypper --non-interactive"';
       }
     }
 
@@ -398,10 +449,9 @@ class Prepare {
       if (pkg != null) {
         Global.updateCommand = '${Global.sudoPath} $pkg update || $errorOnUpdate';
         if (hasDefault) {
-          final operation = to == 'install' ? 'install' : 'uninstall';
-          return '${Global.sudoPath} $pkg $operation -y ${package.name}';
+          return '${Global.sudoPath} $pkg $to -y ${package.name}';
         }
-        return '${to}_android "$pkg -y"';
+        return '${to}_android "${Global.sudoPath} $pkg -y"';
       }
     }
 
@@ -431,8 +481,7 @@ class Prepare {
       if (choco != null) {
         bestWindows = '$choco -y';
         if (hasDefault) {
-          final operation = to == 'install' ? 'install' : 'uninstall';
-          return '$choco $operation -y ${package.name}';
+          return '$choco $to -y ${package.name}';
         }
       } else if (scoop != null) {
         // @TODO add support for hasDefault "scoop"
