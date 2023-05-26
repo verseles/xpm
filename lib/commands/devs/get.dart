@@ -119,7 +119,7 @@ class GetCommand extends Command {
 
     int actualProgress = 0;
     int lastProgress = 0;
-    final File file = await downloader.download(
+    File file = await downloader.download(
       url: url,
       destination: destination,
       userAgent: argResults!['user-agent'],
@@ -185,22 +185,24 @@ class GetCommand extends Command {
     if (argResults!['bin'] == true || argResults!['exec'] == true) {
       final runner = Run();
 
-      if (argResults!['bin'] == true) {
-        final File? toBin = await moveToBin(file, runner: runner, sudo: await Executable('sudo').exists());
-
-        if (toBin != null) {
-          Logger.info('Installed $file to bin folder: ${toBin.path}');
-        } else {
-          throw Exception('Failed to install $file to bin folder');
-        }
-      }
-
       if (argResults!['exec'] == true && !Platform.isWindows) {
         bool asExec = await runner.asExec(file.path, sudo: await Executable('sudo').exists());
         if (asExec) {
           Logger.info('Made $file executable');
         } else {
           throw Exception('Failed to make $file executable');
+        }
+      }
+
+      if (argResults!['bin'] == true) {
+        // @FIXME shouldn't $destination be set instead use this logic?
+        final File? toBin = await moveToBin(file, runner: runner, sudo: await Executable('sudo').exists());
+
+        if (toBin != null) {
+          Logger.info('Installed $file to bin folder: ${toBin.path}');
+          file = toBin;
+        } else {
+          throw Exception('Failed to install $file to bin folder');
         }
       }
     }

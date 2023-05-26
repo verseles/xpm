@@ -1,3 +1,5 @@
+## v0.52.0
+- Fix get command when moving to bin
 ## v0.51.0
 - Separate Flatpak, Snap and AppImage functions and adjusts others files to this change. fix #103
 ## v0.50.0
