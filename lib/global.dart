@@ -28,7 +28,6 @@ class Global {
   static String get sudoPath => _sudoPath;
   static set sudoPath(String value) => _sudoPath = value;
 
-
   /// Gets or sets the update command for current method.
   static String get updateCommand => _updateCommand;
   static set updateCommand(String value) => _updateCommand = value;
