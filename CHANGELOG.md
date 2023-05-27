@@ -1,3 +1,5 @@
+## v0.55.0
+- Full support for Linux shortcuts
 ## v0.54.0
 - Fix #63 - check for updates on repos and of xpm itself
 ## v0.53.0
