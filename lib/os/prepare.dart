@@ -175,7 +175,7 @@ class Prepare {
   /// The [to] parameter is the installation target.
   Future<String> bestForAny({String to = 'install'}) async {
     final methods = package.methods ?? [];
-    final hasMethod = methods.contains('snap');
+    final hasMethod = methods.contains('any');
 
     if (hasMethod) {
       return '${to}_any';
@@ -220,7 +220,7 @@ class Prepare {
     final defaults = package.defaults ?? [];
     final hasDefault = defaults.contains('snap');
 
-    if (hasMethod) {
+    if (hasMethod || hasDefault) {
       final String? snap = await Executable('snap').find();
 
       final String? bestSnap = snap;
