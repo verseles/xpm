@@ -1,3 +1,5 @@
+## v0.53.0
+- Fix use of best method, preferred method and forced method
 ## v0.52.0
 - Fix get command when moving to bin
 ## v0.51.0
