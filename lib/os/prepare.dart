@@ -130,21 +130,22 @@ class Prepare {
 
   Future<String> findBest(to) async {
     await boot();
+    final methods = package.methods ?? [];
 
     if (distro == 'debian' || distroLike.contains('debian')) {
-      return await bestForApt(to: to);
+      if (methods.contains('apt')) return await bestForApt(to: to);
     }
 
     if (distroLike.contains('arch')) {
-      return await bestForArch(to: to);
+      if (methods.contains('pacman')) return await bestForArch(to: to);
     }
 
     if (distro == 'fedora' || distro == 'rhel' || distroLike.contains('rhel') || distroLike.contains('fedora')) {
-      return await bestForFedora(to: to);
+      if (methods.contains('dnf')) return await bestForFedora(to: to);
     }
 
     if (distro == 'android') {
-      return await bestForAndroid(to: to);
+      if (methods.contains('android')) return await bestForAndroid(to: to);
     }
 
     if (distro == 'opensuse' ||
@@ -152,19 +153,19 @@ class Prepare {
         distroLike.contains('sles') ||
         distroLike.contains('opensuse') ||
         distroLike.contains('suse')) {
-      return await bestForOpenSUSE(to: to);
+      if (methods.contains('zypper')) return await bestForOpenSUSE(to: to);
     }
 
     if (distro == 'macos' || distro == 'darwin' || distroLike.contains('darwin') || distroLike.contains('macos')) {
-      return await bestForMacOS(to: to);
+      if (methods.contains('brew')) return await bestForMacOS(to: to);
     }
 
     if (distro == 'windows') {
-      return await bestForWindows(to: to);
+      if (methods.contains('choco')) return await bestForWindows(to: to);
     }
 
     if (distro == 'clear-linux-os' || distroLike.contains('clear-linux-os')) {
-      return await bestForClearLinux(to: to);
+      if (methods.contains('swupd')) return await bestForClearLinux(to: to);
     }
 
     return await bestForAny(to: to);
@@ -175,11 +176,15 @@ class Prepare {
   /// The [to] parameter is the installation target.
   Future<String> bestForAny({String to = 'install'}) async {
     final methods = package.methods ?? [];
-    final hasMethod = methods.contains('any');
-
-    if (hasMethod) {
-      return '${to}_any';
+    if (Global.hasFlatpak) {
+      if (methods.contains('flatpak')) return await bestForFlatpak(to: to);
     }
+
+    if (Global.hasSnap) {
+      if (methods.contains('snap')) return await bestForSnap(to: to);
+    }
+
+    if (methods.contains('any')) return '${to}_any';
 
     leave(message: 'No installation method found for "{@blue}$packageName{@end}".', exitCode: notFound);
   }
