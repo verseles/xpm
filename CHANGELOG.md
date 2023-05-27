@@ -1,3 +1,5 @@
+## v0.56.0
+- Many fixes
 ## v0.55.0
 - Full support for Linux shortcuts
 ## v0.54.0

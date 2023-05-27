@@ -242,8 +242,7 @@ extension KVQueryWhere on QueryBuilder<KV, KV, QWhereClause> {
     });
   }
 
-  QueryBuilder<KV, KV, QAfterWhereClause> idGreaterThan(Id id,
-      {bool include = false}) {
+  QueryBuilder<KV, KV, QAfterWhereClause> idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -251,8 +250,7 @@ extension KVQueryWhere on QueryBuilder<KV, KV, QWhereClause> {
     });
   }
 
-  QueryBuilder<KV, KV, QAfterWhereClause> idLessThan(Id id,
-      {bool include = false}) {
+  QueryBuilder<KV, KV, QAfterWhereClause> idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -339,8 +337,7 @@ extension KVQueryWhere on QueryBuilder<KV, KV, QWhereClause> {
     });
   }
 
-  QueryBuilder<KV, KV, QAfterWhereClause> expiresAtEqualTo(
-      DateTime? expiresAt) {
+  QueryBuilder<KV, KV, QAfterWhereClause> expiresAtEqualTo(DateTime? expiresAt) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
         indexName: r'expiresAt',
@@ -349,8 +346,7 @@ extension KVQueryWhere on QueryBuilder<KV, KV, QWhereClause> {
     });
   }
 
-  QueryBuilder<KV, KV, QAfterWhereClause> expiresAtNotEqualTo(
-      DateTime? expiresAt) {
+  QueryBuilder<KV, KV, QAfterWhereClause> expiresAtNotEqualTo(DateTime? expiresAt) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -447,8 +443,7 @@ extension KVQueryFilter on QueryBuilder<KV, KV, QFilterCondition> {
     });
   }
 
-  QueryBuilder<KV, KV, QAfterFilterCondition> expiresAtEqualTo(
-      DateTime? value) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> expiresAtEqualTo(DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'expiresAt',
@@ -656,8 +651,7 @@ extension KVQueryFilter on QueryBuilder<KV, KV, QFilterCondition> {
     });
   }
 
-  QueryBuilder<KV, KV, QAfterFilterCondition> keyContains(String value,
-      {bool caseSensitive = true}) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> keyContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'key',
@@ -667,8 +661,7 @@ extension KVQueryFilter on QueryBuilder<KV, KV, QFilterCondition> {
     });
   }
 
-  QueryBuilder<KV, KV, QAfterFilterCondition> keyMatches(String pattern,
-      {bool caseSensitive = true}) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> keyMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'key',
@@ -784,8 +777,7 @@ extension KVQueryFilter on QueryBuilder<KV, KV, QFilterCondition> {
     });
   }
 
-  QueryBuilder<KV, KV, QAfterFilterCondition> valueContains(String value,
-      {bool caseSensitive = true}) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> valueContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'value',
@@ -795,8 +787,7 @@ extension KVQueryFilter on QueryBuilder<KV, KV, QFilterCondition> {
     });
   }
 
-  QueryBuilder<KV, KV, QAfterFilterCondition> valueMatches(String pattern,
-      {bool caseSensitive = true}) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> valueMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'value',
