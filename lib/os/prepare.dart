@@ -90,90 +90,99 @@ class Prepare {
       if (preferredMethod == 'auto') {
         leave(message: 'Use --force-method with --method=', exitCode: wrongUsage);
       }
-      switch (preferredMethod) {
-        case 'any':
-          return bestForAny(to: to);
-        case 'flatpak':
-          return bestForFlatpak(to: to);
-        case 'snap':
-          return bestForSnap(to: to);
-        case 'appimage':
-          return bestForAppImage(to: to);
-        case 'apt':
-          return bestForApt(to: to);
-        case 'brew':
-          return bestForMacOS(to: to);
-        case 'choco':
-          return bestForWindows(to: to);
-        case 'dnf':
-          return bestForFedora(to: to);
-        case 'pacman':
-          return bestForArch(to: to);
-        case 'android':
-          return bestForAndroid(to: to);
-        case 'zypper':
-          return bestForOpenSUSE(to: to);
-        case 'swupd':
-          return bestForClearLinux(to: to);
-        default:
-          leave(message: 'Unknown method: $preferredMethod', exitCode: notFound);
-      }
     }
 
-    if (preferredMethod == 'any') return bestForAny(to: to);
+    return await useMethod(to);
+  }
 
-    if (preferredMethod == 'apt' || distro == 'debian' || distroLike.contains('debian')) {
-      return bestForApt(to: to);
+  Future<String> useMethod(to) async {
+    await boot();
+
+    switch (preferredMethod) {
+      case 'any':
+        return await bestForAny(to: to);
+      case 'flatpak':
+        return await bestForFlatpak(to: to);
+      case 'snap':
+        return await bestForSnap(to: to);
+      case 'appimage':
+        return await bestForAppImage(to: to);
+      case 'apt':
+        return await bestForApt(to: to);
+      case 'brew':
+        return await bestForMacOS(to: to);
+      case 'choco':
+        return await bestForWindows(to: to);
+      case 'dnf':
+        return await bestForFedora(to: to);
+      case 'pacman':
+        return await bestForArch(to: to);
+      case 'android':
+        return await bestForAndroid(to: to);
+      case 'zypper':
+        return await bestForOpenSUSE(to: to);
+      case 'swupd':
+        return await bestForClearLinux(to: to);
+      default:
+        return await findBest(to);
+    }
+  }
+
+  Future<String> findBest(to) async {
+    await boot();
+
+    if (distro == 'debian' || distroLike.contains('debian')) {
+      return await bestForApt(to: to);
     }
 
-    if (preferredMethod == 'pacman' || distroLike.contains('arch')) {
-      return bestForArch(to: to);
+    if (distroLike.contains('arch')) {
+      return await bestForArch(to: to);
     }
 
-    if (preferredMethod == 'dnf' ||
-        distro == 'fedora' ||
-        distro == 'rhel' ||
-        distroLike.contains('rhel') ||
-        distroLike.contains('fedora')) {
-      return bestForFedora(to: to);
+    if (distro == 'fedora' || distro == 'rhel' || distroLike.contains('rhel') || distroLike.contains('fedora')) {
+      return await bestForFedora(to: to);
     }
 
-    if (preferredMethod == 'android' || distro == 'android') {
-      return bestForAndroid(to: to);
+    if (distro == 'android') {
+      return await bestForAndroid(to: to);
     }
 
-    if (preferredMethod == 'zypper' ||
-        distro == 'opensuse' ||
+    if (distro == 'opensuse' ||
         distro == 'sles' ||
         distroLike.contains('sles') ||
         distroLike.contains('opensuse') ||
         distroLike.contains('suse')) {
-      return bestForOpenSUSE(to: to);
+      return await bestForOpenSUSE(to: to);
     }
 
-    if (preferredMethod == 'brew' ||
-        distro == 'macos' ||
-        distro == 'darwin' ||
-        distroLike.contains('darwin') ||
-        distroLike.contains('macos')) {
-      return bestForMacOS(to: to);
+    if (distro == 'macos' || distro == 'darwin' || distroLike.contains('darwin') || distroLike.contains('macos')) {
+      return await bestForMacOS(to: to);
     }
 
-    if (preferredMethod == 'choco' || distro == 'windows') {
-      return bestForWindows(to: to);
+    if (distro == 'windows') {
+      return await bestForWindows(to: to);
     }
 
-    if (preferredMethod == 'swupd' || distro == 'clear-linux-os' || distroLike.contains('clear-linux-os')) {
-      return bestForClearLinux(to: to);
+    if (distro == 'clear-linux-os' || distroLike.contains('clear-linux-os')) {
+      return await bestForClearLinux(to: to);
     }
 
-    return bestForAny(to: to);
+    return await bestForAny(to: to);
   }
 
   /// Determines the best installation method for any operating system.
   ///
   /// The [to] parameter is the installation target.
-  Future<String> bestForAny({String to = 'install'}) async => '${to}_any';
+  Future<String> bestForAny({String to = 'install'}) async {
+    final methods = package.methods ?? [];
+    final hasMethod = methods.contains('snap');
+
+    if (hasMethod) {
+      return '${to}_any';
+    }
+
+    leave(message: 'No installation method found for "{@blue}$packageName{@end}".', exitCode: notFound);
+  }
 
   /// Determines the best installation method for Flatpak.
   ///
