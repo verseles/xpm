@@ -184,7 +184,7 @@ class Repositories {
     }
 
     // Set a flag in the local settings to indicate that the package list needs to be refreshed after three days.
-    final threeDays = DateTime.now().add(Duration(days: 3));
-    Setting.set('needs_refresh', true, expires: threeDays, lazy: true);
+    final threeDays = DateTime.now().add(Duration(days: 1));
+    Setting.set('needs_refresh', false, expires: threeDays, lazy: true);
   }
 }

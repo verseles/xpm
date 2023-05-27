@@ -29,23 +29,24 @@ void main(List<String> args) async {
   }
 
   final bool isRepoOutdated = await Setting.get('needs_refresh', defaultValue: true);
-  if (!isRepoOutdated) {
+  if (isRepoOutdated) {
     // @VERBOSE
     await Repositories.index();
   }
 
   final bool isXPMOutdated = await Setting.get('needs_update', defaultValue: true);
-  if (!isXPMOutdated) {
+  if (isXPMOutdated) {
     // @VERBOSE
     final fourDays = DateTime.now().add(Duration(days: 4));
     final newVersionAvailable = await VersionChecker().checkForNewVersion(XPM.name, Version.parse(XPM.version));
-    Setting.set('needs_update', true, expires: fourDays, lazy: true);
+    Setting.set('needs_update', false, expires: fourDays, lazy: true);
     if (newVersionAvailable != null) {
-      Logger.info('There is a new version available: $newVersionAvailable');
+      Logger.info('New version available: $newVersionAvailable');
       Logger.info('Run: {@green}xpm install xpm{@end} to update.');
     }
   }
-  await Setting.deleteExpired(lazy: true);
+
+  Setting.deleteExpired(lazy: true);
 
   final runner = CommandRunner(XPM.name, XPM.description)
     ..argParser.addFlag('version', abbr: 'v', negatable: false, help: 'Prints the version of ${XPM.name}.')

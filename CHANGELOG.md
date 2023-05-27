@@ -1,3 +1,5 @@
+## v0.54.0
+- Fix #63 - check for updates on repos and of xpm itself
 ## v0.53.0
 - Fix use of best method, preferred method and forced method
 ## v0.52.0
