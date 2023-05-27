@@ -36,6 +36,7 @@ class Prepare {
   late final File baseScript;
   late final BashScript packageScript;
   bool booted = false;
+  List<String> skipMethods = [];
 
   /// Creates a new instance of the [Prepare] class.
   ///
@@ -133,21 +134,30 @@ class Prepare {
   Future<String> findBest(to) async {
     await boot();
     final methods = package.methods ?? [];
+    final defaults = package.defaults ?? [];
 
     if (distro == 'debian' || distroLike.contains('debian')) {
-      if (methods.contains('apt')) return await bestForApt(to: to);
+      if (methods.contains('apt') || defaults.contains('apt')) {
+        return await bestForApt(to: to);
+      }
     }
 
     if (distroLike.contains('arch')) {
-      if (methods.contains('pacman')) return await bestForArch(to: to);
+      if (methods.contains('pacman') || defaults.contains('pacman')) {
+        return await bestForArch(to: to);
+      }
     }
 
     if (distro == 'fedora' || distro == 'rhel' || distroLike.contains('rhel') || distroLike.contains('fedora')) {
-      if (methods.contains('dnf')) return await bestForFedora(to: to);
+      if (methods.contains('dnf') || defaults.contains('dnf')) {
+        return await bestForFedora(to: to);
+      }
     }
 
     if (distro == 'android') {
-      if (methods.contains('android')) return await bestForAndroid(to: to);
+      if (methods.contains('termux') || defaults.contains('termux')) {
+        return await bestForAndroid(to: to);
+      }
     }
 
     if (distro == 'opensuse' ||
@@ -155,19 +165,27 @@ class Prepare {
         distroLike.contains('sles') ||
         distroLike.contains('opensuse') ||
         distroLike.contains('suse')) {
-      if (methods.contains('zypper')) return await bestForOpenSUSE(to: to);
+      if (methods.contains('zypper') || defaults.contains('zypper')) {
+        return await bestForOpenSUSE(to: to);
+      }
     }
 
     if (distro == 'macos' || distro == 'darwin' || distroLike.contains('darwin') || distroLike.contains('macos')) {
-      if (methods.contains('brew')) return await bestForMacOS(to: to);
+      if (methods.contains('brew') || defaults.contains('brew')) {
+        return await bestForMacOS(to: to);
+      }
     }
 
     if (distro == 'windows') {
-      if (methods.contains('choco')) return await bestForWindows(to: to);
+      if (methods.contains('choco') || defaults.contains('choco')) {
+        return await bestForWindows(to: to);
+      }
     }
 
     if (distro == 'clear-linux-os' || distroLike.contains('clear-linux-os')) {
-      if (methods.contains('swupd')) return await bestForClearLinux(to: to);
+      if (methods.contains('swupd') || defaults.contains('swupd')) {
+        return await bestForClearLinux(to: to);
+      }
     }
 
     return await bestForAny(to: to);
@@ -176,14 +194,25 @@ class Prepare {
   /// Determines the best installation method for any operating system.
   ///
   /// The [to] parameter is the installation target.
-  Future<String> bestForAny({String to = 'install'}) async {
+  /// The [skip] parameter is a list of methods to skip.
+  Future<String> bestForAny({String to = 'install', List<String> skip = const []}) async {
     final methods = package.methods ?? [];
-    if (Global.hasFlatpak) {
+    final defaults = package.defaults ?? [];
+
+    skipMethods.addAll(skip);
+
+    if (!skipMethods.contains('flatpak') && Global.hasFlatpak) {
       if (methods.contains('flatpak')) return await bestForFlatpak(to: to);
     }
 
-    if (Global.hasSnap) {
-      if (methods.contains('snap')) return await bestForSnap(to: to);
+    if (!skipMethods.contains('snap') && Global.hasSnap) {
+      if (methods.contains('snap') || defaults.contains('snap')) {
+        return await bestForSnap(to: to);
+      }
+    }
+
+    if (!skipMethods.contains('appimage') && methods.contains('appimage')) {
+      return await bestForAppImage(to: to);
     }
 
     if (methods.contains('any')) return '${to}_any';
@@ -199,21 +228,16 @@ class Prepare {
 
     final methods = package.methods ?? [];
     final hasMethod = methods.contains('flatpak');
+    final String? flatpak = await Executable('flatpak').find();
+    final String? bestFlatpak = flatpak;
 
-    if (hasMethod) {
-      final String? flatpak = await Executable('flatpak').find();
-
-      final String? bestFlatpak = flatpak;
-
-      if (bestFlatpak != null) {
-        // no update command available, only upgrade
-        return '${to}_flatpak "${Global.sudoPath} $bestFlatpak --noninteractive"';
-      }
+    if (hasMethod && bestFlatpak != null) {
+      return '${to}_flatpak "${Global.sudoPath} $bestFlatpak --noninteractive"';
     }
 
     stopIfForcedMethodNotFound();
 
-    return await bestForAny(to: to);
+    return await bestForAny(to: to, skip: ['flatpak']);
   }
 
   /// Determines the best installation method for package managers that work on any operating system.
@@ -244,7 +268,7 @@ class Prepare {
 
     stopIfForcedMethodNotFound();
 
-    return await bestForAny(to: to);
+    return await bestForAny(to: to, skip: ['snap']);
   }
 
   /// Determines the best installation method for package managers that work on any operating system.
@@ -264,7 +288,7 @@ class Prepare {
 
     stopIfForcedMethodNotFound();
 
-    return await bestForAny(to: to);
+    return await bestForAny(to: to, skip: ['appimage']);
   }
 
   /// Determines the best installation method for Clear Linux OS.
