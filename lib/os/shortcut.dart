@@ -17,6 +17,8 @@ class Shortcut {
   final bool? terminal;
   final String? type;
   final String? categories;
+  final String? mime;
+  final bool startup;
   final String? destination;
   final bool sudo;
 
@@ -28,6 +30,8 @@ class Shortcut {
     this.terminal = false,
     this.type = 'Application',
     this.categories,
+    this.mime,
+    this.startup = true,
     this.destination,
     this.sudo = true,
   });
@@ -84,6 +88,8 @@ class Shortcut {
     Terminal=$terminal
     Comment=$comment
     Categories=${categories ?? 'Utility'};
+    MimeType=${mime ?? 'application/x-executable'};
+    StartupNotify=$startup
     ''';
     await runner.touch(filePath, sudo: sudo);
 
