@@ -211,7 +211,8 @@ extension RepoQueryWhere on QueryBuilder<Repo, Repo, QWhereClause> {
     });
   }
 
-  QueryBuilder<Repo, Repo, QAfterWhereClause> idGreaterThan(Id id, {bool include = false}) {
+  QueryBuilder<Repo, Repo, QAfterWhereClause> idGreaterThan(Id id,
+      {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -219,7 +220,8 @@ extension RepoQueryWhere on QueryBuilder<Repo, Repo, QWhereClause> {
     });
   }
 
-  QueryBuilder<Repo, Repo, QAfterWhereClause> idLessThan(Id id, {bool include = false}) {
+  QueryBuilder<Repo, Repo, QAfterWhereClause> idLessThan(Id id,
+      {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -444,7 +446,8 @@ extension RepoQueryFilter on QueryBuilder<Repo, Repo, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Repo, Repo, QAfterFilterCondition> urlContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Repo, Repo, QAfterFilterCondition> urlContains(String value,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'url',
@@ -454,7 +457,8 @@ extension RepoQueryFilter on QueryBuilder<Repo, Repo, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Repo, Repo, QAfterFilterCondition> urlMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<Repo, Repo, QAfterFilterCondition> urlMatches(String pattern,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'url',
@@ -486,13 +490,15 @@ extension RepoQueryFilter on QueryBuilder<Repo, Repo, QFilterCondition> {
 extension RepoQueryObject on QueryBuilder<Repo, Repo, QFilterCondition> {}
 
 extension RepoQueryLinks on QueryBuilder<Repo, Repo, QFilterCondition> {
-  QueryBuilder<Repo, Repo, QAfterFilterCondition> package(FilterQuery<Package> q) {
+  QueryBuilder<Repo, Repo, QAfterFilterCondition> package(
+      FilterQuery<Package> q) {
     return QueryBuilder.apply(this, (query) {
       return query.link(q, r'package');
     });
   }
 
-  QueryBuilder<Repo, Repo, QAfterFilterCondition> packageLengthEqualTo(int length) {
+  QueryBuilder<Repo, Repo, QAfterFilterCondition> packageLengthEqualTo(
+      int length) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'package', length, true, length, true);
     });
@@ -535,7 +541,8 @@ extension RepoQueryLinks on QueryBuilder<Repo, Repo, QFilterCondition> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'package', lower, includeLower, upper, includeUpper);
+      return query.linkLength(
+          r'package', lower, includeLower, upper, includeUpper);
     });
   }
 }
@@ -581,7 +588,8 @@ extension RepoQuerySortThenBy on QueryBuilder<Repo, Repo, QSortThenBy> {
 }
 
 extension RepoQueryWhereDistinct on QueryBuilder<Repo, Repo, QDistinct> {
-  QueryBuilder<Repo, Repo, QDistinct> distinctByUrl({bool caseSensitive = true}) {
+  QueryBuilder<Repo, Repo, QDistinct> distinctByUrl(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'url', caseSensitive: caseSensitive);
     });

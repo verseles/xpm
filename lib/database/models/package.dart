@@ -23,16 +23,20 @@ class Package {
   String? url;
 
   @Index(caseSensitive: false)
-  List<String>? arch;
+  List<String>? arch; // supported architectures
 
   @Index(caseSensitive: false)
-  List<String>? methods;
+  List<String>? methods; // supported methods
 
   @Index(caseSensitive: false)
-  List<String>? defaults;
+  List<String>? defaults; // supported default methods
 
   @Index(caseSensitive: false)
-  String? installed;
+  String? installed; // version installed
+
+  String? method; // method used to install
+
+  String? channel; // channel used to install
 
   final repo = IsarLink<Repo>();
 }

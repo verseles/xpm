@@ -28,6 +28,7 @@ class Prepare {
 
   late final String preferredMethod;
   late final bool forceMethod;
+  late final String channelChosen;
 
   late final String repoSlug, packageName;
   late final Future<Directory> cacheRepoDir;
@@ -47,8 +48,9 @@ class Prepare {
   Future<void> boot() async {
     if (booted) return;
 
-    preferredMethod = args?['method'] ?? 'auto';
+    preferredMethod = args?['method'] ?? package.method ?? 'auto';
     forceMethod = args!['force-method'];
+    channelChosen = args!['channel'] ?? package.channel ?? '';
 
     repoSlug = repo.url.slugify();
     packageName = package.name;
@@ -635,7 +637,7 @@ validate "$bestValidateExecutable"
     bool isAndroid = xOS == 'android';
 
     String xARCH = getArchitecture();
-    String xCHANNEL = args!['channel'] ?? '';
+    String xCHANNEL = channelChosen;
 
     String xTMP = (await XPM.temp(packageName)).path;
 

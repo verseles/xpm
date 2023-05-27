@@ -132,6 +132,8 @@ class InstallCommand extends Command {
       // Update the local database to reflect the installation.
       await db.writeTxn(() async {
         packageInDB.installed = packageInDB.version;
+        packageInDB.method = argResults!['method'];
+        packageInDB.channel = argResults!['channel'];
         await db.packages.put(packageInDB);
       });
 

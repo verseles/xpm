@@ -82,7 +82,7 @@ class RemoveCommand extends Command {
       }
 
       var repo = packageInDB.repo.value!;
-      // @TODO Check if package is already installed
+
       final prepare = Prepare(repo, packageInDB, args: argResults);
       out('Removing "{@blue}$packageRequested{@end}"...');
 
@@ -114,6 +114,8 @@ class RemoveCommand extends Command {
       // Update the local database to reflect the removal.
       await db.writeTxn(() async {
         packageInDB.installed = null;
+        packageInDB.method = null;
+        packageInDB.channel = null;
         await db.packages.put(packageInDB);
       });
 
