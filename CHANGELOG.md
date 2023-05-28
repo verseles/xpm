@@ -1,3 +1,5 @@
+## v0.61.0
+- move decisions do findBest instead bestForAny
 ## v0.60.0
 - comment out unused Global.updateCommand and add a FIXME note about the missing update command for swupd only upgrade
 ## v0.59.0

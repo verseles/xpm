@@ -188,32 +188,29 @@ class Prepare {
       }
     }
 
+    if (Global.hasFlatpak) {
+      if (methods.contains('flatpak')) return await bestForFlatpak(to: to);
+    }
+
+    if (Global.hasSnap) {
+      if (methods.contains('snap') || defaults.contains('snap')) {
+        return await bestForSnap(to: to);
+      }
+    }
+
+    if (methods.contains('appimage')) {
+      return await bestForAppImage(to: to);
+    }
+
     return await bestForAny(to: to);
   }
 
   /// Determines the best installation method for any operating system.
   ///
   /// The [to] parameter is the installation target.
-  /// The [skip] parameter is a list of methods to skip.
-  Future<String> bestForAny({String to = 'install', List<String> skip = const []}) async {
+  Future<String> bestForAny({String to = 'install'}) async {
     final methods = package.methods ?? [];
     final defaults = package.defaults ?? [];
-
-    skipMethods.addAll(skip);
-
-    if (!skipMethods.contains('flatpak') && Global.hasFlatpak) {
-      if (methods.contains('flatpak')) return await bestForFlatpak(to: to);
-    }
-
-    if (!skipMethods.contains('snap') && Global.hasSnap) {
-      if (methods.contains('snap') || defaults.contains('snap')) {
-        return await bestForSnap(to: to);
-      }
-    }
-
-    if (!skipMethods.contains('appimage') && methods.contains('appimage')) {
-      return await bestForAppImage(to: to);
-    }
 
     if (methods.contains('any')) return '${to}_any';
 
@@ -237,7 +234,7 @@ class Prepare {
 
     stopIfForcedMethodNotFound();
 
-    return await bestForAny(to: to, skip: ['flatpak']);
+    return await bestForAny(to: to);
   }
 
   /// Determines the best installation method for package managers that work on any operating system.
@@ -268,7 +265,7 @@ class Prepare {
 
     stopIfForcedMethodNotFound();
 
-    return await bestForAny(to: to, skip: ['snap']);
+    return await bestForAny(to: to);
   }
 
   /// Determines the best installation method for package managers that work on any operating system.
@@ -288,7 +285,7 @@ class Prepare {
 
     stopIfForcedMethodNotFound();
 
-    return await bestForAny(to: to, skip: ['appimage']);
+    return await bestForAny(to: to);
   }
 
   /// Determines the best installation method for Clear Linux OS.
