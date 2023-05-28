@@ -1,3 +1,5 @@
+## v0.58.0
+- Small changes
 ## v0.57.0
 - feat(prepare.dart): add support for  parameter to skip installation methods in  method
 ## v0.56.0

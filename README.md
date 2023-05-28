@@ -26,7 +26,9 @@ XPM is a package manager for unix systems like Linux, BSD, MacOS, etc. It can be
 - Search are fast and growing filter options
 - You don't need to know the package manager of your distro
 - You don't need to know the package name that the package manager uses
-- Easy to choose channels (stable, beta, nightly, etc) 
+- Easy to choose channels (stable, beta, nightly, etc)
+- Single base to install packages in any distro
+
   
 ## Installation
 
@@ -62,7 +64,7 @@ XPM tries to use the native package manager way, but if it's not available, it w
 We have a main repository with many popular installer scripts, but we need more. If you want to contribute with an installer script, you can make a PR to [xpm-popular](https://github.com/verseles/xpm-popular). The installer script are bash script. If you want to create a repository with your own installers, you can do it. Just follow the [xpm spec](#xpm-specification).
 
 ## Contribute to XPM
-[![CI tests](https://github.com/verseles/xpm/actions/workflows/ci.yml/badge.svg)](https://github.com/verseles/xpm/actions/workflows/ci.yml)
+[![Test & Build](https://github.com/verseles/xpm/actions/workflows/global.yml/badge.svg)](https://github.com/verseles/xpm/actions/workflows/global.yml)
 
 We rely on dart lang. If you want to contribute, just follow good practices and make a PR. We will review it and merge it if it's ok.
 Don't forget to run the tests before make a PR:
