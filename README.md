@@ -22,7 +22,7 @@ XPM is a package manager for unix systems like Linux, BSD, MacOS, etc. It can be
   - By using Snap if available
   - By using AppImage if available
   - And ultimately by using the xpm way that may download, compile, install etc.
-- High effort to run in non-interactive way
+- High effort to run in non-interactive way, simple decisions are made automatically and always open-source
 - Search are fast and growing filter options
 - You don't need to know the package manager of your distro
 - You don't need to know the package name that the package manager uses
