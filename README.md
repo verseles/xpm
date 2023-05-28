@@ -1,7 +1,7 @@
 # xpm - uniX Package Manager
 [![Test & Build](https://github.com/verseles/xpm/actions/workflows/global.yml/badge.svg)](https://github.com/verseles/xpm/actions/workflows/global.yml)
 ## What is xpm?
-XPM is a package manager for unix systems like Linux, BSD, MacOS, etc. It can be a wrapper for native package managers or a package manager itself by using its way of installing packages. For the list of packages available, see [xpm-popular](https://github.com/vrseles/xpm-popular).
+XPM is a package manager for unix systems like Linux, BSD, MacOS, etc. It can be a wrapper for native package managers or a package manager itself by using its way of installing packages. For the list of packages available, see [xpm-popular](https://github.com/verseles/xpm-popular).
 
 ### Our key values
 
