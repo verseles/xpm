@@ -74,7 +74,7 @@ void main(List<String> args) async {
     }
 
     print(error);
-    Logger.tip('To search packages use: {@cyan}${XPM.name} <package name>');
+    Logger.tip('To search packages use: {@cyan}${XPM.name} <package name>{@end}');
 
     exit(wrongUsage);
   });
