@@ -1,24 +1,41 @@
 import 'dart:io';
 
-/// Returns the architecture of the current device as a future [String].
+/// Returns the architecture of the current system.
 String getArchitecture() {
-  if (Platform.isWindows) {
-    final arch = Platform.environment['PROCESSOR_ARCHITECTURE'];
-    final wow64Arch = Platform.environment['PROCESSOR_ARCHITEW6432'];
-    if ((arch == 'x86' && wow64Arch == null) || arch == 'AMD64') {
-      return 'x86_64';
-    } else {
-      return 'x86';
+  String result = 'unknown';
+  try {
+    final arch = Process.runSync('uname', ['-m']);
+    if (arch.exitCode == 0) {
+      result = arch.stdout.trim();
     }
-  } else {
-    try {
-      final result = Process.runSync('uname', ['-m']);
-      if (result.exitCode == 0) {
-        return result.stdout.trim();
-      }
-    } catch (e) {
-      return 'unknown';
-    }
+  } catch (e) {
+    return result;
   }
-  return 'unknown';
+
+  return normalizeCPUName(result);
+}
+
+/// Returns a normalized CPU name.
+///
+/// This function is used to normalize the output of `uname -m` to a more
+/// common name.
+String normalizeCPUName(String cpuName) {
+  Map<String, String> cpuNameMap = {
+    'amd64': 'x86_64',
+    'x64': 'x86_64',
+    'i686': 'x86',
+    'i386': 'x86',
+    'armv7': 'arm',
+    'aarch64': 'arm64',
+    'm1': 'apple-silicon',
+    'apple': 'apple-silicon',
+    'armv6l': 'arm',
+    'armv8': 'arm64',
+    'arm64v8': 'arm64',
+    'ppc64le': 'ppc64',
+    'ppc64el': 'ppc64',
+    's390x': 's390'
+  };
+
+  return cpuNameMap[cpuName.toLowerCase()] ?? cpuName;
 }
