@@ -13,6 +13,20 @@ XPM is a package manager for unix systems like Linux, BSD, MacOS, etc. It can be
 - Prefer native pm way and falls back to xpm way
 
 > Consider XPM as **release candidate** in Linux, **beta** in macOS, and **alpha** in Windows. It's not ready for production, but it's ready for testing and feedback.
+
+### Why use xpm?
+
+- Easy to install using flatpak, snap, appimage, default package manager or automatic fallback to xpm way
+- Automatic fallback to the most reasonable way to install the package
+  - By using Flatpak if available
+  - By using Snap if available
+  - By using AppImage if available
+  - And ultimately by using the xpm way that may download, compile, install etc.
+- High effort to run in non-interactive way
+- Search are fast and growing filter options
+- You don't need to know the package manager of your distro
+- You don't need to know the package name that the package manager uses
+- Easy to choose channels (stable, beta, nightly, etc) 
   
 ## Installation
 
@@ -40,7 +54,7 @@ xpm r <package>
 ## How it works
 XPM provides a set of tools to let community create their installers, or a group of installers (repository). The only requirement is to follow the [xpm spec](#xpm-specification). The spec is a set of bash functions that must be implemented in order to be a valid installer. The only required methods in the bash file is `validate` the others are optional but highly recommended: `install_any`, `remove_any`, `install_apt`, `install_pacman`, [etc](#xpm-specification).
 ## Architecture
-XPM takes care of detecting the operating system and the package manager, and then it calls the installer. The installer is a bash script that follows the [xpm spec]. Before call the bash script, it provides important variables to the script, like the package manager available, xpm [commands](#xpm-commands-available) to let download files, move to binary system folder, change permissions, move, copy, delete files, and even create shortcuts. All of this without need to know or rely in the operating system.
+XPM takes care of detecting the operating system and the package manager, and then it calls the installer. The installer is a bash script that follows the [xpm spec](#xpm-specification). Before call the bash script, it provides important variables to the script, like the package manager available, xpm [commands](#xpm-commands-available) to let download files, move to binary system folder, change permissions, move, copy, delete files, and even create shortcuts. All of this without need to know or rely in the operating system.
 
 XPM tries to use the native package manager way, but if it's not available, it will use its own way. For example, if you are using a debian based distro, and you want to install `micro` (an text editor in terminal), it will use `apt` to install it. But if you are using a distro that doesn't have `apt`, it will use `xpm` to install it. The same happens with `pacman` and `dnf`, and others. If you want to know more about how it works, you can read the [xpm spec](#xpm-specification).
 
@@ -70,7 +84,7 @@ The main house of the installer scripts are the repository [xpm-popular](https:/
 Every script should follow the specs and be considered valid to be included in the repository. The specs are:
 
 ### Read-only variables
-The following variables should be informed by the installer script, in the example below, the micro installer script:
+The following variables should be set by the installer script, in the example below, the micro installer script:
 ```bash
 # The name of the package
 readonly xNAME="micro"
