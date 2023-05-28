@@ -307,7 +307,8 @@ class Prepare {
       final String? bestSwupd = swupd;
 
       if (bestSwupd != null) {
-        Global.updateCommand = '${Global.sudoPath} $bestSwupd update || $errorOnUpdate';
+        // Global.updateCommand = '${Global.sudoPath} $bestSwupd update || $errorOnUpdate';
+        // @FIXME there is no update command for swupd only upgrade
         if (hasDefault) {
           final operation = to == 'install' ? 'bundle-add' : 'bundle-remove';
           return '${Global.sudoPath} $bestSwupd $operation -y ${package.name}';
