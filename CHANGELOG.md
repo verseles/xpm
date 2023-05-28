@@ -1,3 +1,5 @@
+## v0.62.0
+- small fix
 ## v0.61.0
 - move decisions do findBest instead bestForAny
 ## v0.60.0

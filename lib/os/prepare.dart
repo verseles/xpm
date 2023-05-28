@@ -210,7 +210,6 @@ class Prepare {
   /// The [to] parameter is the installation target.
   Future<String> bestForAny({String to = 'install'}) async {
     final methods = package.methods ?? [];
-    final defaults = package.defaults ?? [];
 
     if (methods.contains('any')) return '${to}_any';
 
