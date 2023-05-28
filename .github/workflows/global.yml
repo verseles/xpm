@@ -1,4 +1,4 @@
-name: Global
+name: Test/Build
 
 on:
   push:
