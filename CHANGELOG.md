@@ -1,3 +1,5 @@
+## v0.59.0
+- Better normalization of architeture function
 ## v0.58.0
 - Small changes
 ## v0.57.0
