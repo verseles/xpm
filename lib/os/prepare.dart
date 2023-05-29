@@ -228,7 +228,7 @@ class Prepare {
     final String? bestFlatpak = flatpak;
 
     if (hasMethod && bestFlatpak != null) {
-      return '${to}_flatpak "${Global.sudoPath} $bestFlatpak -y --noninteractive"';
+      return '${to}_flatpak "${Global.sudoPath} $bestFlatpak -y"';
     }
 
     stopIfForcedMethodNotFound();
