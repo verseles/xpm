@@ -1,3 +1,5 @@
+## v0.68.0
+- small fixes
 ## v0.67.0
 - small fix for flatpak
 ## v0.66.0
