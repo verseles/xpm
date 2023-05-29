@@ -229,7 +229,7 @@ class Prepare {
 
     if (hasMethod && bestFlatpak != null) {
       Global.updateCommand =
-          "${Global.sudoPath} $bestFlatpak -y --noninteractive remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo";
+          "${Global.sudoPath} $bestFlatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo";
       return '${to}_flatpak "${Global.sudoPath} $bestFlatpak -y --noninteractive"';
     }
 
