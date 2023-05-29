@@ -87,7 +87,7 @@ class BashScript {
   /// Returns the first value of the PROVIDES array.
   Future<String?> getFirstProvides() async {
     final value = await getArray('xPROVIDES');
-    if (value == null) {
+    if (value == null || value.isEmpty || value.first.isEmpty) {
       return null;
     }
     return value.first;

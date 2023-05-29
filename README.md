@@ -17,11 +17,6 @@ XPM is a package manager for unix systems like Linux, BSD, MacOS, etc. It can be
 ### Why use xpm?
 
 - Easy to install using flatpak, snap, appimage, default package manager or automatic fallback to xpm way
-- Automatic fallback to the most reasonable way to install the package
-  - By using Flatpak if available
-  - By using Snap if available
-  - By using AppImage if available
-  - And ultimately by using the xpm way that may download, compile, install etc.
 - High effort to run in non-interactive way, simple decisions are made automatically and always open-source
 - Search are fast and growing filter options
 - You don't need to know the package manager of your distro
