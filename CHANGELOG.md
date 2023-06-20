@@ -1,3 +1,5 @@
+## v0.73.0
+- lock update
 ## v0.69.0
 - add support for 'any' on ARCH, fixex #106
 ## v0.68.0
