@@ -1,3 +1,5 @@
+## v0.74.0
+- lock update
 ## v0.73.0
 - lock update
 ## v0.69.0
