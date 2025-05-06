@@ -24,15 +24,22 @@ void main() async {
       await runner.delete(filePath, sudo: false);
     }, testOn: 'linux');
 
-    test('creates a macOS shortcut correctly', () async {
-      final shortcut = Shortcut(
-        name: 'test_shortcut',
-        executablePath: '/Applications/test_app.app',
-      );
+    test(
+      'creates a macOS shortcut correctly',
+      () async {
+        final shortcut = Shortcut(
+          name: 'test_shortcut',
+          executablePath: '/Applications/Safari.app',
+        );
 
-      final file = File(await shortcut.create());
-      expect(await file.exists(), isTrue);
-    }, testOn: 'mac-os', tags: 'not-tested');
+        final filePath = await shortcut.create();
+
+        final runner = Run();
+
+        expect(await runner.exists(filePath, sudo: false), isTrue);
+      },
+      testOn: 'mac-os',
+    );
 
     test('creates a Windows shortcut correctly', () async {
       final shortcut = Shortcut(
