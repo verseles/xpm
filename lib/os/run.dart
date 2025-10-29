@@ -14,7 +14,6 @@ class Run {
     ShellEnvironment env = ShellEnvironment()..aliases['sudo'] = 'sudo --stdin';
     Shell shell = Shell(
         stdout: controller.sink,
-        stdin: sharedStdIn,
         environment: env,
         workingDirectory: XPM.userHome.path,
         runInShell: true,
@@ -39,15 +38,15 @@ class Run {
     try {
       if (Platform.isWindows) {
         await File(filePath).writeAsString(text);
+        return true;
       } else {
         List<String> args = ['-c', 'echo "$text" > $filePath'];
-        await simple('sh', args, sudo: sudo);
+        final result = await simple('sh', args, sudo: sudo);
+        return result.exitCode == 0;
       }
     } catch (e) {
       return false;
     }
-
-    return true;
   }
 
   /// Create an empty file at [filePath]
@@ -56,13 +55,14 @@ class Run {
     try {
       if (Platform.isWindows) {
         await File(filePath).create();
+        return true;
       } else {
-        await simple('touch', [filePath], sudo: sudo);
+        final result = await simple('touch', [filePath], sudo: sudo);
+        return result.exitCode == 0;
       }
     } catch (e) {
       return false;
     }
-    return true;
   }
 
   /// give [filePath] executable permissions
@@ -72,7 +72,10 @@ class Run {
       if (Platform.isWindows) {
         return true;
       } else {
-        await simple('chmod', ['+x', filePath], sudo: sudo);
+        final result = await simple('chmod', ['+x', filePath], sudo: sudo);
+        if (result.exitCode != 0) {
+          return false;
+        }
       }
     } catch (e) {
       return false;
@@ -96,6 +99,7 @@ class Run {
     try {
       if (Platform.isWindows) {
         await file.delete();
+        return true;
       } else {
         List<String> args = ['-f', filePath];
         if (recursive) {
@@ -104,13 +108,12 @@ class Run {
         if (force) {
           args.insert(0, '-f');
         }
-        await simple('rm', args, sudo: sudo);
+        final result = await simple('rm', args, sudo: sudo);
+        return result.exitCode == 0;
       }
     } catch (e) {
       return false;
     }
-    final exists = await file.exists();
-    return !exists;
   }
 
   /// Rename or move [oldPath] to [newPath]
@@ -120,6 +123,7 @@ class Run {
     try {
       if (Platform.isWindows) {
         await File($oldPath).rename($newPath);
+        return true;
       } else {
         List<String> args = [$oldPath, $newPath];
         if (recursive) {
@@ -131,13 +135,12 @@ class Run {
         if (preserve) {
           args.insert(0, '-p');
         }
-        await simple('mv', args, sudo: sudo);
+        final result = await simple('mv', args, sudo: sudo);
+        return result.exitCode == 0;
       }
     } catch (e) {
       return false;
     }
-
-    return true;
   }
 
   /// Copy [oldPath] to [newPath]
@@ -163,25 +166,24 @@ class Run {
         if (preserve) {
           args.insert(0, '-p');
         }
-        await simple('cp', args, sudo: sudo);
+        final result = await simple('cp', args, sudo: sudo);
+        return result.exitCode == 0;
       }
     } catch (e) {
       return false;
     }
-
-    return true;
   }
 
   /// Check if [filePath] exists
   /// If [sudo] is true, the file will be checked with sudo permissions
   Future<bool> exists(String filePath, {sudo = false}) async {
-    if (Platform.isWindows) {
-      return await File(filePath).exists();
-    }
-
     try {
-      await simple('test', ['-e', filePath], sudo: sudo);
-      return true;
+      if (Platform.isWindows) {
+        return await File(filePath).exists();
+      }
+
+      final result = await simple('test', ['-e', filePath], sudo: sudo);
+      return result.exitCode == 0;
     } catch (e) {
       return false;
     }
