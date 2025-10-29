@@ -80,7 +80,7 @@ void main(List<String> args) async {
   });
 }
 
-Never showVersion(args) {
+Never showVersion(List<String> args) {
   if (args.first == '-v') {
     leave(message: XPM.version, exitCode: success);
   }

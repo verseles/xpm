@@ -131,7 +131,7 @@ class Prepare {
     }
   }
 
-  Future<String> findBest(to) async {
+  Future<String> findBest(String to) async {
     await boot();
     final methods = package.methods ?? [];
     final defaults = package.defaults ?? [];
