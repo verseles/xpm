@@ -8,16 +8,22 @@ class Run {
   /// If [sudo] is true, the command will be run with sudo permissions
   /// If [onProgress] is provided, it will be called with the output of the
   /// command
-  Future<ProcessResult> simple(String script, List<String> args,
-      {void Function(String)? onProgress, bool quiet = false, bool sudo = false}) async {
+  Future<ProcessResult> simple(
+    String script,
+    List<String> args, {
+    void Function(String)? onProgress,
+    bool quiet = false,
+    bool sudo = false,
+  }) async {
     final controller = ShellLinesController();
     ShellEnvironment env = ShellEnvironment()..aliases['sudo'] = 'sudo --stdin';
     Shell shell = Shell(
-        stdout: controller.sink,
-        environment: env,
-        workingDirectory: XPM.userHome.path,
-        runInShell: true,
-        commandVerbose: false);
+      stdout: controller.sink,
+      environment: env,
+      workingDirectory: XPM.userHome.path,
+      runInShell: true,
+      commandVerbose: false,
+    );
 
     if (onProgress != null) {
       controller.stream.listen((line) => onProgress.call(line));
@@ -118,8 +124,14 @@ class Run {
 
   /// Rename or move [oldPath] to [newPath]
   /// If [sudo] is true, the file will be moved with sudo permissions
-  Future<bool> move(String $oldPath, String $newPath,
-      {sudo = false, force = false, recursive = false, preserve = false}) async {
+  Future<bool> move(
+    String $oldPath,
+    String $newPath, {
+    sudo = false,
+    force = false,
+    recursive = false,
+    preserve = false,
+  }) async {
     try {
       if (Platform.isWindows) {
         await File($oldPath).rename($newPath);
@@ -149,8 +161,14 @@ class Run {
   /// If [force] is true, the file will be copied even if it already exists
   /// If [preserve] is true, the file will be copied preserving the original
   /// permissions
-  Future<bool> copy(String oldPath, String newPath,
-      {sudo = false, recursive = false, force = false, preserve = false}) async {
+  Future<bool> copy(
+    String oldPath,
+    String newPath, {
+    sudo = false,
+    recursive = false,
+    force = false,
+    preserve = false,
+  }) async {
     try {
       if (Platform.isWindows) {
         await File(oldPath).copy(newPath);

@@ -27,15 +27,22 @@ class GetCommand extends Command {
   GetCommand() {
     argParser.addOption("out", abbr: "o", help: "Output file path with filename", valueHelp: 'path');
 
-    argParser.addOption("user-agent",
-        abbr: "u", help: "Identification of the software accessing the internet", valueHelp: "<string>");
+    argParser.addOption(
+      "user-agent",
+      abbr: "u",
+      help: "Identification of the software accessing the internet",
+      valueHelp: "<string>",
+    );
 
     argParser.addFlag('no-user-agent', help: 'Disable user agent', negatable: false);
 
-    argParser.addOption('name',
-        abbr: 'n',
-        help: 'Define the name of the downloaded file without defining the path'
-            ' (only works without --out)');
+    argParser.addOption(
+      'name',
+      abbr: 'n',
+      help:
+          'Define the name of the downloaded file without defining the path'
+          ' (only works without --out)',
+    );
 
     argParser.addFlag('exec', abbr: 'x', help: 'Make executable the downloaded file (unix only)', negatable: false);
 
@@ -109,10 +116,11 @@ class GetCommand extends Command {
     final ProgressState? progressBar;
     if (progressBarEnabled) {
       progressBar = Progress.withTheme(
-          theme: Theme.colorfulTheme,
-          length: 100,
-          rightPrompt: (current) => ' ${current.toString().padLeft(3)}%',
-          leftPrompt: (c) => 'Downloading $fileName ').interact();
+        theme: Theme.colorfulTheme,
+        length: 100,
+        rightPrompt: (current) => ' ${current.toString().padLeft(3)}%',
+        leftPrompt: (c) => 'Downloading $fileName ',
+      ).interact();
     } else {
       progressBar = null;
     }

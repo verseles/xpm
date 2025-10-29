@@ -46,7 +46,8 @@ class InstallCommand extends Command {
     argParser.addFlag(
       'force-method',
       negatable: false,
-      help: 'Force the selected method set by --method.'
+      help:
+          'Force the selected method set by --method.'
           '\nIf not set, the selected method can fallback to another method or finally to [any].',
     );
 
@@ -56,7 +57,8 @@ class InstallCommand extends Command {
     argParser.addMultiOption(
       'flags',
       abbr: 'e',
-      help: 'Inform custom flags to the script.'
+      help:
+          'Inform custom flags to the script.'
           '\nUse this option multiple times to pass multiple flags.'
           '\nExample: --flags="--flag1" --flags="--flag2"',
     );

@@ -45,8 +45,12 @@ class FileDeleteCommand extends Command {
       }
 
       final run = Run();
-      final deleted = await run.delete(filePath,
-          sudo: argResults!['sudo'], recursive: argResults!['recursive'], force: argResults!['force']);
+      final deleted = await run.delete(
+        filePath,
+        sudo: argResults!['sudo'],
+        recursive: argResults!['recursive'],
+        force: argResults!['force'],
+      );
 
       if (!deleted || file.existsSync() && !argResults!['force']) {
         out("{@red}Failed to delete '$filePath'{@end}");

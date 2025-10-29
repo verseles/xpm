@@ -8,12 +8,14 @@ void main() {
         'name': 'John',
         'age': 30,
         'isMarried': true,
-        'hobbies': ['reading', 'coding', 'playing guitar']
+        'hobbies': ['reading', 'coding', 'playing guitar'],
       };
 
       String serializedData = serialize(data);
       expect(
-          serializedData, '{"name":"John","age":30,"isMarried":true,"hobbies":["reading","coding","playing guitar"]}');
+        serializedData,
+        '{"name":"John","age":30,"isMarried":true,"hobbies":["reading","coding","playing guitar"]}',
+      );
 
       dynamic unserializedData = unserialize(serializedData);
       expect(unserializedData, equals(data));

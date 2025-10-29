@@ -28,28 +28,40 @@ class RemoveCommand extends Command {
 
   RemoveCommand() {
     // Add options and flags for the command.
-    argParser.addOption('method',
-        abbr: 'm',
-        help: 'The method to use to remove the package.',
-        valueHelp: 'auto',
-        allowed: XPM.installMethods.keys,
-        allowedHelp: XPM.installMethods);
+    argParser.addOption(
+      'method',
+      abbr: 'm',
+      help: 'The method to use to remove the package.',
+      valueHelp: 'auto',
+      allowed: XPM.installMethods.keys,
+      allowedHelp: XPM.installMethods,
+    );
 
-    argParser.addFlag('force-method',
-        negatable: false,
-        help: 'Force the selected method set by --method.'
-            '\nIf not set, the selected method can fallsback to another method or finally to [any].');
+    argParser.addFlag(
+      'force-method',
+      negatable: false,
+      help:
+          'Force the selected method set by --method.'
+          '\nIf not set, the selected method can fallsback to another method or finally to [any].',
+    );
 
     argParser.addOption('channel', abbr: 'c', help: 'Inform the prefered channel to install the package.');
 
-    argParser.addFlag('force',
-        negatable: false, abbr: 'f', help: 'Force the removal of the package even if it is not installed.');
+    argParser.addFlag(
+      'force',
+      negatable: false,
+      abbr: 'f',
+      help: 'Force the removal of the package even if it is not installed.',
+    );
 
-    argParser.addMultiOption('flags',
-        abbr: 'e',
-        help: 'Inform custom flags to the script.'
-            '\nUse this option multiple times to pass multiple flags.'
-            '\nExample: --flags="--flag1" --flags="--flag2"');
+    argParser.addMultiOption(
+      'flags',
+      abbr: 'e',
+      help:
+          'Inform custom flags to the script.'
+          '\nUse this option multiple times to pass multiple flags.'
+          '\nExample: --flags="--flag1" --flags="--flag2"',
+    );
 
     argParser.addFlag('verbose', negatable: false, abbr: 'v', help: 'Show more information about what is going on.');
   }

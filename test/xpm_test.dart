@@ -70,11 +70,14 @@ void main() {
       final userHome = XPM.userHome;
       expect(userHome.path, isNotEmpty);
       expect(
-          userHome.path,
-          equals(Platform.environment['HOME'] ??
+        userHome.path,
+        equals(
+          Platform.environment['HOME'] ??
               Platform.environment['USERPROFILE'] ??
               Platform.environment['HOMEPATH'] ??
-              Directory.current.absolute.path));
+              Directory.current.absolute.path,
+        ),
+      );
     });
   }, tags: ['dpp']);
 }

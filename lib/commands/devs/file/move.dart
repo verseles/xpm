@@ -36,8 +36,13 @@ class FileMoveCommand extends Command {
     final newPath = args[1];
 
     final run = Run();
-    final moved = await run.move(oldPath, newPath,
-        sudo: argResults!['sudo'], force: argResults!['force'], preserve: argResults!['preserve']);
+    final moved = await run.move(
+      oldPath,
+      newPath,
+      sudo: argResults!['sudo'],
+      force: argResults!['force'],
+      preserve: argResults!['preserve'],
+    );
 
     final file = File(newPath);
     if (!moved || !file.existsSync()) {

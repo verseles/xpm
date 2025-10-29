@@ -70,7 +70,9 @@ class SearchCommand extends Command {
               ? '[{@red}unavailable for $platform{@end}]'
               : '';
 
-          out('$unavailable{@blue}${result.name}{@end} {@green}${result.version}{@end} $installed- ${result.title != result.name ? "${result.title} - " : ""}${result.desc}');
+          out(
+            '$unavailable{@blue}${result.name}{@end} {@green}${result.version}{@end} $installed- ${result.title != result.name ? "${result.title} - " : ""}${result.desc}',
+          );
         }
       }
     }

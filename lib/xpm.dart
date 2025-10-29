@@ -17,39 +17,39 @@ class XPM {
   static String get description => pubspec.description.split('.').first;
 
   static Map<String, String> get installMethods => {
-        'auto': 'Automatically choose the best method or fallsback to [any].',
-        'any': 'Use the generic method. Sometimes this is the best method.',
-        'apt': 'Use apt or apt-like package manager.',
-        'flatpak': 'Use flatpak or flatpak-like package manager.',
-        'snap': 'Use snap or snap-like package manager.',
-        'appimage': 'Use compiled binaries if available.',
-        'brew': 'Use brew or brew-like package manager.',
-        'choco': 'Use choco or choco-like package manager.',
-        'dnf': 'Use dnf or dnf-like package manager.',
-        'pacman': 'Use pacman or pacman-like package manager.',
-        'zypper': 'Use zypper or zypper-like package manager.',
-        'termux': 'Use android or android-like package manager.',
-        'swupd': 'Use swupd or swupd-like package manager.'
-      };
+    'auto': 'Automatically choose the best method or fallsback to [any].',
+    'any': 'Use the generic method. Sometimes this is the best method.',
+    'apt': 'Use apt or apt-like package manager.',
+    'flatpak': 'Use flatpak or flatpak-like package manager.',
+    'snap': 'Use snap or snap-like package manager.',
+    'appimage': 'Use compiled binaries if available.',
+    'brew': 'Use brew or brew-like package manager.',
+    'choco': 'Use choco or choco-like package manager.',
+    'dnf': 'Use dnf or dnf-like package manager.',
+    'pacman': 'Use pacman or pacman-like package manager.',
+    'zypper': 'Use zypper or zypper-like package manager.',
+    'termux': 'Use android or android-like package manager.',
+    'swupd': 'Use swupd or swupd-like package manager.',
+  };
 
   /// Returns a map of architecture correspondences.
   static Map<String, String> get archCorrespondence => {
-        'linux64': 'linux-x86_64',
-        'linux32': 'linux-i686',
-        'linuxarm': 'linux-armv7l',
-        'linuxarm64': 'linux-aarch64',
-        'windows32': 'windows-i686',
-        'win32': 'windows-i686',
-        'win64': 'windows-x86_64',
-        'macos64': 'darwin-x86_64',
-        'macos-aarch64': 'macos-arm64',
-        'freebsd32': 'freebsd-i686',
-        'freebsd64': 'freebsd-x86_64',
-        'netbsd32': 'netbsd-i686',
-        'netbsd64': 'netbsd-x86_64',
-        'openbsd32': 'openbsd-i686',
-        'openbsd64': 'openbsd-x86_64',
-      };
+    'linux64': 'linux-x86_64',
+    'linux32': 'linux-i686',
+    'linuxarm': 'linux-armv7l',
+    'linuxarm64': 'linux-aarch64',
+    'windows32': 'windows-i686',
+    'win32': 'windows-i686',
+    'win64': 'windows-x86_64',
+    'macos64': 'darwin-x86_64',
+    'macos-aarch64': 'macos-arm64',
+    'freebsd32': 'freebsd-i686',
+    'freebsd64': 'freebsd-x86_64',
+    'netbsd32': 'netbsd-i686',
+    'netbsd64': 'netbsd-x86_64',
+    'openbsd32': 'openbsd-i686',
+    'openbsd64': 'openbsd-x86_64',
+  };
 
   /// Returns the path to the git executable.
   /// There is no need to cache the result as it is cached by the [Executable] class.

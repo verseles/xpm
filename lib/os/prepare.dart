@@ -24,7 +24,8 @@ class Prepare {
 
   static final String distro = osRelease('ID') ?? Platform.operatingSystem;
   static final List<String> distroLike = (osRelease('ID_LIKE') ?? '').split(" ");
-  static final String errorOnUpdate = 'echo -e "\\\\033[38;5;208m Errors on update repositores. Proceeding... \\\\033[0m"';
+  static final String errorOnUpdate =
+      'echo -e "\\\\033[38;5;208m Errors on update repositores. Proceeding... \\\\033[0m"';
 
   late final String preferredMethod;
   late final bool forceMethod;
@@ -551,7 +552,8 @@ class Prepare {
 
     final packageScriptContents = await packageScript.contents();
 
-    String togetherContents = '''
+    String togetherContents =
+        '''
 #!/usr/bin/env bash
 
 $dynamicCode
@@ -584,7 +586,8 @@ $bestFor
 
     final packageScriptContents = await packageScript.contents();
 
-    String togetherContents = '''
+    String togetherContents =
+        '''
 #!/usr/bin/env bash
 
 $dynamicCode
@@ -625,7 +628,8 @@ $bestFor
       }
     }
 
-    String togetherContents = '''
+    String togetherContents =
+        '''
 #!/usr/bin/env bash
 
 ${await dynamicCode()}

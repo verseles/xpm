@@ -36,7 +36,7 @@ String normalizeCPUName(String cpuName) {
     'arm64v8': 'arm64',
     'ppc64le': 'ppc64',
     'ppc64el': 'ppc64',
-    's390x': 's390'
+    's390x': 's390',
   };
 
   return cpuNameMap[cpuName.toLowerCase()] ?? cpuName;

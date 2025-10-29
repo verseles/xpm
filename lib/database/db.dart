@@ -37,8 +37,12 @@ class DB {
 
     // Open the database and create the necessary tables.
     if (Isar.getInstance(dbName) == null) {
-      await Isar.open([RepoSchema, PackageSchema, KVSchema],
-          directory: dataDir.path, relaxedDurability: true, name: dbName);
+      await Isar.open(
+        [RepoSchema, PackageSchema, KVSchema],
+        directory: dataDir.path,
+        relaxedDurability: true,
+        name: dbName,
+      );
     }
 
     // If the database instance cannot be opened, throw an exception.

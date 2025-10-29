@@ -40,11 +40,14 @@ class FileCopyCommand extends Command {
     final newPath = args[1];
 
     final run = Run();
-    final copied = await run.copy(oldPath, newPath,
-        sudo: argResults!['sudo'],
-        recursive: argResults!['recursive'],
-        force: argResults!['force'],
-        preserve: argResults!['preserve']);
+    final copied = await run.copy(
+      oldPath,
+      newPath,
+      sudo: argResults!['sudo'],
+      recursive: argResults!['recursive'],
+      force: argResults!['force'],
+      preserve: argResults!['preserve'],
+    );
 
     final file = File(newPath);
     if (!copied || !file.existsSync()) {

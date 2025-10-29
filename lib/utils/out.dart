@@ -15,12 +15,14 @@ import 'package:console/console.dart';
 /// The [style] parameter is an enum value that specifies the style of the variables in the message. The default value is `null`, which means that the variables will be printed in their default style.
 ///
 /// The [resolver] parameter is a function that takes a variable name and returns its value. It is used to resolve variables in the message. The default value is `null`, which means that variables will not be resolved.
-void out(String message,
-    {bool error = false,
-    List<String>? args,
-    Map<String, String>? replace,
-    VariableStyle? style,
-    VariableResolver? resolver}) {
+void out(
+  String message, {
+  bool error = false,
+  List<String>? args,
+  Map<String, String>? replace,
+  VariableStyle? style,
+  VariableResolver? resolver,
+}) {
   final output = error ? stderr : stdout;
 
   output.writeln(format(message, args: args, replace: replace, style: style, resolver: resolver));

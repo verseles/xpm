@@ -31,8 +31,13 @@ class ChecksumCommand extends Command {
   };
 
   ChecksumCommand() {
-    argParser.addOption('type',
-        abbr: 't', help: 'Hash type', allowed: _supportedHashes.keys.toList(), defaultsTo: 'sha1');
+    argParser.addOption(
+      'type',
+      abbr: 't',
+      help: 'Hash type',
+      allowed: _supportedHashes.keys.toList(),
+      defaultsTo: 'sha1',
+    );
   }
 
   @override

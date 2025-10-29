@@ -23,20 +23,30 @@ class ShortcutCommand extends Command {
 
     argParser.addOption("description", abbr: "d", help: "Description of the application", valueHelp: 'description');
 
-    argParser.addMultiOption("category",
-        abbr: "c", help: "Categories, multiple times or once using semicolon", valueHelp: 'category[;category2]');
+    argParser.addMultiOption(
+      "category",
+      abbr: "c",
+      help: "Categories, multiple times or once using semicolon",
+      valueHelp: 'category[;category2]',
+    );
 
     argParser.addFlag("terminal", abbr: 't', help: 'Run in terminal', defaultsTo: false);
 
-    argParser.addOption("type",
-        abbr: 'y',
-        help: 'Type of the shortcut',
-        valueHelp: 'type',
-        allowed: ['Application', 'Link', 'Directory', 'Menu', 'FSDevice', 'FSVolume', 'Location', 'Window'],
-        defaultsTo: 'Application');
+    argParser.addOption(
+      "type",
+      abbr: 'y',
+      help: 'Type of the shortcut',
+      valueHelp: 'type',
+      allowed: ['Application', 'Link', 'Directory', 'Menu', 'FSDevice', 'FSVolume', 'Location', 'Window'],
+      defaultsTo: 'Application',
+    );
 
-    argParser.addMultiOption('mime',
-        abbr: 'm', help: 'MimeTypes, multiple times or once using semicolon', valueHelp: 'mime[;mime2]');
+    argParser.addMultiOption(
+      'mime',
+      abbr: 'm',
+      help: 'MimeTypes, multiple times or once using semicolon',
+      valueHelp: 'mime[;mime2]',
+    );
 
     argParser.addFlag("startup", abbr: 'u', help: 'Notify on startup', negatable: true, defaultsTo: true);
 
@@ -62,16 +72,17 @@ class ShortcutCommand extends Command {
     final bool remove = argResults!['remove'];
 
     var shortcut = Shortcut(
-        name: name,
-        executablePath: executablePath,
-        icon: icon,
-        comment: description,
-        categories: category.join(';'),
-        terminal: terminal,
-        type: type,
-        mime: mime.join(';'),
-        startup: startup,
-        sudo: sudo);
+      name: name,
+      executablePath: executablePath,
+      icon: icon,
+      comment: description,
+      categories: category.join(';'),
+      terminal: terminal,
+      type: type,
+      mime: mime.join(';'),
+      startup: startup,
+      sudo: sudo,
+    );
 
     if (remove) {
       await shortcut.delete();

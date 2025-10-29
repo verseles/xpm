@@ -80,7 +80,8 @@ class Shortcut {
     if (await file.exists()) {
       await runner.delete(filePath, sudo: sudo);
     }
-    String content = '''[Desktop Entry]
+    String content =
+        '''[Desktop Entry]
     Name=$name
     Exec=$executablePath
     Icon=${icon ?? name}
@@ -115,7 +116,8 @@ class Shortcut {
   /// @FIXME This function was not tested.
   Future<String> _createWindowsShortcut() async {
     final linkPath = "$home/Desktop/$name.lnk";
-    final command = "cmd /c "
+    final command =
+        "cmd /c "
         "echo Set oWS = WScript.CreateObject(\"WScript.Shell\") > CreateShortcut.vbs & "
         "echo sLinkFile = \"$linkPath\" >> CreateShortcut.vbs & "
         "echo Set oLink = oWS.CreateShortcut(sLinkFile) >> CreateShortcut.vbs & "
