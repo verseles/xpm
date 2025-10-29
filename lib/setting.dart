@@ -13,7 +13,7 @@ class Setting {
   /// Parameters:
   /// - [key]: A unique key for the setting. It is case-insensitive and will be stored in lowercase.
   /// - [value]: The value to set for the setting.
-  static Future<void> set(String key, dynamic value, {DateTime? expires, lazy = false}) async {
+  static Future<void> set(String key, dynamic value, {DateTime? expires, bool lazy = false}) async {
     final data = KV()
       ..key = key.toLowerCase()
       ..value = serialize(value)

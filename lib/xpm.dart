@@ -33,7 +33,7 @@ class XPM {
       };
 
   /// Returns a map of architecture correspondences.
-  static get archCorrespondence => {
+  static Map<String, String> get archCorrespondence => {
         'linux64': 'linux-x86_64',
         'linux32': 'linux-i686',
         'linuxarm': 'linux-armv7l',
