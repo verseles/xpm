@@ -27,7 +27,7 @@ build:
 try:
 	build/xpm $(CMD)
 
-test:
+test: build
 	dart test --concurrency=12 --test-randomize-ordering-seed=random
 
 validate:

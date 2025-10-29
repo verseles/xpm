@@ -13,10 +13,10 @@ packages:
     dependency: "direct main"
     description:
       name: all_exit_codes
-      sha256: a3da77f2565ac34c9f15932bcfda8084b177b87b40569017e574c437c894254a
+      sha256: d32006955941012cb78c9013107cbc150f6b7f71b70d9e05eb8516bd6dd097bd
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.3"
+    version: "2.2.0"
   analyzer:
     dependency: transitive
     description:
@@ -189,10 +189,10 @@ packages:
     dependency: "direct main"
     description:
       name: console_bars
-      sha256: "32e3c4033310be15253c407ac2495635e1ca179de50d2b59f116dad7d3678ec7"
+      sha256: "625f41029b516ccbccaaf765f1038cd9af7680194eaeda5a7c86dc408fc88255"
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.1"
   convert:
     dependency: transitive
     description:
@@ -245,10 +245,10 @@ packages:
     dependency: "direct main"
     description:
       name: dio
-      sha256: "253a18bbd4851fecba42f7343a1df3a9a4c1d31a2c1b37e221086b4fa8c8dbc9"
+      sha256: d90ee57923d1828ac14e492ca49440f65477f4bb1263575900be731a3dac66a9
       url: "https://pub.dev"
     source: hosted
-    version: "5.8.0+1"
+    version: "5.9.0"
   dio_web_adapter:
     dependency: transitive
     description:
@@ -261,18 +261,18 @@ packages:
     dependency: "direct main"
     description:
       name: dloader
-      sha256: "0d07278e77cfc655ff02aa7ebf27c6937b8019e381692feca6430e765d257685"
+      sha256: e796289ee61c6c4a5b4c3a117c0916814e5dcc3429870d543be24527877121b4
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.6"
+    version: "1.2.7"
   executable:
     dependency: "direct main"
     description:
       name: executable
-      sha256: "2ff97e2ca1c99001f5d30ba20442fabce13e4df4c9e20af02c6adbbca883a885"
+      sha256: "6aae2bfcee545e404fec54b89364cca3931fc1f5e2f09a098a7a2e3e75e82afc"
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.0"
+    version: "1.4.1"
   ffi:
     dependency: transitive
     description:
@@ -397,10 +397,10 @@ packages:
     dependency: "direct dev"
     description:
       name: lints
-      sha256: c35bb79562d980e9a453fc715854e1ed39e24e7d0297a880ef54e17f9874a9d7
+      sha256: a5e2b223cb7c9c8efdc663ef484fdd95bb243bff242ef5b13e26883547fce9a0
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.1"
+    version: "6.0.0"
   logging:
     dependency: transitive
     description:
@@ -754,4 +754,4 @@ packages:
     source: hosted
     version: "3.1.3"
 sdks:
-  dart: ">=3.7.0 <3.8.0"
+  dart: ">=3.9.4 <4.0.0"

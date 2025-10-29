@@ -78,7 +78,7 @@ class Setting {
 
   // Factory to save cached values in a list map
   factory Setting() => _instance;
-  static final _instance = Setting._privateConstructor();
+  static final Setting _instance = Setting._privateConstructor();
   Setting._privateConstructor();
 
   /// Delete all expired settings.

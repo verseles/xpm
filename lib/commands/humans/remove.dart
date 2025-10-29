@@ -90,17 +90,17 @@ class RemoveCommand extends Command {
       final runner = Run();
       try {
         await runner.simple(bash, ['-c', 'source ${await prepare.toRemove()}']);
-      } on ShellException catch (_) {
+      } on ShellException catch (e) {
         sharedStdIn.terminate();
 
         String error = 'Failed to remove "{@red}$packageRequested{@end}"';
         if (argResults!['verbose'] == true) {
-          error += ': ${_.message}';
+          error += ': ${e.message}';
         } else {
           error += '.';
         }
 
-        leave(message: error, exitCode: _.result?.exitCode ?? generalError);
+        leave(message: error, exitCode: e.result?.exitCode ?? generalError);
       }
 
       // Validate the removal of the package.
@@ -108,7 +108,7 @@ class RemoveCommand extends Command {
         await runner.simple(bash, ['-c', 'source ${await prepare.toValidate(removing: true)}']);
         String error = 'Failed to validate uninstall of "{@red}$packageRequested{@end}"';
         Logger.warning(error);
-      } on ShellException catch (_) {
+      } on ShellException catch (e) {
         // If the package is not installed, the validation should pass
       }
       // Update the local database to reflect the removal.

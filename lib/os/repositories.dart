@@ -25,7 +25,7 @@ class Repositories {
   /// The [create] parameter indicates whether to create the directory if it does not exist.
   static final Map<String, Future<Directory>> __dirs = {};
 
-  static Future<Directory> dir(String repoSlug, {package = '', create = true}) async {
+  static Future<Directory> dir(String repoSlug, {String package = '', bool create = true}) async {
     final reposDir = await getReposDir();
 
     final dir = Directory("${reposDir.path}/$repoSlug/$package");

@@ -97,16 +97,16 @@ class InstallCommand extends Command {
       final runner = Run();
       try {
         await runner.simple(bash, ['-c', 'source ${await prepare.toInstall()}']);
-      } on ShellException catch (_) {
+      } on ShellException catch (e) {
         sharedStdIn.terminate();
         String error = 'Failed to install "$packageRequested"';
         if (argResults!['verbose'] == true) {
-          error += ': ${_.message}';
+          error += ': ${e.message}';
         } else {
           error += '.';
         }
 
-        leave(message: error, exitCode: _.result?.exitCode ?? generalError);
+        leave(message: error, exitCode: e.result?.exitCode ?? generalError);
       }
 
       // Check if the package was installed successfully.
@@ -117,10 +117,10 @@ class InstallCommand extends Command {
         Logger.info('Checking installation of $packageRequested...');
         try {
           await runner.simple(bash, ['-c', 'source ${await prepare.toValidate()}']);
-        } on ShellException catch (_) {
+        } on ShellException catch (e) {
           error = 'Package "$packageRequested" installed with errors';
           if (argResults!['verbose'] == true) {
-            error += ': ${_.message}';
+            error += ': ${e.message}';
           } else {
             error += '.';
           }
