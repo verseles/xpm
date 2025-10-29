@@ -108,7 +108,7 @@ class RemoveCommand extends Command {
         await runner.simple(bash, ['-c', 'source ${await prepare.toValidate(removing: true)}']);
         String error = 'Failed to validate uninstall of "{@red}$packageRequested{@end}"';
         Logger.warning(error);
-      } on ShellException catch (e) {
+      } on ShellException {
         // If the package is not installed, the validation should pass
       }
       // Update the local database to reflect the removal.
