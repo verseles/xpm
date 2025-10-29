@@ -107,7 +107,7 @@ class Repositories {
     }
   }
 
-  static index() async {
+  static Future<void> index() async {
     final db = await DB.instance();
 
     // Delete all packages that are not currently installed from the local database.

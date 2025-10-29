@@ -78,7 +78,7 @@ class Setting {
 
   // Factory to save cached values in a list map
   factory Setting() => _instance;
-  static final _instance = Setting._privateConstructor();
+  static final Setting _instance = Setting._privateConstructor();
   Setting._privateConstructor();
 
   /// Delete all expired settings.
@@ -87,7 +87,7 @@ class Setting {
   ///
   /// Parameters:
   /// - [lazy]: Whether to delete the expired settings in a lazy transaction. Defaults to `false`.
-  static Future<void> deleteExpired({lazy = false}) async {
+  static Future<void> deleteExpired({bool lazy = false}) async {
     final db = await DB.instance();
     final now = DateTime.now();
 
