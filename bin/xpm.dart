@@ -48,7 +48,7 @@ void main(List<String> args) async {
 
   Setting.deleteExpired(lazy: true);
 
-  final runner = CommandRunner(XPM.name, XPM.description)
+  final CommandRunner runner = CommandRunner(XPM.name, XPM.description)
     ..argParser.addFlag('version', abbr: 'v', negatable: false, help: 'Prints the version of ${XPM.name}.')
     ..addCommand(RefreshCommand())
     ..addCommand(SearchCommand())
@@ -80,7 +80,7 @@ void main(List<String> args) async {
   });
 }
 
-Never showVersion(args) {
+Never showVersion(List<String> args) {
   if (args.first == '-v') {
     leave(message: XPM.version, exitCode: success);
   }

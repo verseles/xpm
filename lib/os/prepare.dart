@@ -23,8 +23,8 @@ class Prepare {
   final ArgResults? args;
 
   static final String distro = osRelease('ID') ?? Platform.operatingSystem;
-  static final List distroLike = (osRelease('ID_LIKE') ?? '').split(" ");
-  static final errorOnUpdate = 'echo -e "\\\\033[38;5;208m Errors on update repositores. Proceeding... \\\\033[0m"';
+  static final List<String> distroLike = (osRelease('ID_LIKE') ?? '').split(" ");
+  static final String errorOnUpdate = 'echo -e "\\\\033[38;5;208m Errors on update repositores. Proceeding... \\\\033[0m"';
 
   late final String preferredMethod;
   late final bool forceMethod;
@@ -86,7 +86,7 @@ class Prepare {
   /// Determines the best installation method based on the user's preferences and the operating system.
   ///
   /// The [to] parameter is the installation target.
-  Future<String> best({to = 'install'}) async {
+  Future<String> best({String to = 'install'}) async {
     await boot();
 
     if (forceMethod) {
@@ -98,7 +98,7 @@ class Prepare {
     return await useMethod(to);
   }
 
-  Future<String> useMethod(to) async {
+  Future<String> useMethod(String to) async {
     await boot();
 
     switch (preferredMethod) {
@@ -131,7 +131,7 @@ class Prepare {
     }
   }
 
-  Future<String> findBest(to) async {
+  Future<String> findBest(String to) async {
     await boot();
     final methods = package.methods ?? [];
     final defaults = package.defaults ?? [];
@@ -606,7 +606,7 @@ $bestFor
   /// The script is generated based on the current operating system and package manager.
   ///
   /// If [removing] is `true`, the script will validate the package removal instead of installation.
-  Future<String> toValidate({removing = false}) async {
+  Future<String> toValidate({bool removing = false}) async {
     await boot();
 
     String? bestValidateExecutable;

@@ -1,5 +1,6 @@
 @Tags(['skip-ci', 'sudo'])
 @Skip('This test requires sudo access to move files to the bin directory')
+library;
 
 import 'dart:io';
 import 'package:test/test.dart';
