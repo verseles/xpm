@@ -1,4 +1,5 @@
 @Tags(['skip-ci'])
+library;
 
 import 'dart:io';
 

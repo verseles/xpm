@@ -8,8 +8,8 @@ class Run {
   /// If [sudo] is true, the command will be run with sudo permissions
   /// If [onProgress] is provided, it will be called with the output of the
   /// command
-  Future<ProcessResult> simple(script, List<String> args,
-      {void Function(String)? onProgress, quiet = false, sudo = false}) async {
+  Future<ProcessResult> simple(String script, List<String> args,
+      {void Function(String)? onProgress, bool quiet = false, bool sudo = false}) async {
     final controller = ShellLinesController();
     ShellEnvironment env = ShellEnvironment()..aliases['sudo'] = 'sudo --stdin';
     Shell shell = Shell(
