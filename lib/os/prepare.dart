@@ -23,8 +23,8 @@ class Prepare {
   final ArgResults? args;
 
   static final String distro = osRelease('ID') ?? Platform.operatingSystem;
-  static final List distroLike = (osRelease('ID_LIKE') ?? '').split(" ");
-  static final errorOnUpdate = 'echo -e "\\\\033[38;5;208m Errors on update repositores. Proceeding... \\\\033[0m"';
+  static final List<String> distroLike = (osRelease('ID_LIKE') ?? '').split(" ");
+  static final String errorOnUpdate = 'echo -e "\\\\033[38;5;208m Errors on update repositores. Proceeding... \\\\033[0m"';
 
   late final String preferredMethod;
   late final bool forceMethod;
