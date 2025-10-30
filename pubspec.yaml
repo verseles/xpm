@@ -10,11 +10,13 @@ environment:
   sdk: '>=3.9.4 <4.0.0'
 
 dev_dependencies:
+  analyzer: ^5.13.0
   build_runner: ^2.4.13
   isar_generator: ^3.1.0+1
   lints: ^6.0.0
+  mockito: ^5.4.4
   test: ^1.25.8
-  var_dump: ^0.5.0
+  var_dump: ^0.6.0
   yaml: ^3.1.2
 
 dependencies:

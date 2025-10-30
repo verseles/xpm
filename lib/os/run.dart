@@ -96,7 +96,12 @@ class Run {
   /// If [sudo] is true, the file will be deleted with sudo permissions
   /// If [recursive] is true, the file will be deleted recursively
   /// If [force] is true, the file will be deleted even if it is read-only
-  Future<bool> delete(String filePath, {sudo = false, recursive = false, force = false}) async {
+  Future<bool> delete(
+    String filePath, {
+    sudo = false,
+    recursive = false,
+    force = false,
+  }) async {
     final file = File(filePath);
 
     if (!file.existsSync()) {

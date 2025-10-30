@@ -1,6 +1,3 @@
-@Tags(['skip-ci'])
-library;
-
 import 'dart:io';
 
 import 'package:test/test.dart';
@@ -27,7 +24,10 @@ void main() async {
     }, testOn: 'linux');
 
     test('creates a macOS shortcut correctly', () async {
-      final shortcut = Shortcut(name: 'test_shortcut', executablePath: '/Applications/Safari.app');
+      final shortcut = Shortcut(
+        name: 'test_shortcut',
+        executablePath: '/Applications/Safari.app',
+      );
 
       final filePath = await shortcut.create();
 
@@ -39,7 +39,10 @@ void main() async {
     test(
       'creates a Windows shortcut correctly',
       () async {
-        final shortcut = Shortcut(name: 'test_shortcut', executablePath: 'C:\\Program Files\\test_app.exe');
+        final shortcut = Shortcut(
+          name: 'test_shortcut',
+          executablePath: 'C:\\Program Files\\test_app.exe',
+        );
 
         final file = File(await shortcut.create());
         expect(await file.exists(), isTrue);

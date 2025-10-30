@@ -5,7 +5,14 @@ void main() {
   group('Setting', () {
     // tearDown removes any settings that were created during the test
     tearDown(() async {
-      await Setting.delete(['greeting', 'missing', 'deleteme', 'deleteme1', 'deleteme2', 'deleteme3']);
+      await Setting.delete([
+        'greeting',
+        'missing',
+        'deleteme',
+        'deleteme1',
+        'deleteme2',
+        'deleteme3',
+      ]);
     });
     test('set and get a setting value', () async {
       // Set the value of a setting
@@ -86,7 +93,11 @@ void main() {
       // Set the value of a setting with an expiration date of 1 second
       final now = DateTime.now();
       final expireTime = now.add(Duration(milliseconds: 100));
-      await Setting.set('expireme', 'I should be deleted after 1 second', expires: expireTime);
+      await Setting.set(
+        'expireme',
+        'I should be deleted after 1 second',
+        expires: expireTime,
+      );
 
       // Wait for the setting to expire
       await Future.delayed(Duration(milliseconds: 200));

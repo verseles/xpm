@@ -25,7 +25,11 @@ class Repositories {
   /// The [create] parameter indicates whether to create the directory if it does not exist.
   static final Map<String, Future<Directory>> __dirs = {};
 
-  static Future<Directory> dir(String repoSlug, {String package = '', bool create = true}) async {
+  static Future<Directory> dir(
+    String repoSlug, {
+    String package = '',
+    bool create = true,
+  }) async {
     final reposDir = await getReposDir();
 
     final dir = Directory("${reposDir.path}/$repoSlug/$package");
@@ -94,7 +98,9 @@ class Repositories {
 
     out("{@green}Updating repos...{@end}");
     for (final repo in repos) {
-      var progress = loader.progress(format(' Updating {@blue}${repoName(repo.url)}{@end}'));
+      var progress = loader.progress(
+        format(' Updating {@blue}${repoName(repo.url)}{@end}'),
+      );
       final remote = repo.url;
       final localRepoDirPath = (await dir(remote.slugify())).path;
       if (await XPM.isGit(Directory(localRepoDirPath))) {
@@ -123,7 +129,9 @@ class Repositories {
     for (final repo in repos) {
       final remote = repo.url;
       final local = (await dir(remote.slugify())).path;
-      final packages = (await Directory(local).list().toList()).whereType<Directory>();
+      final packages = (await Directory(
+        local,
+      ).list().toList()).whereType<Directory>();
 
       for (final packageFolder in packages) {
         final packageBasename = p.basename(packageFolder.path);
@@ -147,18 +155,33 @@ class Repositories {
         final installMethodFutures = XPM.installMethods.keys
             .toList()
             .where((method) => method != 'auto')
-            .map((method) => bashScript.hasFunction('install_$method').then((value) => value ? method : null));
+            .map(
+              (method) => bashScript
+                  .hasFunction('install_$method')
+                  .then((value) => value ? method : null),
+            );
 
-        final List<String?> availableMethods = await Future.wait(installMethodFutures);
+        final List<String?> availableMethods = await Future.wait(
+          installMethodFutures,
+        );
 
-        final List<dynamic> results = await Future.wait([desc, version, title, url, archs, defaults]);
+        final List<dynamic> results = await Future.wait([
+          desc,
+          version,
+          title,
+          url,
+          archs,
+          defaults,
+        ]);
 
         final Map<String, dynamic> data = {
           'desc': results[0],
           'version': results[1],
           'title': results[2],
           'url': results[3],
-          'arch': (results[4] as List<String>).standardize(XPM.archCorrespondence),
+          'arch': (results[4] as List<String>).standardize(
+            XPM.archCorrespondence,
+          ),
           'defaults': results[5],
           'methods': availableMethods.whereType<String>().toList(),
         };

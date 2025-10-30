@@ -10,7 +10,13 @@ void main() {
 
     test('returns a valid architecture name', () {
       final result = getArchitecture();
-      final validArchitectures = ['x86_64', 'x86', 'arm', 'arm64', 'apple-silicon'];
+      final validArchitectures = [
+        'x86_64',
+        'x86',
+        'arm',
+        'arm64',
+        'apple-silicon',
+      ];
       expect(validArchitectures.contains(result), isTrue);
     });
   });

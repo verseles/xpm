@@ -13,7 +13,11 @@ void main() async {
       await file.writeAsString('Hello, world!');
 
       final checksum = Checksum();
-      final result = await checksum.check(file, sha1, '943a702d06f34599aee1f8da8ef9f7296031d699');
+      final result = await checksum.check(
+        file,
+        sha1,
+        '943a702d06f34599aee1f8da8ef9f7296031d699',
+      );
 
       expect(result, isTrue);
       file.delete();

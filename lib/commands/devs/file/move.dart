@@ -13,7 +13,8 @@ class FileMoveCommand extends Command {
   @override
   final aliases = ['mv'];
   @override
-  String get invocation => '${runner!.executableName} file $name <old path> <new path>';
+  String get invocation =>
+      '${runner!.executableName} file $name <old path> <new path>';
   @override
   final description = "Move a file or directory";
 
@@ -21,8 +22,19 @@ class FileMoveCommand extends Command {
   FileMoveCommand() {
     argParser.addFlag('sudo', abbr: 's', negatable: false, help: 'Run as sudo');
     argParser.addFlag('force', abbr: 'f', negatable: false, help: 'Force move');
-    argParser.addFlag('preserve', abbr: 'p', negatable: false, help: 'Preserve attributes');
-    argParser.addFlag('verbose', abbr: 'v', negatable: true, defaultsTo: true, help: 'Verbose output');
+    argParser.addFlag(
+      'preserve',
+      abbr: 'p',
+      negatable: false,
+      help: 'Preserve attributes',
+    );
+    argParser.addFlag(
+      'verbose',
+      abbr: 'v',
+      negatable: true,
+      defaultsTo: true,
+      help: 'Verbose output',
+    );
   }
 
   // [run] may also return a Future.

@@ -23,7 +23,9 @@ class Prepare {
   final ArgResults? args;
 
   static final String distro = osRelease('ID') ?? Platform.operatingSystem;
-  static final List<String> distroLike = (osRelease('ID_LIKE') ?? '').split(" ");
+  static final List<String> distroLike = (osRelease('ID_LIKE') ?? '').split(
+    " ",
+  );
   static final String errorOnUpdate =
       'echo -e "\\\\033[38;5;208m Errors on update repositores. Proceeding... \\\\033[0m"';
 
@@ -51,8 +53,8 @@ class Prepare {
     if (booted) return;
 
     preferredMethod = args?['method'] ?? package.method ?? 'auto';
-    forceMethod = args!['force-method'];
-    channelChosen = args!['channel'] ?? package.channel ?? '';
+    forceMethod = args?['force-method'] ?? false;
+    channelChosen = args?['channel'] ?? package.channel ?? '';
 
     repoSlug = repo.url.slugify();
     packageName = package.name;
@@ -65,7 +67,10 @@ class Prepare {
     packageScript = BashScript(package.script);
 
     if (await packageScript.contents() == null) {
-      leave(message: 'Script for "{@blue}$packageName{@end}" does not exist.', exitCode: unableToOpenInputFile);
+      leave(
+        message: 'Script for "{@blue}$packageName{@end}" does not exist.',
+        exitCode: unableToOpenInputFile,
+      );
     }
 
     Global.sudoPath = await Executable('sudo').find() ?? '';
@@ -81,7 +86,9 @@ class Prepare {
   Future<File> writeThisBeast(String script) async {
     await boot();
 
-    return File('${(await cacheRepoDir).path}/together.bash').writeAsString(script.trim());
+    return File(
+      '${(await cacheRepoDir).path}/together.bash',
+    ).writeAsString(script.trim());
   }
 
   /// Determines the best installation method based on the user's preferences and the operating system.
@@ -92,7 +99,10 @@ class Prepare {
 
     if (forceMethod) {
       if (preferredMethod == 'auto') {
-        leave(message: 'Use --force-method with --method=', exitCode: wrongUsage);
+        leave(
+          message: 'Use --force-method with --method=',
+          exitCode: wrongUsage,
+        );
       }
     }
 
@@ -149,7 +159,10 @@ class Prepare {
       }
     }
 
-    if (distro == 'fedora' || distro == 'rhel' || distroLike.contains('rhel') || distroLike.contains('fedora')) {
+    if (distro == 'fedora' ||
+        distro == 'rhel' ||
+        distroLike.contains('rhel') ||
+        distroLike.contains('fedora')) {
       if (methods.contains('dnf') || defaults.contains('dnf')) {
         return await bestForFedora(to: to);
       }
@@ -171,7 +184,10 @@ class Prepare {
       }
     }
 
-    if (distro == 'macos' || distro == 'darwin' || distroLike.contains('darwin') || distroLike.contains('macos')) {
+    if (distro == 'macos' ||
+        distro == 'darwin' ||
+        distroLike.contains('darwin') ||
+        distroLike.contains('macos')) {
       if (methods.contains('brew') || defaults.contains('brew')) {
         return await bestForMacOS(to: to);
       }
@@ -214,7 +230,10 @@ class Prepare {
 
     if (methods.contains('any')) return '${to}_any';
 
-    leave(message: 'No installation method found for "{@blue}$packageName{@end}".', exitCode: notFound);
+    leave(
+      message: 'No installation method found for "{@blue}$packageName{@end}".',
+      exitCode: notFound,
+    );
   }
 
   /// Determines the best installation method for Flatpak.
@@ -338,7 +357,8 @@ class Prepare {
       final String? bestApt = apt ?? aptGet;
 
       if (bestApt != null) {
-        Global.updateCommand = '${Global.sudoPath} $bestApt update || $errorOnUpdate';
+        Global.updateCommand =
+            '${Global.sudoPath} $bestApt update || $errorOnUpdate';
         if (hasDefault) {
           return '${Global.sudoPath} $bestApt $to -y ${package.name}';
         }
@@ -374,7 +394,8 @@ class Prepare {
         if (bestArchLinux == pacman) {
           needsSudo = Global.sudoPath;
         }
-        Global.updateCommand = '${Global.sudoPath} $bestArchLinux -Sy || $errorOnUpdate';
+        Global.updateCommand =
+            '${Global.sudoPath} $bestArchLinux -Sy || $errorOnUpdate';
         if (hasDefault) {
           final operation = to == 'install' ? '-S' : '-R';
           return '$needsSudo $bestArchLinux --noconfirm $operation ${package.name}';
@@ -404,7 +425,8 @@ class Prepare {
       String? bestFedora = dnf;
 
       if (bestFedora != null) {
-        Global.updateCommand = '${Global.sudoPath} $bestFedora check-update || $errorOnUpdate';
+        Global.updateCommand =
+            '${Global.sudoPath} $bestFedora check-update || $errorOnUpdate';
         if (hasDefault) {
           return '${Global.sudoPath} $bestFedora -y $to ${package.name}';
         }
@@ -458,7 +480,8 @@ class Prepare {
       final zypper = await Executable('zypper').find();
 
       if (zypper != null) {
-        Global.updateCommand = '${Global.sudoPath} $zypper refresh || $errorOnUpdate';
+        Global.updateCommand =
+            '${Global.sudoPath} $zypper refresh || $errorOnUpdate';
         if (hasDefault) {
           return '${Global.sudoPath} $zypper --non-interactive $to ${package.name}';
         }
@@ -467,7 +490,11 @@ class Prepare {
     }
 
     if (forceMethod) {
-      leave(message: 'No suitable package manager found. [FORCED: $preferredMethod]', exitCode: notFound);
+      leave(
+        message:
+            'No suitable package manager found. [FORCED: $preferredMethod]',
+        exitCode: notFound,
+      );
     }
 
     return await bestForAny(to: to);
@@ -487,7 +514,8 @@ class Prepare {
       final pkg = await Executable('pkg').find(); // termux
 
       if (pkg != null) {
-        Global.updateCommand = '${Global.sudoPath} $pkg update || $errorOnUpdate';
+        Global.updateCommand =
+            '${Global.sudoPath} $pkg update || $errorOnUpdate';
         if (hasDefault) {
           return '${Global.sudoPath} $pkg $to -y ${package.name}';
         }
@@ -616,13 +644,17 @@ $bestFor
 
     final String? firstProvides = await packageScript.getFirstProvides();
     if (firstProvides != null) {
-      final firstProvidesExecutable = await Executable(firstProvides).find(cache: false);
+      final firstProvidesExecutable = await Executable(
+        firstProvides,
+      ).find(cache: false);
       if (firstProvidesExecutable != null) {
         bestValidateExecutable = firstProvidesExecutable;
       }
     }
     if (bestValidateExecutable == null) {
-      final String? nameExecutable = await Executable(packageName).find(cache: false);
+      final String? nameExecutable = await Executable(
+        packageName,
+      ).find(cache: false);
       if (nameExecutable != null) {
         bestValidateExecutable = nameExecutable;
       }
@@ -651,7 +683,8 @@ validate "$bestValidateExecutable"
   Future<String> dynamicCode() async {
     String executable = Platform.resolvedExecutable;
 
-    if (Platform.script.path.endsWith('.dart') || executable.endsWith('/dart')) {
+    if (Platform.script.path.endsWith('.dart') ||
+        executable.endsWith('/dart')) {
       // If we are running from a dart file or from a dart executable, add the
       // executable to the script.
       executable += ' ${Platform.script.path}';
@@ -698,7 +731,10 @@ readonly hasFlatpak="${Global.hasFlatpak}";
 
   void stopIfForcedMethodNotFound() {
     if (forceMethod) {
-      Logger.error('No method found for forced installation using $preferredMethod.', exitCode: notFound);
+      Logger.error(
+        'No method found for forced installation using $preferredMethod.',
+        exitCode: notFound,
+      );
     }
   }
 }

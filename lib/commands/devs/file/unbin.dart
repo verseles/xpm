@@ -17,9 +17,20 @@ class FileUnbinCommand extends Command {
 
   /// Creates a new instance of the [FileUnbinCommand] class.
   FileUnbinCommand() {
-    argParser.addFlag('verbose', abbr: 'v', negatable: true, defaultsTo: true, help: 'Verbose output');
+    argParser.addFlag(
+      'verbose',
+      abbr: 'v',
+      negatable: true,
+      defaultsTo: true,
+      help: 'Verbose output',
+    );
     argParser.addFlag('sudo', abbr: 's', negatable: false, help: 'Run as sudo');
-    argParser.addFlag('force', abbr: 'f', negatable: false, help: 'Force delete');
+    argParser.addFlag(
+      'force',
+      abbr: 'f',
+      negatable: false,
+      help: 'Force delete',
+    );
   }
 
   // [run] may also return a Future.
@@ -34,7 +45,11 @@ class FileUnbinCommand extends Command {
     final file = File(filePath);
     final finalPath = file.absolute.path;
 
-    final deleted = await deleteFromBin(file, sudo: argResults!['sudo'], force: argResults!['force']);
+    final deleted = await deleteFromBin(
+      file,
+      sudo: argResults!['sudo'],
+      force: argResults!['force'],
+    );
 
     if (!deleted) {
       out("{@red}Failed to delete '$filePath'{@end}");

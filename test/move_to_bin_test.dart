@@ -19,7 +19,11 @@ void main() {
       // Call the moveToBin function
       final binDir = binDirectory();
       final runner = Run();
-      final fileInBinDir = await moveToBin(testFile, binDir: binDir, runner: runner);
+      final fileInBinDir = await moveToBin(
+        testFile,
+        binDir: binDir,
+        runner: runner,
+      );
       expect(fileInBinDir, isNotNull);
 
       // Check that the file was moved to the bin directory
@@ -32,15 +36,18 @@ void main() {
       await runner.delete(tempDir.path, sudo: true, recursive: true);
     });
 
-    test('should return null if file cannot be moved to bin directory', () async {
-      // Create a file in a non-existent directory
-      final testFile = File('non-existent-dir/test.txt');
+    test(
+      'should return null if file cannot be moved to bin directory',
+      () async {
+        // Create a file in a non-existent directory
+        final testFile = File('non-existent-dir/test.txt');
 
-      // Call the moveToBin function
-      final success = await moveToBin(testFile);
+        // Call the moveToBin function
+        final success = await moveToBin(testFile);
 
-      // Check that the function returns null
-      expect(success, isNull);
-    });
+        // Check that the function returns null
+        expect(success, isNull);
+      },
+    );
   });
 }

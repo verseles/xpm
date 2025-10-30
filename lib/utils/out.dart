@@ -25,7 +25,15 @@ void out(
 }) {
   final output = error ? stderr : stdout;
 
-  output.writeln(format(message, args: args, replace: replace, style: style, resolver: resolver));
+  output.writeln(
+    format(
+      message,
+      args: args,
+      replace: replace,
+      style: style,
+      resolver: resolver,
+    ),
+  );
 
   // exit does not work here since the write process is non-blocking (async)
 }

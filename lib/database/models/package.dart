@@ -7,7 +7,7 @@ part 'package.g.dart';
 class Package {
   Id? id;
 
-  late String script; // path to script
+  String? script; // path to script
 
   @Index(caseSensitive: false)
   late String name;

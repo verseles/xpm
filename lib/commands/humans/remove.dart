@@ -45,7 +45,11 @@ class RemoveCommand extends Command {
           '\nIf not set, the selected method can fallsback to another method or finally to [any].',
     );
 
-    argParser.addOption('channel', abbr: 'c', help: 'Inform the prefered channel to install the package.');
+    argParser.addOption(
+      'channel',
+      abbr: 'c',
+      help: 'Inform the prefered channel to install the package.',
+    );
 
     argParser.addFlag(
       'force',
@@ -63,7 +67,12 @@ class RemoveCommand extends Command {
           '\nExample: --flags="--flag1" --flags="--flag2"',
     );
 
-    argParser.addFlag('verbose', negatable: false, abbr: 'v', help: 'Show more information about what is going on.');
+    argParser.addFlag(
+      'verbose',
+      negatable: false,
+      abbr: 'v',
+      help: 'Show more information about what is going on.',
+    );
   }
 
   // [run] may also return a Future.
@@ -83,14 +92,23 @@ class RemoveCommand extends Command {
     // Remove each package.
     for (String packageRequested in packagesRequested) {
       // Find the package in the local database.
-      final packageInDB = await db.packages.filter().nameEqualTo(packageRequested).findFirst();
+      final packageInDB = await db.packages
+          .filter()
+          .nameEqualTo(packageRequested)
+          .findFirst();
       if (packageInDB == null) {
-        leave(message: 'Package "{@gold}$packageRequested{@end}" not found.', exitCode: cantExecute);
+        leave(
+          message: 'Package "{@gold}$packageRequested{@end}" not found.',
+          exitCode: cantExecute,
+        );
       }
 
       if (packageInDB.installed == null && !argResults!['force']) {
         // Check if the package is installed in the system but not for me.
-        leave(message: 'Package "{@gold}$packageRequested{@end}" is not installed.', exitCode: cantExecute);
+        leave(
+          message: 'Package "{@gold}$packageRequested{@end}" is not installed.',
+          exitCode: cantExecute,
+        );
       }
 
       var repo = packageInDB.repo.value!;
@@ -117,8 +135,12 @@ class RemoveCommand extends Command {
 
       // Validate the removal of the package.
       try {
-        await runner.simple(bash, ['-c', 'source ${await prepare.toValidate(removing: true)}']);
-        String error = 'Failed to validate uninstall of "{@red}$packageRequested{@end}"';
+        await runner.simple(bash, [
+          '-c',
+          'source ${await prepare.toValidate(removing: true)}',
+        ]);
+        String error =
+            'Failed to validate uninstall of "{@red}$packageRequested{@end}"';
         Logger.warning(error);
       } on ShellException {
         // If the package is not installed, the validation should pass

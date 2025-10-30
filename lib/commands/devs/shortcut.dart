@@ -15,13 +15,34 @@ class ShortcutCommand extends Command {
   final category = "For developers";
 
   ShortcutCommand() {
-    argParser.addOption("name", abbr: "n", help: "Name of the application", valueHelp: 'name', mandatory: true);
+    argParser.addOption(
+      "name",
+      abbr: "n",
+      help: "Name of the application",
+      valueHelp: 'name',
+      mandatory: true,
+    );
 
-    argParser.addOption("path", abbr: "p", help: "Path of the executable", valueHelp: 'path');
+    argParser.addOption(
+      "path",
+      abbr: "p",
+      help: "Path of the executable",
+      valueHelp: 'path',
+    );
 
-    argParser.addOption("icon", abbr: "i", help: "Name or path of the icon", valueHelp: 'name|path');
+    argParser.addOption(
+      "icon",
+      abbr: "i",
+      help: "Name or path of the icon",
+      valueHelp: 'name|path',
+    );
 
-    argParser.addOption("description", abbr: "d", help: "Description of the application", valueHelp: 'description');
+    argParser.addOption(
+      "description",
+      abbr: "d",
+      help: "Description of the application",
+      valueHelp: 'description',
+    );
 
     argParser.addMultiOption(
       "category",
@@ -30,14 +51,28 @@ class ShortcutCommand extends Command {
       valueHelp: 'category[;category2]',
     );
 
-    argParser.addFlag("terminal", abbr: 't', help: 'Run in terminal', defaultsTo: false);
+    argParser.addFlag(
+      "terminal",
+      abbr: 't',
+      help: 'Run in terminal',
+      defaultsTo: false,
+    );
 
     argParser.addOption(
       "type",
       abbr: 'y',
       help: 'Type of the shortcut',
       valueHelp: 'type',
-      allowed: ['Application', 'Link', 'Directory', 'Menu', 'FSDevice', 'FSVolume', 'Location', 'Window'],
+      allowed: [
+        'Application',
+        'Link',
+        'Directory',
+        'Menu',
+        'FSDevice',
+        'FSVolume',
+        'Location',
+        'Window',
+      ],
       defaultsTo: 'Application',
     );
 
@@ -48,12 +83,29 @@ class ShortcutCommand extends Command {
       valueHelp: 'mime[;mime2]',
     );
 
-    argParser.addFlag("startup", abbr: 'u', help: 'Notify on startup', negatable: true, defaultsTo: true);
+    argParser.addFlag(
+      "startup",
+      abbr: 'u',
+      help: 'Notify on startup',
+      negatable: true,
+      defaultsTo: true,
+    );
 
-    argParser.addFlag("sudo", abbr: 's', help: 'Run as sudo', negatable: true, defaultsTo: true);
+    argParser.addFlag(
+      "sudo",
+      abbr: 's',
+      help: 'Run as sudo',
+      negatable: true,
+      defaultsTo: true,
+    );
 
     // Remove shortcut flag
-    argParser.addFlag("remove", abbr: 'r', help: 'Remove shortcut', negatable: false);
+    argParser.addFlag(
+      "remove",
+      abbr: 'r',
+      help: 'Remove shortcut',
+      negatable: false,
+    );
   }
 
   @override

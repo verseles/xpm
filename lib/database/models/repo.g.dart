@@ -16,7 +16,13 @@ extension GetRepoCollection on Isar {
 const RepoSchema = CollectionSchema(
   name: r'Repo',
   id: 8520529424681796092,
-  properties: {r'url': PropertySchema(id: 0, name: r'url', type: IsarType.string)},
+  properties: {
+    r'url': PropertySchema(
+      id: 0,
+      name: r'url',
+      type: IsarType.string,
+    )
+  },
   estimateSize: _repoEstimateSize,
   serialize: _repoSerialize,
   deserialize: _repoDeserialize,
@@ -28,8 +34,14 @@ const RepoSchema = CollectionSchema(
       name: r'url',
       unique: true,
       replace: false,
-      properties: [IndexPropertySchema(name: r'url', type: IndexType.hash, caseSensitive: true)],
-    ),
+      properties: [
+        IndexPropertySchema(
+          name: r'url',
+          type: IndexType.hash,
+          caseSensitive: true,
+        )
+      ],
+    )
   },
   links: {
     r'package': LinkSchema(
@@ -38,7 +50,7 @@ const RepoSchema = CollectionSchema(
       target: r'Package',
       single: false,
       linkName: r'repo',
-    ),
+    )
   },
   embeddedSchemas: {},
   getId: _repoGetId,
@@ -47,24 +59,43 @@ const RepoSchema = CollectionSchema(
   version: '3.1.0+1',
 );
 
-int _repoEstimateSize(Repo object, List<int> offsets, Map<Type, List<int>> allOffsets) {
+int _repoEstimateSize(
+  Repo object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.url.length * 3;
   return bytesCount;
 }
 
-void _repoSerialize(Repo object, IsarWriter writer, List<int> offsets, Map<Type, List<int>> allOffsets) {
+void _repoSerialize(
+  Repo object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   writer.writeString(offsets[0], object.url);
 }
 
-Repo _repoDeserialize(Id id, IsarReader reader, List<int> offsets, Map<Type, List<int>> allOffsets) {
+Repo _repoDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   final object = Repo();
   object.id = id;
   object.url = reader.readString(offsets[0]);
   return object;
 }
 
-P _repoDeserializeProp<P>(IsarReader reader, int propertyId, int offset, Map<Type, List<int>> allOffsets) {
+P _repoDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
   switch (propertyId) {
     case 0:
       return (reader.readString(offset)) as P;
@@ -151,7 +182,10 @@ extension RepoQueryWhereSort on QueryBuilder<Repo, Repo, QWhere> {
 extension RepoQueryWhere on QueryBuilder<Repo, Repo, QWhereClause> {
   QueryBuilder<Repo, Repo, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
+      return query.addWhereClause(IdWhereClause.between(
+        lower: id,
+        upper: id,
+      ));
     });
   }
 
@@ -159,25 +193,39 @@ extension RepoQueryWhere on QueryBuilder<Repo, Repo, QWhereClause> {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: false))
-            .addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: false));
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
       } else {
         return query
-            .addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: false))
-            .addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: false));
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
       }
     });
   }
 
-  QueryBuilder<Repo, Repo, QAfterWhereClause> idGreaterThan(Id id, {bool include = false}) {
+  QueryBuilder<Repo, Repo, QAfterWhereClause> idGreaterThan(Id id,
+      {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: include));
+      return query.addWhereClause(
+        IdWhereClause.greaterThan(lower: id, includeLower: include),
+      );
     });
   }
 
-  QueryBuilder<Repo, Repo, QAfterWhereClause> idLessThan(Id id, {bool include = false}) {
+  QueryBuilder<Repo, Repo, QAfterWhereClause> idLessThan(Id id,
+      {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: include));
+      return query.addWhereClause(
+        IdWhereClause.lessThan(upper: id, includeUpper: include),
+      );
     });
   }
 
@@ -188,15 +236,21 @@ extension RepoQueryWhere on QueryBuilder<Repo, Repo, QWhereClause> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.between(lower: lowerId, includeLower: includeLower, upper: upperId, includeUpper: includeUpper),
-      );
+      return query.addWhereClause(IdWhereClause.between(
+        lower: lowerId,
+        includeLower: includeLower,
+        upper: upperId,
+        includeUpper: includeUpper,
+      ));
     });
   }
 
   QueryBuilder<Repo, Repo, QAfterWhereClause> urlEqualTo(String url) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'url', value: [url]));
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'url',
+        value: [url],
+      ));
     });
   }
 
@@ -204,12 +258,32 @@ extension RepoQueryWhere on QueryBuilder<Repo, Repo, QWhereClause> {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IndexWhereClause.between(indexName: r'url', lower: [], upper: [url], includeUpper: false))
-            .addWhereClause(IndexWhereClause.between(indexName: r'url', lower: [url], includeLower: false, upper: []));
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'url',
+              lower: [],
+              upper: [url],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'url',
+              lower: [url],
+              includeLower: false,
+              upper: [],
+            ));
       } else {
         return query
-            .addWhereClause(IndexWhereClause.between(indexName: r'url', lower: [url], includeLower: false, upper: []))
-            .addWhereClause(IndexWhereClause.between(indexName: r'url', lower: [], upper: [url], includeUpper: false));
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'url',
+              lower: [url],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'url',
+              lower: [],
+              upper: [url],
+              includeUpper: false,
+            ));
       }
     });
   }
@@ -218,31 +292,52 @@ extension RepoQueryWhere on QueryBuilder<Repo, Repo, QWhereClause> {
 extension RepoQueryFilter on QueryBuilder<Repo, Repo, QFilterCondition> {
   QueryBuilder<Repo, Repo, QAfterFilterCondition> idIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(property: r'id'));
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'id',
+      ));
     });
   }
 
   QueryBuilder<Repo, Repo, QAfterFilterCondition> idIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(property: r'id'));
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'id',
+      ));
     });
   }
 
   QueryBuilder<Repo, Repo, QAfterFilterCondition> idEqualTo(Id? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(property: r'id', value: value));
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'id',
+        value: value,
+      ));
     });
   }
 
-  QueryBuilder<Repo, Repo, QAfterFilterCondition> idGreaterThan(Id? value, {bool include = false}) {
+  QueryBuilder<Repo, Repo, QAfterFilterCondition> idGreaterThan(
+    Id? value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(include: include, property: r'id', value: value));
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
     });
   }
 
-  QueryBuilder<Repo, Repo, QAfterFilterCondition> idLessThan(Id? value, {bool include = false}) {
+  QueryBuilder<Repo, Repo, QAfterFilterCondition> idLessThan(
+    Id? value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(include: include, property: r'id', value: value));
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
     });
   }
 
@@ -253,23 +348,26 @@ extension RepoQueryFilter on QueryBuilder<Repo, Repo, QFilterCondition> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.between(
-          property: r'id',
-          lower: lower,
-          includeLower: includeLower,
-          upper: upper,
-          includeUpper: includeUpper,
-        ),
-      );
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'id',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
     });
   }
 
-  QueryBuilder<Repo, Repo, QAfterFilterCondition> urlEqualTo(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Repo, Repo, QAfterFilterCondition> urlEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'url', value: value, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'url',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
@@ -279,9 +377,12 @@ extension RepoQueryFilter on QueryBuilder<Repo, Repo, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(include: include, property: r'url', value: value, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'url',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
@@ -291,9 +392,12 @@ extension RepoQueryFilter on QueryBuilder<Repo, Repo, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.lessThan(include: include, property: r'url', value: value, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'url',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
@@ -305,60 +409,80 @@ extension RepoQueryFilter on QueryBuilder<Repo, Repo, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.between(
-          property: r'url',
-          lower: lower,
-          includeLower: includeLower,
-          upper: upper,
-          includeUpper: includeUpper,
-          caseSensitive: caseSensitive,
-        ),
-      );
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'url',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
-  QueryBuilder<Repo, Repo, QAfterFilterCondition> urlStartsWith(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Repo, Repo, QAfterFilterCondition> urlStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.startsWith(property: r'url', value: value, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'url',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
-  QueryBuilder<Repo, Repo, QAfterFilterCondition> urlEndsWith(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Repo, Repo, QAfterFilterCondition> urlEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.endsWith(property: r'url', value: value, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'url',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
-  QueryBuilder<Repo, Repo, QAfterFilterCondition> urlContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Repo, Repo, QAfterFilterCondition> urlContains(String value,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.contains(property: r'url', value: value, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'url',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
-  QueryBuilder<Repo, Repo, QAfterFilterCondition> urlMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<Repo, Repo, QAfterFilterCondition> urlMatches(String pattern,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.matches(property: r'url', wildcard: pattern, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'url',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
   QueryBuilder<Repo, Repo, QAfterFilterCondition> urlIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(property: r'url', value: ''));
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'url',
+        value: '',
+      ));
     });
   }
 
   QueryBuilder<Repo, Repo, QAfterFilterCondition> urlIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(property: r'url', value: ''));
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'url',
+        value: '',
+      ));
     });
   }
 }
@@ -366,13 +490,15 @@ extension RepoQueryFilter on QueryBuilder<Repo, Repo, QFilterCondition> {
 extension RepoQueryObject on QueryBuilder<Repo, Repo, QFilterCondition> {}
 
 extension RepoQueryLinks on QueryBuilder<Repo, Repo, QFilterCondition> {
-  QueryBuilder<Repo, Repo, QAfterFilterCondition> package(FilterQuery<Package> q) {
+  QueryBuilder<Repo, Repo, QAfterFilterCondition> package(
+      FilterQuery<Package> q) {
     return QueryBuilder.apply(this, (query) {
       return query.link(q, r'package');
     });
   }
 
-  QueryBuilder<Repo, Repo, QAfterFilterCondition> packageLengthEqualTo(int length) {
+  QueryBuilder<Repo, Repo, QAfterFilterCondition> packageLengthEqualTo(
+      int length) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'package', length, true, length, true);
     });
@@ -390,13 +516,19 @@ extension RepoQueryLinks on QueryBuilder<Repo, Repo, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Repo, Repo, QAfterFilterCondition> packageLengthLessThan(int length, {bool include = false}) {
+  QueryBuilder<Repo, Repo, QAfterFilterCondition> packageLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'package', 0, true, length, include);
     });
   }
 
-  QueryBuilder<Repo, Repo, QAfterFilterCondition> packageLengthGreaterThan(int length, {bool include = false}) {
+  QueryBuilder<Repo, Repo, QAfterFilterCondition> packageLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'package', length, include, 999999, true);
     });
@@ -409,7 +541,8 @@ extension RepoQueryLinks on QueryBuilder<Repo, Repo, QFilterCondition> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'package', lower, includeLower, upper, includeUpper);
+      return query.linkLength(
+          r'package', lower, includeLower, upper, includeUpper);
     });
   }
 }
@@ -455,7 +588,8 @@ extension RepoQuerySortThenBy on QueryBuilder<Repo, Repo, QSortThenBy> {
 }
 
 extension RepoQueryWhereDistinct on QueryBuilder<Repo, Repo, QDistinct> {
-  QueryBuilder<Repo, Repo, QDistinct> distinctByUrl({bool caseSensitive = true}) {
+  QueryBuilder<Repo, Repo, QDistinct> distinctByUrl(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'url', caseSensitive: caseSensitive);
     });

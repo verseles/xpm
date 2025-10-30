@@ -9,7 +9,8 @@ class LogCommand extends Command {
   final description =
       "Output info, warning, and error messages\nIf the first argument is 'info', 'warning', 'error', or 'tip', the second argument will be output as that type of message. Otherwise, the arguments will be output as a log message.";
   @override
-  String get invocation => '${runner!.executableName} $name [info|warning|error|tip] <message>';
+  String get invocation =>
+      '${runner!.executableName} $name [info|warning|error|tip] <message>';
   @override
   final category = "For developers";
 

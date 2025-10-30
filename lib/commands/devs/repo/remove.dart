@@ -13,7 +13,8 @@ class RepoRemoveCommand extends Command {
   @override
   final name = "remove";
   @override
-  String get invocation => '${runner!.executableName} repo $name <repository url>';
+  String get invocation =>
+      '${runner!.executableName} repo $name <repository url>';
   @override
   final aliases = ['rm', 'r'];
   @override

@@ -10,7 +10,8 @@ class FileCommand extends Command {
   @override
   final name = "file";
   @override
-  final description = "File operations like copy, move, delete, make executable, etc.";
+  final description =
+      "File operations like copy, move, delete, make executable, etc.";
   @override
   final category = "For developers";
 

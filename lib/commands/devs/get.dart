@@ -25,7 +25,12 @@ class GetCommand extends Command {
   String get invocation => "${runner!.executableName} $name <url>";
 
   GetCommand() {
-    argParser.addOption("out", abbr: "o", help: "Output file path with filename", valueHelp: 'path');
+    argParser.addOption(
+      "out",
+      abbr: "o",
+      help: "Output file path with filename",
+      valueHelp: 'path',
+    );
 
     argParser.addOption(
       "user-agent",
@@ -34,7 +39,11 @@ class GetCommand extends Command {
       valueHelp: "<string>",
     );
 
-    argParser.addFlag('no-user-agent', help: 'Disable user agent', negatable: false);
+    argParser.addFlag(
+      'no-user-agent',
+      help: 'Disable user agent',
+      negatable: false,
+    );
 
     argParser.addOption(
       'name',
@@ -44,12 +53,26 @@ class GetCommand extends Command {
           ' (only works without --out)',
     );
 
-    argParser.addFlag('exec', abbr: 'x', help: 'Make executable the downloaded file (unix only)', negatable: false);
+    argParser.addFlag(
+      'exec',
+      abbr: 'x',
+      help: 'Make executable the downloaded file (unix only)',
+      negatable: false,
+    );
 
-    argParser.addFlag('bin', abbr: 'b', help: 'Install to bin folder of the system', negatable: false);
+    argParser.addFlag(
+      'bin',
+      abbr: 'b',
+      help: 'Install to bin folder of the system',
+      negatable: false,
+    );
 
     // no progress bar
-    argParser.addFlag('no-progress', help: 'Disable progress bar', negatable: false);
+    argParser.addFlag(
+      'no-progress',
+      help: 'Disable progress bar',
+      negatable: false,
+    );
 
     argParser.addOption('md5', help: 'Check MD5 hash', valueHelp: 'hash');
     argParser.addOption('sha1', help: 'Check SHA1 hash', valueHelp: 'hash');
@@ -57,8 +80,16 @@ class GetCommand extends Command {
     argParser.addOption('sha512', help: 'Check SHA512 hash', valueHelp: 'hash');
     argParser.addOption('sha224', help: 'Check SHA224 hash', valueHelp: 'hash');
     argParser.addOption('sha384', help: 'Check SHA384 hash', valueHelp: 'hash');
-    argParser.addOption('sha512-224', help: 'Check SHA512/224 hash', valueHelp: 'hash');
-    argParser.addOption('sha512-256', help: 'Check SHA512/256 hash', valueHelp: 'hash');
+    argParser.addOption(
+      'sha512-224',
+      help: 'Check SHA512/224 hash',
+      valueHelp: 'hash',
+    );
+    argParser.addOption(
+      'sha512-256',
+      help: 'Check SHA512/256 hash',
+      valueHelp: 'hash',
+    );
   }
 
   @override
@@ -134,7 +165,9 @@ class GetCommand extends Command {
       disableUserAgent: argResults!['no-user-agent'],
       onProgress: (progress) {
         actualProgress = int.parse(progress['percentComplete']);
-        if (progressBarEnabled && actualProgress > 0 && actualProgress > lastProgress) {
+        if (progressBarEnabled &&
+            actualProgress > 0 &&
+            actualProgress > lastProgress) {
           progressBar!.increase(actualProgress - lastProgress);
           lastProgress = actualProgress;
         }
@@ -194,7 +227,10 @@ class GetCommand extends Command {
       final runner = Run();
 
       if (argResults!['exec'] == true && !Platform.isWindows) {
-        bool asExec = await runner.asExec(file.path, sudo: await Executable('sudo').exists());
+        bool asExec = await runner.asExec(
+          file.path,
+          sudo: await Executable('sudo').exists(),
+        );
         if (asExec) {
           Logger.info('Made $file executable');
         } else {
@@ -204,7 +240,11 @@ class GetCommand extends Command {
 
       if (argResults!['bin'] == true) {
         // @FIXME shouldn't $destination be set instead use this logic?
-        final File? toBin = await moveToBin(file, runner: runner, sudo: await Executable('sudo').exists());
+        final File? toBin = await moveToBin(
+          file,
+          runner: runner,
+          sudo: await Executable('sudo').exists(),
+        );
 
         if (toBin != null) {
           Logger.info('Installed $file to bin folder: ${toBin.path}');
