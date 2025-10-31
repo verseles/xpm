@@ -17,9 +17,21 @@ const KVSchema = CollectionSchema(
   name: r'kv',
   id: 3557462688186956702,
   properties: {
-    r'expiresAt': PropertySchema(id: 0, name: r'expiresAt', type: IsarType.dateTime),
-    r'key': PropertySchema(id: 1, name: r'key', type: IsarType.string),
-    r'value': PropertySchema(id: 2, name: r'value', type: IsarType.string),
+    r'expiresAt': PropertySchema(
+      id: 0,
+      name: r'expiresAt',
+      type: IsarType.dateTime,
+    ),
+    r'key': PropertySchema(
+      id: 1,
+      name: r'key',
+      type: IsarType.string,
+    ),
+    r'value': PropertySchema(
+      id: 2,
+      name: r'value',
+      type: IsarType.string,
+    )
   },
   estimateSize: _kVEstimateSize,
   serialize: _kVSerialize,
@@ -32,15 +44,27 @@ const KVSchema = CollectionSchema(
       name: r'key',
       unique: true,
       replace: false,
-      properties: [IndexPropertySchema(name: r'key', type: IndexType.hash, caseSensitive: true)],
+      properties: [
+        IndexPropertySchema(
+          name: r'key',
+          type: IndexType.hash,
+          caseSensitive: true,
+        )
+      ],
     ),
     r'expiresAt': IndexSchema(
       id: 4994901953235663716,
       name: r'expiresAt',
       unique: false,
       replace: false,
-      properties: [IndexPropertySchema(name: r'expiresAt', type: IndexType.value, caseSensitive: false)],
-    ),
+      properties: [
+        IndexPropertySchema(
+          name: r'expiresAt',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
+    )
   },
   links: {},
   embeddedSchemas: {},
@@ -50,20 +74,34 @@ const KVSchema = CollectionSchema(
   version: '3.1.0+1',
 );
 
-int _kVEstimateSize(KV object, List<int> offsets, Map<Type, List<int>> allOffsets) {
+int _kVEstimateSize(
+  KV object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.key.length * 3;
   bytesCount += 3 + object.value.length * 3;
   return bytesCount;
 }
 
-void _kVSerialize(KV object, IsarWriter writer, List<int> offsets, Map<Type, List<int>> allOffsets) {
+void _kVSerialize(
+  KV object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   writer.writeDateTime(offsets[0], object.expiresAt);
   writer.writeString(offsets[1], object.key);
   writer.writeString(offsets[2], object.value);
 }
 
-KV _kVDeserialize(Id id, IsarReader reader, List<int> offsets, Map<Type, List<int>> allOffsets) {
+KV _kVDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   final object = KV();
   object.expiresAt = reader.readDateTimeOrNull(offsets[0]);
   object.id = id;
@@ -72,7 +110,12 @@ KV _kVDeserialize(Id id, IsarReader reader, List<int> offsets, Map<Type, List<in
   return object;
 }
 
-P _kVDeserializeProp<P>(IsarReader reader, int propertyId, int offset, Map<Type, List<int>> allOffsets) {
+P _kVDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
   switch (propertyId) {
     case 0:
       return (reader.readDateTimeOrNull(offset)) as P;
@@ -160,7 +203,9 @@ extension KVQueryWhereSort on QueryBuilder<KV, KV, QWhere> {
 
   QueryBuilder<KV, KV, QAfterWhere> anyExpiresAt() {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(const IndexWhereClause.any(indexName: r'expiresAt'));
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'expiresAt'),
+      );
     });
   }
 }
@@ -168,7 +213,10 @@ extension KVQueryWhereSort on QueryBuilder<KV, KV, QWhere> {
 extension KVQueryWhere on QueryBuilder<KV, KV, QWhereClause> {
   QueryBuilder<KV, KV, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
+      return query.addWhereClause(IdWhereClause.between(
+        lower: id,
+        upper: id,
+      ));
     });
   }
 
@@ -176,25 +224,39 @@ extension KVQueryWhere on QueryBuilder<KV, KV, QWhereClause> {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: false))
-            .addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: false));
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
       } else {
         return query
-            .addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: false))
-            .addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: false));
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
       }
     });
   }
 
-  QueryBuilder<KV, KV, QAfterWhereClause> idGreaterThan(Id id, {bool include = false}) {
+  QueryBuilder<KV, KV, QAfterWhereClause> idGreaterThan(Id id,
+      {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: include));
+      return query.addWhereClause(
+        IdWhereClause.greaterThan(lower: id, includeLower: include),
+      );
     });
   }
 
-  QueryBuilder<KV, KV, QAfterWhereClause> idLessThan(Id id, {bool include = false}) {
+  QueryBuilder<KV, KV, QAfterWhereClause> idLessThan(Id id,
+      {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: include));
+      return query.addWhereClause(
+        IdWhereClause.lessThan(upper: id, includeUpper: include),
+      );
     });
   }
 
@@ -205,15 +267,21 @@ extension KVQueryWhere on QueryBuilder<KV, KV, QWhereClause> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.between(lower: lowerId, includeLower: includeLower, upper: upperId, includeUpper: includeUpper),
-      );
+      return query.addWhereClause(IdWhereClause.between(
+        lower: lowerId,
+        includeLower: includeLower,
+        upper: upperId,
+        includeUpper: includeUpper,
+      ));
     });
   }
 
   QueryBuilder<KV, KV, QAfterWhereClause> keyEqualTo(String key) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'key', value: [key]));
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'key',
+        value: [key],
+      ));
     });
   }
 
@@ -221,71 +289,126 @@ extension KVQueryWhere on QueryBuilder<KV, KV, QWhereClause> {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IndexWhereClause.between(indexName: r'key', lower: [], upper: [key], includeUpper: false))
-            .addWhereClause(IndexWhereClause.between(indexName: r'key', lower: [key], includeLower: false, upper: []));
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'key',
+              lower: [],
+              upper: [key],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'key',
+              lower: [key],
+              includeLower: false,
+              upper: [],
+            ));
       } else {
         return query
-            .addWhereClause(IndexWhereClause.between(indexName: r'key', lower: [key], includeLower: false, upper: []))
-            .addWhereClause(IndexWhereClause.between(indexName: r'key', lower: [], upper: [key], includeUpper: false));
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'key',
+              lower: [key],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'key',
+              lower: [],
+              upper: [key],
+              includeUpper: false,
+            ));
       }
     });
   }
 
   QueryBuilder<KV, KV, QAfterWhereClause> expiresAtIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'expiresAt', value: [null]));
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'expiresAt',
+        value: [null],
+      ));
     });
   }
 
   QueryBuilder<KV, KV, QAfterWhereClause> expiresAtIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IndexWhereClause.between(indexName: r'expiresAt', lower: [null], includeLower: false, upper: []),
-      );
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'expiresAt',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
     });
   }
 
-  QueryBuilder<KV, KV, QAfterWhereClause> expiresAtEqualTo(DateTime? expiresAt) {
+  QueryBuilder<KV, KV, QAfterWhereClause> expiresAtEqualTo(
+      DateTime? expiresAt) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'expiresAt', value: [expiresAt]));
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'expiresAt',
+        value: [expiresAt],
+      ));
     });
   }
 
-  QueryBuilder<KV, KV, QAfterWhereClause> expiresAtNotEqualTo(DateTime? expiresAt) {
+  QueryBuilder<KV, KV, QAfterWhereClause> expiresAtNotEqualTo(
+      DateTime? expiresAt) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(
-              IndexWhereClause.between(indexName: r'expiresAt', lower: [], upper: [expiresAt], includeUpper: false),
-            )
-            .addWhereClause(
-              IndexWhereClause.between(indexName: r'expiresAt', lower: [expiresAt], includeLower: false, upper: []),
-            );
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'expiresAt',
+              lower: [],
+              upper: [expiresAt],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'expiresAt',
+              lower: [expiresAt],
+              includeLower: false,
+              upper: [],
+            ));
       } else {
         return query
-            .addWhereClause(
-              IndexWhereClause.between(indexName: r'expiresAt', lower: [expiresAt], includeLower: false, upper: []),
-            )
-            .addWhereClause(
-              IndexWhereClause.between(indexName: r'expiresAt', lower: [], upper: [expiresAt], includeUpper: false),
-            );
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'expiresAt',
+              lower: [expiresAt],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'expiresAt',
+              lower: [],
+              upper: [expiresAt],
+              includeUpper: false,
+            ));
       }
     });
   }
 
-  QueryBuilder<KV, KV, QAfterWhereClause> expiresAtGreaterThan(DateTime? expiresAt, {bool include = false}) {
+  QueryBuilder<KV, KV, QAfterWhereClause> expiresAtGreaterThan(
+    DateTime? expiresAt, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IndexWhereClause.between(indexName: r'expiresAt', lower: [expiresAt], includeLower: include, upper: []),
-      );
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'expiresAt',
+        lower: [expiresAt],
+        includeLower: include,
+        upper: [],
+      ));
     });
   }
 
-  QueryBuilder<KV, KV, QAfterWhereClause> expiresAtLessThan(DateTime? expiresAt, {bool include = false}) {
+  QueryBuilder<KV, KV, QAfterWhereClause> expiresAtLessThan(
+    DateTime? expiresAt, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IndexWhereClause.between(indexName: r'expiresAt', lower: [], upper: [expiresAt], includeUpper: include),
-      );
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'expiresAt',
+        lower: [],
+        upper: [expiresAt],
+        includeUpper: include,
+      ));
     });
   }
 
@@ -296,15 +419,13 @@ extension KVQueryWhere on QueryBuilder<KV, KV, QWhereClause> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IndexWhereClause.between(
-          indexName: r'expiresAt',
-          lower: [lowerExpiresAt],
-          includeLower: includeLower,
-          upper: [upperExpiresAt],
-          includeUpper: includeUpper,
-        ),
-      );
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'expiresAt',
+        lower: [lowerExpiresAt],
+        includeLower: includeLower,
+        upper: [upperExpiresAt],
+        includeUpper: includeUpper,
+      ));
     });
   }
 }
@@ -312,33 +433,53 @@ extension KVQueryWhere on QueryBuilder<KV, KV, QWhereClause> {
 extension KVQueryFilter on QueryBuilder<KV, KV, QFilterCondition> {
   QueryBuilder<KV, KV, QAfterFilterCondition> expiresAtIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(property: r'expiresAt'));
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'expiresAt',
+      ));
     });
   }
 
   QueryBuilder<KV, KV, QAfterFilterCondition> expiresAtIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(property: r'expiresAt'));
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'expiresAt',
+      ));
     });
   }
 
-  QueryBuilder<KV, KV, QAfterFilterCondition> expiresAtEqualTo(DateTime? value) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> expiresAtEqualTo(
+      DateTime? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(property: r'expiresAt', value: value));
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'expiresAt',
+        value: value,
+      ));
     });
   }
 
-  QueryBuilder<KV, KV, QAfterFilterCondition> expiresAtGreaterThan(DateTime? value, {bool include = false}) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> expiresAtGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(include: include, property: r'expiresAt', value: value),
-      );
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'expiresAt',
+        value: value,
+      ));
     });
   }
 
-  QueryBuilder<KV, KV, QAfterFilterCondition> expiresAtLessThan(DateTime? value, {bool include = false}) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> expiresAtLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(include: include, property: r'expiresAt', value: value));
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'expiresAt',
+        value: value,
+      ));
     });
   }
 
@@ -349,45 +490,64 @@ extension KVQueryFilter on QueryBuilder<KV, KV, QFilterCondition> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.between(
-          property: r'expiresAt',
-          lower: lower,
-          includeLower: includeLower,
-          upper: upper,
-          includeUpper: includeUpper,
-        ),
-      );
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'expiresAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
     });
   }
 
   QueryBuilder<KV, KV, QAfterFilterCondition> idIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(property: r'id'));
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'id',
+      ));
     });
   }
 
   QueryBuilder<KV, KV, QAfterFilterCondition> idIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(property: r'id'));
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'id',
+      ));
     });
   }
 
   QueryBuilder<KV, KV, QAfterFilterCondition> idEqualTo(Id? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(property: r'id', value: value));
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'id',
+        value: value,
+      ));
     });
   }
 
-  QueryBuilder<KV, KV, QAfterFilterCondition> idGreaterThan(Id? value, {bool include = false}) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> idGreaterThan(
+    Id? value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(include: include, property: r'id', value: value));
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
     });
   }
 
-  QueryBuilder<KV, KV, QAfterFilterCondition> idLessThan(Id? value, {bool include = false}) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> idLessThan(
+    Id? value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(include: include, property: r'id', value: value));
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
     });
   }
 
@@ -398,23 +558,26 @@ extension KVQueryFilter on QueryBuilder<KV, KV, QFilterCondition> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.between(
-          property: r'id',
-          lower: lower,
-          includeLower: includeLower,
-          upper: upper,
-          includeUpper: includeUpper,
-        ),
-      );
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'id',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
     });
   }
 
-  QueryBuilder<KV, KV, QAfterFilterCondition> keyEqualTo(String value, {bool caseSensitive = true}) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> keyEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'key', value: value, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'key',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
@@ -424,9 +587,12 @@ extension KVQueryFilter on QueryBuilder<KV, KV, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(include: include, property: r'key', value: value, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'key',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
@@ -436,9 +602,12 @@ extension KVQueryFilter on QueryBuilder<KV, KV, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.lessThan(include: include, property: r'key', value: value, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'key',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
@@ -450,68 +619,93 @@ extension KVQueryFilter on QueryBuilder<KV, KV, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.between(
-          property: r'key',
-          lower: lower,
-          includeLower: includeLower,
-          upper: upper,
-          includeUpper: includeUpper,
-          caseSensitive: caseSensitive,
-        ),
-      );
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'key',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
-  QueryBuilder<KV, KV, QAfterFilterCondition> keyStartsWith(String value, {bool caseSensitive = true}) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> keyStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.startsWith(property: r'key', value: value, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'key',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
-  QueryBuilder<KV, KV, QAfterFilterCondition> keyEndsWith(String value, {bool caseSensitive = true}) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> keyEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.endsWith(property: r'key', value: value, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'key',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
-  QueryBuilder<KV, KV, QAfterFilterCondition> keyContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> keyContains(String value,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.contains(property: r'key', value: value, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'key',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
-  QueryBuilder<KV, KV, QAfterFilterCondition> keyMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> keyMatches(String pattern,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.matches(property: r'key', wildcard: pattern, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'key',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
   QueryBuilder<KV, KV, QAfterFilterCondition> keyIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(property: r'key', value: ''));
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'key',
+        value: '',
+      ));
     });
   }
 
   QueryBuilder<KV, KV, QAfterFilterCondition> keyIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(property: r'key', value: ''));
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'key',
+        value: '',
+      ));
     });
   }
 
-  QueryBuilder<KV, KV, QAfterFilterCondition> valueEqualTo(String value, {bool caseSensitive = true}) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> valueEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'value', value: value, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'value',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
@@ -521,9 +715,12 @@ extension KVQueryFilter on QueryBuilder<KV, KV, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(include: include, property: r'value', value: value, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'value',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
@@ -533,9 +730,12 @@ extension KVQueryFilter on QueryBuilder<KV, KV, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.lessThan(include: include, property: r'value', value: value, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'value',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
@@ -547,60 +747,80 @@ extension KVQueryFilter on QueryBuilder<KV, KV, QFilterCondition> {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.between(
-          property: r'value',
-          lower: lower,
-          includeLower: includeLower,
-          upper: upper,
-          includeUpper: includeUpper,
-          caseSensitive: caseSensitive,
-        ),
-      );
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'value',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
-  QueryBuilder<KV, KV, QAfterFilterCondition> valueStartsWith(String value, {bool caseSensitive = true}) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> valueStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.startsWith(property: r'value', value: value, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'value',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
-  QueryBuilder<KV, KV, QAfterFilterCondition> valueEndsWith(String value, {bool caseSensitive = true}) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> valueEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.endsWith(property: r'value', value: value, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'value',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
-  QueryBuilder<KV, KV, QAfterFilterCondition> valueContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> valueContains(String value,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.contains(property: r'value', value: value, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'value',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
-  QueryBuilder<KV, KV, QAfterFilterCondition> valueMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<KV, KV, QAfterFilterCondition> valueMatches(String pattern,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.matches(property: r'value', wildcard: pattern, caseSensitive: caseSensitive),
-      );
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'value',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
   QueryBuilder<KV, KV, QAfterFilterCondition> valueIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(property: r'value', value: ''));
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'value',
+        value: '',
+      ));
     });
   }
 
   QueryBuilder<KV, KV, QAfterFilterCondition> valueIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(property: r'value', value: ''));
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'value',
+        value: '',
+      ));
     });
   }
 }

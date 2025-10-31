@@ -3,6 +3,8 @@ import 'package:args/command_runner.dart';
 import 'package:isar/isar.dart';
 import 'package:process_run/shell.dart';
 import 'package:xpm/database/db.dart';
+import 'package:xpm/database/models/package.dart';
+import 'package:xpm/native_is_for_everyone/native_package_manager_detector.dart';
 import 'package:xpm/os/bash_script.dart';
 import 'package:xpm/os/executable.dart';
 import 'package:xpm/os/prepare.dart';
@@ -11,7 +13,6 @@ import 'package:xpm/utils/leave.dart';
 import 'package:xpm/utils/logger.dart';
 import 'package:xpm/utils/show_usage.dart';
 import 'package:xpm/xpm.dart';
-import 'package:xpm/database/models/package.dart';
 
 /// A command that installs a package.
 class InstallCommand extends Command {
@@ -63,6 +64,12 @@ class InstallCommand extends Command {
           '\nExample: --flags="--flag1" --flags="--flag2"',
     );
 
+    argParser.addOption('native',
+        abbr: 'n',
+        allowed: ['auto', 'only', 'off'],
+        defaultsTo: 'auto',
+        help: 'Control integration with native package managers.');
+
     // add verbose flag
     argParser.addFlag('verbose', negatable: false, help: 'Show more information about what is going on.');
   }
@@ -74,6 +81,8 @@ class InstallCommand extends Command {
     List<String> packagesRequested = argResults!.rest;
     showUsage(packagesRequested.isEmpty, () => printUsage());
 
+    String nativeMode = argResults!['native'];
+
     // Get the Bash instance.
     final bash = await XPM.bash;
 
@@ -82,68 +91,107 @@ class InstallCommand extends Command {
 
     // Install each package.
     for (String packageRequested in packagesRequested) {
-      final packageInDB = await db.packages.filter().nameEqualTo(packageRequested).findFirst();
+      Package? packageInDB;
+      if (nativeMode != 'only') {
+        packageInDB = await db.packages.filter().nameEqualTo(packageRequested).findFirst();
+      }
+
       if (packageInDB == null) {
-        leave(message: 'Package "{@gold}$packageRequested{@end}" not found.', exitCode: cantExecute);
-      }
-
-      var repo = packageInDB.repo.value!;
-      final prepare = Prepare(repo, packageInDB, args: argResults);
-      if (packageInDB.installed != null && Executable(packageRequested).existsSync(cache: false)) {
-        Logger.info('Reinstalling "$packageRequested"...');
-      } else {
-        Logger.info('Installing "$packageRequested"...');
-      }
-
-      // Run the installation script.
-      final runner = Run();
-      try {
-        await runner.simple(bash, ['-c', 'source ${await prepare.toInstall()}']);
-      } on ShellException catch (e) {
-        sharedStdIn.terminate();
-        String error = 'Failed to install "$packageRequested"';
-        if (argResults!['verbose'] == true) {
-          error += ': ${e.message}';
+        if (nativeMode != 'off') {
+          final nativeManager = await NativePackageManagerDetector.detect();
+          if (nativeManager != null) {
+            Logger.info('Installing "$packageRequested" from native package manager...');
+            try {
+              await nativeManager.install(packageRequested);
+              final nativePackage = await nativeManager.get(packageRequested);
+              if (nativePackage != null) {
+                // Add the package to the local database to be managed by xpm
+                await db.writeTxn(() async {
+                  final newPackage = Package()
+                    ..name = nativePackage.name
+                    ..version = nativePackage.version ?? 'native'
+                    ..desc = nativePackage.description
+                    ..installed = nativePackage.version ?? 'native'
+                    ..isNative = true;
+                  await db.packages.put(newPackage);
+                });
+                Logger.success('Successfully installed "$packageRequested".');
+              } else {
+                Logger.error('Failed to install "$packageRequested".');
+              }
+            } catch (e) {
+              leave(message: 'Failed to install "$packageRequested": $e', exitCode: generalError);
+            }
+          } else {
+            leave(message: 'Package "{@gold}$packageRequested{@end}" not found.', exitCode: cantExecute);
+          }
         } else {
-          error += '.';
+          leave(message: 'Package "{@gold}$packageRequested{@end}" not found.', exitCode: cantExecute);
+        }
+      } else {
+        var repo = packageInDB.repo.value!;
+        final prepare = Prepare(repo, packageInDB, args: argResults);
+        if (packageInDB.installed != null && await Executable(packageRequested).exists()) {
+          Logger.info('Reinstalling "$packageRequested"...');
+        } else {
+          Logger.info('Installing "$packageRequested"...');
         }
 
-        leave(message: error, exitCode: e.result?.exitCode ?? generalError);
-      }
-
-      // Check if the package was installed successfully.
-      final bashScript = BashScript(packageInDB.script);
-      bool hasValidation = await bashScript.hasFunction('validate');
-      String? error;
-      if (hasValidation) {
-        Logger.info('Checking installation of $packageRequested...');
+        // Run the installation script.
+        final runner = Run();
         try {
-          await runner.simple(bash, ['-c', 'source ${await prepare.toValidate()}']);
+          await runner.simple(bash, ['-c', 'source ${await prepare.toInstall()}']);
         } on ShellException catch (e) {
-          error = 'Package "$packageRequested" installed with errors';
+          sharedStdIn.terminate();
+          String error = 'Failed to install "$packageRequested"';
           if (argResults!['verbose'] == true) {
             error += ': ${e.message}';
           } else {
             error += '.';
           }
+
+          leave(message: error, exitCode: e.result?.exitCode ?? generalError);
         }
-      } else {
-        Logger.warning('No validation found for $packageRequested.');
-      }
 
-      // Update the local database to reflect the installation.
-      await db.writeTxn(() async {
-        packageInDB.installed = packageInDB.version;
-        packageInDB.method = argResults!['method'];
-        packageInDB.channel = argResults!['channel'];
-        await db.packages.put(packageInDB);
-      });
+        // Check if the package was installed successfully.
+        final script = packageInDB.script;
+        if (script != null) {
+          final bashScript = BashScript(script);
+          bool hasValidation = await bashScript.hasFunction('validate');
+          String? error;
+          if (hasValidation) {
+            Logger.info('Checking installation of $packageRequested...');
+            try {
+              await runner.simple(bash, ['-c', 'source ${await prepare.toValidate()}']);
+            } on ShellException catch (e) {
+              error = 'Package "$packageRequested" installed with errors';
+              if (argResults!['verbose'] == true) {
+                error += ': ${e.message}';
+              } else {
+                error += '.';
+              }
+            }
+          } else {
+            Logger.warning('No validation found for $packageRequested.');
+          }
 
-      // Log the result of the installation.
-      if (error != null) {
-        Logger.error(error);
-      } else {
-        Logger.success('Successfully installed "$packageRequested".');
+          // Update the local database to reflect the installation.
+          await db.writeTxn(() async {
+            if (packageInDB != null) {
+              packageInDB.installed = packageInDB.version;
+              packageInDB.method = argResults!['method'];
+              packageInDB.channel = argResults!['channel'];
+              await db.packages.put(packageInDB);
+            }
+          });
+
+          // Log the result of the installation.
+          if (error != null) {
+            Logger.error(error);
+          } else {
+            Logger.success('Successfully installed "$packageRequested".');
+          }
+        }
       }
     }
     sharedStdIn.terminate();

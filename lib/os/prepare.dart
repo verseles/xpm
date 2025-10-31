@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:all_exit_codes/all_exit_codes.dart';
 import 'package:args/args.dart';
 import 'package:xpm/database/models/package.dart';
 import 'package:xpm/database/models/repo.dart';
@@ -50,9 +49,9 @@ class Prepare {
   Future<void> boot() async {
     if (booted) return;
 
-    preferredMethod = args?['method'] ?? package.method ?? 'auto';
-    forceMethod = args!['force-method'];
-    channelChosen = args!['channel'] ?? package.channel ?? '';
+    preferredMethod = (args?['method'] as String?) ?? package.method ?? 'auto';
+    forceMethod = (args?['force-method'] as bool?) ?? false;
+    channelChosen = (args?['channel'] as String?) ?? package.channel ?? '';
 
     repoSlug = repo.url.slugify();
     packageName = package.name;
@@ -62,10 +61,14 @@ class Prepare {
     final String packageDirPath = (await packageDir).path;
     baseScript = File('$packageDirPath/../base.bash');
 
-    packageScript = BashScript(package.script);
+    final script = package.script;
+    if (script == null) {
+      leave(message: 'Package "{@blue}$packageName{@end}" has no script.', exitCode: 1);
+    }
+    packageScript = BashScript(script);
 
     if (await packageScript.contents() == null) {
-      leave(message: 'Script for "{@blue}$packageName{@end}" does not exist.', exitCode: unableToOpenInputFile);
+      leave(message: 'Script for "{@blue}$packageName{@end}" does not exist.', exitCode: 1);
     }
 
     Global.sudoPath = await Executable('sudo').find() ?? '';
@@ -92,7 +95,7 @@ class Prepare {
 
     if (forceMethod) {
       if (preferredMethod == 'auto') {
-        leave(message: 'Use --force-method with --method=', exitCode: wrongUsage);
+        leave(message: 'Use --force-method with --method=', exitCode: 1);
       }
     }
 
@@ -214,7 +217,7 @@ class Prepare {
 
     if (methods.contains('any')) return '${to}_any';
 
-    leave(message: 'No installation method found for "{@blue}$packageName{@end}".', exitCode: notFound);
+    leave(message: 'No installation method found for "{@blue}$packageName{@end}".', exitCode: 1);
   }
 
   /// Determines the best installation method for Flatpak.
@@ -467,7 +470,7 @@ class Prepare {
     }
 
     if (forceMethod) {
-      leave(message: 'No suitable package manager found. [FORCED: $preferredMethod]', exitCode: notFound);
+      leave(message: 'No suitable package manager found. [FORCED: $preferredMethod]', exitCode: 1);
     }
 
     return await bestForAny(to: to);
@@ -698,7 +701,7 @@ readonly hasFlatpak="${Global.hasFlatpak}";
 
   void stopIfForcedMethodNotFound() {
     if (forceMethod) {
-      Logger.error('No method found for forced installation using $preferredMethod.', exitCode: notFound);
+      Logger.error('No method found for forced installation using $preferredMethod.', exitCode: 1);
     }
   }
 }
