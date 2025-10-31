@@ -13,25 +13,13 @@ import 'package:path/path.dart';
 /// If [sudo] is true, the file will be deleted using sudo.
 ///
 /// Returns true if the file was deleted successfully, false otherwise.
-Future<bool> deleteFromBin(
-  File file, {
-  Run? runner,
-  Directory? binDir,
-  bool sudo = true,
-  force = true,
-}) async {
+Future<bool> deleteFromBin(File file, {Run? runner, Directory? binDir, bool sudo = true, force = true}) async {
   binDir ??= binDirectory();
   runner ??= Run();
 
   try {
-    final fileInBinDir = File(
-      join(binDir.absolute.path, basename(file.absolute.path)),
-    );
-    final success = await runner.delete(
-      fileInBinDir.absolute.path,
-      sudo: sudo,
-      force: force,
-    );
+    final fileInBinDir = File(join(binDir.absolute.path, basename(file.absolute.path)));
+    final success = await runner.delete(fileInBinDir.absolute.path, sudo: sudo, force: force);
     return success;
   } catch (e) {
     return false;

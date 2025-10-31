@@ -22,24 +22,19 @@ void main() {
       expect(await File('${binDir.path}/test_file').exists(), false);
     });
 
-    test(
-      'should return false when file does not exist in bin directory',
-      () async {
-        final tempDir = Directory.systemTemp.createTempSync(
-          'deleteFromBin_test',
-        );
-        final file = File('${tempDir.path}/test_file');
-        await file.create(recursive: true);
-        final binDir = Directory('${tempDir.path}/bin');
-        await binDir.create(recursive: true);
+    test('should return false when file does not exist in bin directory', () async {
+      final tempDir = Directory.systemTemp.createTempSync('deleteFromBin_test');
+      final file = File('${tempDir.path}/test_file');
+      await file.create(recursive: true);
+      final binDir = Directory('${tempDir.path}/bin');
+      await binDir.create(recursive: true);
 
-        final result = await deleteFromBin(file, binDir: binDir, sudo: false);
+      final result = await deleteFromBin(file, binDir: binDir, sudo: false);
 
-        expect(result, true);
-        expect(await file.exists(), true);
-        expect(await File('${binDir.path}/test_file').exists(), false);
-      },
-    );
+      expect(result, true);
+      expect(await file.exists(), true);
+      expect(await File('${binDir.path}/test_file').exists(), false);
+    });
 
     test('should return false when file cannot be deleted', () async {
       final tempDir = Directory.systemTemp.createTempSync('deleteFromBin_test');
@@ -50,10 +45,7 @@ void main() {
       final runner = Run();
       await runner.move(file.path, '${binDir.path}/test_file', sudo: false);
       // Expect an exception to be thrown when deleting inexistent file
-      expect(
-        () async => await file.delete(),
-        throwsA(isA<PathNotFoundException>()),
-      );
+      expect(() async => await file.delete(), throwsA(isA<PathNotFoundException>()));
 
       final result = await deleteFromBin(file, binDir: binDir, sudo: false);
 

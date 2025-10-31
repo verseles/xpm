@@ -42,38 +42,43 @@ const PackageSchema = CollectionSchema(
       name: r'installed',
       type: IsarType.string,
     ),
-    r'method': PropertySchema(
+    r'isNative': PropertySchema(
       id: 5,
+      name: r'isNative',
+      type: IsarType.bool,
+    ),
+    r'method': PropertySchema(
+      id: 6,
       name: r'method',
       type: IsarType.string,
     ),
     r'methods': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'methods',
       type: IsarType.stringList,
     ),
     r'name': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'name',
       type: IsarType.string,
     ),
     r'script': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'script',
       type: IsarType.string,
     ),
     r'title': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'title',
       type: IsarType.string,
     ),
     r'url': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'url',
       type: IsarType.string,
     ),
     r'version': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'version',
       type: IsarType.string,
     )
@@ -171,6 +176,19 @@ const PackageSchema = CollectionSchema(
         IndexPropertySchema(
           name: r'installed',
           type: IndexType.hash,
+          caseSensitive: false,
+        )
+      ],
+    ),
+    r'isNative': IndexSchema(
+      id: -8873014192892976863,
+      name: r'isNative',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'isNative',
+          type: IndexType.value,
           caseSensitive: false,
         )
       ],
@@ -296,13 +314,14 @@ void _packageSerialize(
   writer.writeStringList(offsets[2], object.defaults);
   writer.writeString(offsets[3], object.desc);
   writer.writeString(offsets[4], object.installed);
-  writer.writeString(offsets[5], object.method);
-  writer.writeStringList(offsets[6], object.methods);
-  writer.writeString(offsets[7], object.name);
-  writer.writeString(offsets[8], object.script);
-  writer.writeString(offsets[9], object.title);
-  writer.writeString(offsets[10], object.url);
-  writer.writeString(offsets[11], object.version);
+  writer.writeBool(offsets[5], object.isNative);
+  writer.writeString(offsets[6], object.method);
+  writer.writeStringList(offsets[7], object.methods);
+  writer.writeString(offsets[8], object.name);
+  writer.writeString(offsets[9], object.script);
+  writer.writeString(offsets[10], object.title);
+  writer.writeString(offsets[11], object.url);
+  writer.writeString(offsets[12], object.version);
 }
 
 Package _packageDeserialize(
@@ -318,13 +337,14 @@ Package _packageDeserialize(
   object.desc = reader.readStringOrNull(offsets[3]);
   object.id = id;
   object.installed = reader.readStringOrNull(offsets[4]);
-  object.method = reader.readStringOrNull(offsets[5]);
-  object.methods = reader.readStringList(offsets[6]);
-  object.name = reader.readString(offsets[7]);
-  object.script = reader.readStringOrNull(offsets[8]);
-  object.title = reader.readStringOrNull(offsets[9]);
-  object.url = reader.readStringOrNull(offsets[10]);
-  object.version = reader.readStringOrNull(offsets[11]);
+  object.isNative = reader.readBool(offsets[5]);
+  object.method = reader.readStringOrNull(offsets[6]);
+  object.methods = reader.readStringList(offsets[7]);
+  object.name = reader.readString(offsets[8]);
+  object.script = reader.readStringOrNull(offsets[9]);
+  object.title = reader.readStringOrNull(offsets[10]);
+  object.url = reader.readStringOrNull(offsets[11]);
+  object.version = reader.readStringOrNull(offsets[12]);
   return object;
 }
 
@@ -346,18 +366,20 @@ P _packageDeserializeProp<P>(
     case 4:
       return (reader.readStringOrNull(offset)) as P;
     case 5:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 6:
-      return (reader.readStringList(offset)) as P;
-    case 7:
-      return (reader.readString(offset)) as P;
-    case 8:
       return (reader.readStringOrNull(offset)) as P;
+    case 7:
+      return (reader.readStringList(offset)) as P;
+    case 8:
+      return (reader.readString(offset)) as P;
     case 9:
       return (reader.readStringOrNull(offset)) as P;
     case 10:
       return (reader.readStringOrNull(offset)) as P;
     case 11:
+      return (reader.readStringOrNull(offset)) as P;
+    case 12:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -381,6 +403,14 @@ extension PackageQueryWhereSort on QueryBuilder<Package, Package, QWhere> {
   QueryBuilder<Package, Package, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhere> anyIsNative() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'isNative'),
+      );
     });
   }
 }
@@ -878,6 +908,51 @@ extension PackageQueryWhere on QueryBuilder<Package, Package, QWhereClause> {
               indexName: r'installed',
               lower: [],
               upper: [installed],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> isNativeEqualTo(
+      bool isNative) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'isNative',
+        value: [isNative],
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterWhereClause> isNativeNotEqualTo(
+      bool isNative) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'isNative',
+              lower: [],
+              upper: [isNative],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'isNative',
+              lower: [isNative],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'isNative',
+              lower: [isNative],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'isNative',
+              lower: [],
+              upper: [isNative],
               includeUpper: false,
             ));
       }
@@ -1855,6 +1930,16 @@ extension PackageQueryFilter
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'installed',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterFilterCondition> isNativeEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isNative',
+        value: value,
       ));
     });
   }
@@ -3011,6 +3096,18 @@ extension PackageQuerySortBy on QueryBuilder<Package, Package, QSortBy> {
     });
   }
 
+  QueryBuilder<Package, Package, QAfterSortBy> sortByIsNative() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isNative', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterSortBy> sortByIsNativeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isNative', Sort.desc);
+    });
+  }
+
   QueryBuilder<Package, Package, QAfterSortBy> sortByMethod() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'method', Sort.asc);
@@ -3134,6 +3231,18 @@ extension PackageQuerySortThenBy
     });
   }
 
+  QueryBuilder<Package, Package, QAfterSortBy> thenByIsNative() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isNative', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Package, Package, QAfterSortBy> thenByIsNativeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isNative', Sort.desc);
+    });
+  }
+
   QueryBuilder<Package, Package, QAfterSortBy> thenByMethod() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'method', Sort.asc);
@@ -3242,6 +3351,12 @@ extension PackageQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Package, Package, QDistinct> distinctByIsNative() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isNative');
+    });
+  }
+
   QueryBuilder<Package, Package, QDistinct> distinctByMethod(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -3326,6 +3441,12 @@ extension PackageQueryProperty
   QueryBuilder<Package, String?, QQueryOperations> installedProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'installed');
+    });
+  }
+
+  QueryBuilder<Package, bool, QQueryOperations> isNativeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isNative');
     });
   }
 

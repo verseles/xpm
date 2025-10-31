@@ -23,25 +23,9 @@ class FileDeleteCommand extends Command {
   /// Creates a new instance of the [FileDeleteCommand] class.
   FileDeleteCommand() {
     argParser.addFlag('sudo', abbr: 's', negatable: false, help: 'Run as sudo');
-    argParser.addFlag(
-      'recursive',
-      abbr: 'r',
-      negatable: false,
-      help: 'Delete recursively',
-    );
-    argParser.addFlag(
-      'force',
-      abbr: 'f',
-      negatable: false,
-      help: 'Force delete',
-    );
-    argParser.addFlag(
-      'verbose',
-      abbr: 'v',
-      negatable: true,
-      defaultsTo: true,
-      help: 'Verbose output',
-    );
+    argParser.addFlag('recursive', abbr: 'r', negatable: false, help: 'Delete recursively');
+    argParser.addFlag('force', abbr: 'f', negatable: false, help: 'Force delete');
+    argParser.addFlag('verbose', abbr: 'v', negatable: true, defaultsTo: true, help: 'Verbose output');
   }
 
   // [run] may also return a Future.

@@ -18,20 +18,9 @@ class FileBinCommand extends Command {
   final description = "Move a file to the system bin directory";
 
   FileBinCommand() {
-    argParser.addFlag(
-      'verbose',
-      abbr: 'v',
-      negatable: true,
-      defaultsTo: true,
-      help: 'Verbose output',
-    );
+    argParser.addFlag('verbose', abbr: 'v', negatable: true, defaultsTo: true, help: 'Verbose output');
     argParser.addFlag('sudo', abbr: 's', negatable: false, help: 'Run as sudo');
-    argParser.addFlag(
-      'exec',
-      abbr: 'x',
-      negatable: false,
-      help: 'Mark as executable',
-    );
+    argParser.addFlag('exec', abbr: 'x', negatable: false, help: 'Mark as executable');
   }
 
   // [run] may also return a Future.

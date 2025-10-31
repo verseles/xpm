@@ -13,12 +13,7 @@ class Setting {
   /// Parameters:
   /// - [key]: A unique key for the setting. It is case-insensitive and will be stored in lowercase.
   /// - [value]: The value to set for the setting.
-  static Future<void> set(
-    String key,
-    dynamic value, {
-    DateTime? expires,
-    bool lazy = false,
-  }) async {
+  static Future<void> set(String key, dynamic value, {DateTime? expires, bool lazy = false}) async {
     final data = KV()
       ..key = key.toLowerCase()
       ..value = serialize(value)
@@ -42,11 +37,7 @@ class Setting {
   /// - [cache]: Whether to cache the value in memory. Defaults to `true`.
   ///
   /// Returns: The value of the setting or the default value if it is not found.
-  static Future<dynamic> get(
-    String key, {
-    dynamic defaultValue,
-    bool cache = true,
-  }) async {
+  static Future<dynamic> get(String key, {dynamic defaultValue, bool cache = true}) async {
     key = key.toLowerCase();
 
     if (cache && _cache.containsKey(key)) {

@@ -18,7 +18,7 @@ packages:
     source: hosted
     version: "2.2.0"
   analyzer:
-    dependency: "direct dev"
+    dependency: transitive
     description:
       name: analyzer
       sha256: ea3d8652bda62982addfd92fdc2d0214e5f82e43325104990d4f4c4a2a313562
@@ -433,14 +433,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
-  mockito:
-    dependency: "direct dev"
-    description:
-      name: mockito
-      sha256: "6841eed20a7befac0ce07df8116c8b8233ed1f4486a7647c7fc5a02ae6163917"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.4.4"
   node_preamble:
     dependency: transitive
     description:
@@ -677,10 +669,10 @@ packages:
     dependency: "direct dev"
     description:
       name: var_dump
-      sha256: "6fd51d7f1807b83fe014acde9c71affb31aadf22902323085a88132a78d61b0d"
+      sha256: "24522a3404b921b30369fa4019a485f54dc48ba15f1306ddfe9d6b4654d14437"
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.0"
+    version: "0.5.0"
   vector_math:
     dependency: transitive
     description:

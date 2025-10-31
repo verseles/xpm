@@ -38,5 +38,8 @@ class Package {
 
   String? channel; // channel used to install
 
+  @Index()
+  bool isNative = false;
+
   final repo = IsarLink<Repo>();
 }

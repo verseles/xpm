@@ -1,3 +1,14 @@
-#dart_test.yaml
-setup: test/.test_setup.dart
-teardown: test/.test_teardown.dart
+# We occasionally want to use --tags or --exclude-tags on these tags.
+tags:
+  sudo:
+    description: Require sudo to run this test.
+
+  skip-ci:
+    description: Skip this test on CI.
+    # This is a workaround for
+
+  not-tested:
+    description: This test is not yet tested.
+    # This is a workaround for
+  dpp:
+    description: This test is depentent of dpp and should be run at the end

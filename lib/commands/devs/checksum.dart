@@ -15,8 +15,7 @@ class ChecksumCommand extends Command {
   @override
   final category = "For developers";
   @override
-  String get invocation =>
-      '${runner!.executableName} $name <expectedHash> <file path>';
+  String get invocation => '${runner!.executableName} $name <expectedHash> <file path>';
   @override
   final aliases = ['cs'];
 
@@ -60,9 +59,7 @@ class ChecksumCommand extends Command {
     if (result) {
       out('{@green}✅ Checksum is correct:{@end} {@green}$expectedHash{@end}');
     } else {
-      out(
-        '{@red}⛔ Checksum is incorrect{@end}: {@yellow}$expectedHash{@end} != {@green}${checksum.fileHash}{@end}',
-      );
+      out('{@red}⛔ Checksum is incorrect{@end}: {@yellow}$expectedHash{@end} != {@green}${checksum.fileHash}{@end}');
     }
   }
 }

@@ -65,9 +65,7 @@ class VersionChecker {
         }
         break;
       case Types.patch:
-        if (current.patch < newer.patch &&
-            current.minor >= newer.minor &&
-            current.major >= newer.major) {
+        if (current.patch < newer.patch && current.minor >= newer.minor && current.major >= newer.major) {
           return newer;
         }
         break;

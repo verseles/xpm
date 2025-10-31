@@ -2,14 +2,17 @@ class NativePackage {
   final String name;
   final String? version;
   final String? description;
-  final bool isInstalled;
-  final String source;
+  final String? arch;
 
   NativePackage({
     required this.name,
     this.version,
     this.description,
-    this.isInstalled = false,
-    required this.source,
+    this.arch,
   });
+
+  @override
+  String toString() {
+    return 'NativePackage{name: $name, version: $version, description: $description, arch: $arch}';
+  }
 }

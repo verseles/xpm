@@ -50,7 +50,5 @@ Directory binDirectory({String? PATH}) {
       }
     }
   }
-  throw Exception(
-    'No executable folder was found in the PATH environment variable.',
-  );
+  throw Exception('No executable folder was found in the PATH environment variable.');
 }
