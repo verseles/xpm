@@ -7,8 +7,7 @@ class AptPackageManager extends NativePackageManager {
   @override
   Future<List<NativePackage>> search(String name, {int? limit}) async {
     final shell = Shell();
-    final result = await shell.run(
-        'apt-cache search --names-only "^$name"');
+    final result = await shell.run('apt-cache search --names-only "^$name"');
     if (result.first.exitCode != 0) {
       return [];
     }
@@ -25,8 +24,7 @@ class AptPackageManager extends NativePackageManager {
         continue;
       }
       final parts = line.split(' - ');
-      packages.add(
-          NativePackage(name: parts[0], description: parts.length > 1 ? parts[1] : null));
+      packages.add(NativePackage(name: parts[0], description: parts.length > 1 ? parts[1] : null));
     }
 
     return packages;
@@ -39,15 +37,13 @@ class AptPackageManager extends NativePackageManager {
       throw Exception('sudo not found');
     }
     final shell = Shell();
-    await shell.run(
-        '$sudo apt-get install -y "$name"');
+    await shell.run('$sudo apt-get install -y "$name"');
   }
 
   @override
   Future<bool> isInstalled(String name) async {
     final shell = Shell();
-    final result =
-        await shell.run('dpkg-query --show --showformat=\'${"Status"}\' "$name"');
+    final result = await shell.run('dpkg-query --show --showformat=\'${"Status"}\' "$name"');
     if (result.first.exitCode != 0) {
       return false;
     }
@@ -58,8 +54,7 @@ class AptPackageManager extends NativePackageManager {
   @override
   Future<NativePackage?> get(String name) async {
     final shell = Shell();
-    final result =
-        await shell.run('apt-cache show "$name"');
+    final result = await shell.run('apt-cache show "$name"');
     if (result.first.exitCode != 0) {
       return null;
     }

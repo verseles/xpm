@@ -1,3 +1,5 @@
+## v0.76.0
+- feat: native package manager
 ## v0.75.0
 - update to latest dart stable version
 ## v0.74.0

@@ -4,12 +4,7 @@ class NativePackage {
   final String? description;
   final String? arch;
 
-  NativePackage({
-    required this.name,
-    this.version,
-    this.description,
-    this.arch,
-  });
+  NativePackage({required this.name, this.version, this.description, this.arch});
 
   @override
   String toString() {

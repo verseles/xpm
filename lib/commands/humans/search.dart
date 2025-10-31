@@ -23,15 +23,14 @@ class SearchCommand extends Command {
   SearchCommand() {
     argParser.addFlag('exact', negatable: false, abbr: 'e', help: 'Search for an exact match of the package name.');
     argParser.addFlag('all', negatable: false, abbr: 'a', help: 'List all packages available.');
-    argParser.addOption('native',
-        abbr: 'n',
-        allowed: ['auto', 'only', 'off'],
-        defaultsTo: 'auto',
-        help: 'Control integration with native package managers.');
-    argParser.addOption('limit',
-        abbr: 'l',
-        defaultsTo: '20',
-        help: 'Limit the number of results.');
+    argParser.addOption(
+      'native',
+      abbr: 'n',
+      allowed: ['auto', 'only', 'off'],
+      defaultsTo: 'auto',
+      help: 'Control integration with native package managers.',
+    );
+    argParser.addOption('limit', abbr: 'l', defaultsTo: '20', help: 'Limit the number of results.');
   }
 
   // [run] may also return a Future.

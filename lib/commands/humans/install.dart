@@ -64,11 +64,13 @@ class InstallCommand extends Command {
           '\nExample: --flags="--flag1" --flags="--flag2"',
     );
 
-    argParser.addOption('native',
-        abbr: 'n',
-        allowed: ['auto', 'only', 'off'],
-        defaultsTo: 'auto',
-        help: 'Control integration with native package managers.');
+    argParser.addOption(
+      'native',
+      abbr: 'n',
+      allowed: ['auto', 'only', 'off'],
+      defaultsTo: 'auto',
+      help: 'Control integration with native package managers.',
+    );
 
     // add verbose flag
     argParser.addFlag('verbose', negatable: false, help: 'Show more information about what is going on.');
