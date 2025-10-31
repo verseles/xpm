@@ -8,13 +8,19 @@ class AptPackageManager extends NativePackageManager {
   Future<List<NativePackage>> search(String name, {int? limit}) async {
     final shell = Shell();
     final result = await shell.run(
-        'apt-cache search --names-only "^$name" | sort -r | head -n ${limit ?? 10}');
+        'apt-cache search --names-only "^$name"');
     if (result.first.exitCode != 0) {
       return [];
     }
 
+    var lines = result.first.stdout.toString().split('\n');
+    lines.sort((a, b) => b.compareTo(a));
+    if (limit != null) {
+      lines = lines.take(limit).toList();
+    }
+
     final packages = <NativePackage>[];
-    for (final line in result.first.stdout.toString().split('\n')) {
+    for (final line in lines) {
       if (line.isEmpty) {
         continue;
       }
