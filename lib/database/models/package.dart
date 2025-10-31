@@ -7,7 +7,7 @@ part 'package.g.dart';
 class Package {
   Id? id;
 
-  String? script; // path to script
+  late String script; // path to script
 
   @Index(caseSensitive: false)
   late String name;
@@ -37,9 +37,6 @@ class Package {
   String? method; // method used to install
 
   String? channel; // channel used to install
-
-  @Index()
-  bool isNative = false;
 
   final repo = IsarLink<Repo>();
 }
