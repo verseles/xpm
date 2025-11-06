@@ -129,9 +129,7 @@ class SearchCommand extends Command {
         final packageLabel = result.repo == 'aur' ? 'AUR' : 'PM';
         final fullName = repoInfo.isNotEmpty ? '$repoInfo${result.name}' : result.name;
 
-        out(
-          '{@yellow}[$packageLabel]{@end} {@blue}$fullName{@end}$version$popularity - ${result.description ?? ''}',
-        );
+        out('{@yellow}[$packageLabel]{@end} {@blue}$fullName{@end}$version$popularity - ${result.description ?? ''}');
       }
 
       // Then display xpm results (moved after native results)
