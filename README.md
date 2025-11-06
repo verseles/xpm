@@ -26,31 +26,39 @@ XPM is a package manager for unix systems like Linux, BSD, MacOS, etc. It can be
 
 ## Supported Operating Systems & Package Managers
 
-XPM supports a wide range of Unix-like systems:
+XPM supports two levels of integration:
+
+### 🎯 **Integrated Support** (Native PM with formatted search)
+- **Debian/Ubuntu** & derivatives → **APT**
+- **Arch Linux** → **Pacman** (with AUR support via **Paru** and **Yay**)
+
+These systems get full native package manager integration with intelligent search, metadata extraction, and clean formatted output.
+
+### 📜 **Script-Based Support** (via installers)
+For other systems, XPM provides script-based installation through the [xpm-popular](https://github.com/verseles/xpm-popular) repository:
 
 **Linux Distributions:**
-- **Debian/Ubuntu** & derivatives → APT
-- **Arch Linux** → Pacman (with AUR support via **Paru** and **Yay**)
 - **Fedora** → DNF
 - **openSUSE** → Zypper
 - **Clear Linux** → swupd
 - **Android (Termux)** → pkg
-- **Alpine Linux** → APK (via xpm way)
+- **Alpine Linux** → via custom scripts
 
-**macOS** → Homebrew (brew)
+**macOS** → Homebrew (brew) - via scripts
 
-**Windows** → Chocolatey (choco)
+**Windows** → Chocolatey (choco) - via scripts
 
-**Universal Package Managers:**
+**Universal Package Managers (via scripts):**
 - Flatpak
 - Snap
 
-When searching for packages, XPM automatically detects your system and displays results from:
-1. **Native package manager** (APT, Pacman, DNF, etc.) with clean, formatted output
-2. **AUR packages** (for Arch Linux) with popularity votes
+### 🔍 **Search Behavior**
+When searching for packages on **integrated systems** (Debian/Ubuntu, Arch), XPM displays:
+1. **Native package manager** results with clean formatted output
+2. **AUR packages** (Arch only) with popularity votes
 3. **XPM repository** as fallback
 
-The native PM integration provides intelligent search with metadata extraction (descriptions, versions, repository information) formatted consistently across all package managers.
+On other systems, only the XPM repository is searched.
 
 
 ## Installation
