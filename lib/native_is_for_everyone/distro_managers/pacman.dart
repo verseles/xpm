@@ -77,7 +77,8 @@ class PacmanPackageManager extends NativePackageManager {
     // Sort official packages alphabetically
     officialPackages.sort((a, b) => a.name.compareTo(b.name));
 
-    // Sort AUR packages by popularity (ascending - less popular first, most popular last)
+    // Sort AUR packages by popularity (ascending - least popular first, most popular last)
+    // This ensures most popular AUR packages appear at the end for CLI users
     aurPackages.sort((a, b) {
       final aPop = a.popularity ?? 0;
       final bPop = b.popularity ?? 0;

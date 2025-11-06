@@ -127,6 +127,7 @@ class SearchCommand extends Command {
       }
 
       // Then display native results: extra/chaotic-aur, then others, then AUR
+      // Order: PM → AUR (so user sees PM first when reading top to bottom)
       final allNativePackages = <NativePackage>[];
       allNativePackages.addAll(extraChaoticPackages);
       allNativePackages.addAll(otherOfficialPackages);
