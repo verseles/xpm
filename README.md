@@ -24,7 +24,35 @@ XPM is a package manager for unix systems like Linux, BSD, MacOS, etc. It can be
 - Easy to choose channels (stable, beta, nightly, etc)
 - Single base to install packages in any distro
 
-  
+## Supported Operating Systems & Package Managers
+
+XPM supports a wide range of Unix-like systems:
+
+**Linux Distributions:**
+- **Debian/Ubuntu** & derivatives → APT
+- **Arch Linux** → Pacman (with AUR support via **Paru** and **Yay**)
+- **Fedora** → DNF
+- **openSUSE** → Zypper
+- **Clear Linux** → swupd
+- **Android (Termux)** → pkg
+- **Alpine Linux** → APK (via xpm way)
+
+**macOS** → Homebrew (brew)
+
+**Windows** → Chocolatey (choco)
+
+**Universal Package Managers:**
+- Flatpak
+- Snap
+
+When searching for packages, XPM automatically detects your system and displays results from:
+1. **Native package manager** (APT, Pacman, DNF, etc.) with clean, formatted output
+2. **AUR packages** (for Arch Linux) with popularity votes
+3. **XPM repository** as fallback
+
+The native PM integration provides intelligent search with metadata extraction (descriptions, versions, repository information) formatted consistently across all package managers.
+
+
 ## Installation
 
 Just run the following command in your terminal:
