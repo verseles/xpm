@@ -4,8 +4,6 @@ import 'package:args/command_runner.dart';
 import 'package:isar/isar.dart';
 import 'package:xpm/database/db.dart';
 import 'package:xpm/database/models/package.dart';
-import 'package:xpm/native_is_for_everyone/distro_managers/apt.dart';
-import 'package:xpm/native_is_for_everyone/distro_managers/pacman.dart';
 import 'package:xpm/native_is_for_everyone/models/native_package.dart';
 import 'package:xpm/native_is_for_everyone/native_package_manager_detector.dart';
 import 'package:xpm/os/get_archicteture.dart';
@@ -90,29 +88,7 @@ class SearchCommand extends Command {
     } else {
       print('Found ${xpmResults.length + nativeResults.length} packages:');
 
-      // Display native results first (order changed from xpm results to native results)
-      final nativeManager = await NativePackageManagerDetector.detect();
-      String managerLabel;
-      if (nativeManager is AptPackageManager) {
-        managerLabel = 'APT';
-      } else if (nativeManager is PacmanPackageManager) {
-        managerLabel = 'Pacman';
-      } else {
-        managerLabel = 'Native';
-      }
-
-      for (final result in nativeResults) {
-        final version = result.version != null && result.version!.isNotEmpty ? ' {@green}${result.version}{@end}' : '';
-        final popularity = result.popularity != null && result.popularity! > 0
-            ? ' {@yellow}(${result.popularity} votes){@end}'
-            : '';
-        final repoInfo = result.repo != null && result.repo != 'aur' ? ' ${result.repo}/' : '';
-        out(
-          '{@yellow}[$managerLabel]{@end} {@blue}$repoInfo${result.name}{@end}$version$popularity - ${result.description ?? ''}',
-        );
-      }
-
-      // Then display xpm results (moved after native results)
+      // First, display xpm results
       for (final result in xpmResults) {
         final installed = result.installed != null ? '[{@green}installed{@end}] ' : '';
         final unavailable = result.arch != null && !result.arch!.contains('any') && !result.arch!.contains(platform)
@@ -121,6 +97,51 @@ class SearchCommand extends Command {
 
         out(
           '$unavailable{@blue}${result.name}{@end} {@green}${result.version}{@end} $installed- ${result.title != result.name ? "${result.title} - " : ""}${result.desc}',
+        );
+      }
+
+      // Separate native results by type for proper ordering
+      final extraChaoticPackages = <NativePackage>[];
+      final otherOfficialPackages = <NativePackage>[];
+      final aurPackages = <NativePackage>[];
+
+      for (final result in nativeResults) {
+        if (result.repo == 'aur') {
+          aurPackages.add(result);
+        } else if (result.repo == 'extra' || result.repo == 'chaotic-aur') {
+          extraChaoticPackages.add(result);
+        } else {
+          otherOfficialPackages.add(result);
+        }
+      }
+
+      // Sort official packages alphabetically
+      extraChaoticPackages.sort((a, b) => a.name.compareTo(b.name));
+      otherOfficialPackages.sort((a, b) => a.name.compareTo(b.name));
+
+      // Sort AUR packages by popularity (ascending - less popular first so user sees most popular first)
+      aurPackages.sort((a, b) {
+        final aPop = a.popularity ?? 0;
+        final bPop = b.popularity ?? 0;
+        return aPop.compareTo(bPop);
+      });
+
+      // Display native results: extra/chaotic-aur, then others, then AUR
+      final allNativePackages = <NativePackage>[];
+      allNativePackages.addAll(extraChaoticPackages);
+      allNativePackages.addAll(otherOfficialPackages);
+      allNativePackages.addAll(aurPackages);
+
+      for (final result in allNativePackages) {
+        final version = result.version != null && result.version!.isNotEmpty ? ' {@green}${result.version}{@end}' : '';
+        final popularity = result.popularity != null && result.popularity! > 0
+            ? ' {@yellow}(${result.popularity} votes){@end}'
+            : '';
+        final repoInfo = result.repo != null && result.repo != 'aur' ? ' ${result.repo}/' : '';
+        final packageLabel = result.repo == 'aur' ? 'AUR' : 'PM';
+
+        out(
+          '{@yellow}[$packageLabel]{@end} {@blue}$repoInfo${result.name}{@end}$version$popularity - ${result.description ?? ''}',
         );
       }
     }
