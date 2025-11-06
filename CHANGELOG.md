@@ -1,3 +1,5 @@
+## v0.81.0
+- better pacman support
 ## v0.80.0
 - fix: pacman now in xpm style
 ## v0.79.1
