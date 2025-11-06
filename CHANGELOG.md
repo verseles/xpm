@@ -1,3 +1,5 @@
+## v0.79.0
+- feat: native package manager ArchLinux/pacman/yay/paru
 ## v0.76.0
 - feat: native package manager
 ## v0.75.0
