@@ -148,13 +148,9 @@ class PacmanPackageManager extends NativePackageManager {
         continue;
       }
 
-      packages.add(NativePackage(
-        name: name,
-        version: version,
-        description: description,
-        repo: repo,
-        popularity: popularity,
-      ));
+      packages.add(
+        NativePackage(name: name, version: version, description: description, repo: repo, popularity: popularity),
+      );
     }
 
     return packages;

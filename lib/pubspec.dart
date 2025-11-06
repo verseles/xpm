@@ -2,32 +2,12 @@
 const name = 'xpm';
 const description =
     'Universal package manager for any unix-like distro including macOS. Also experimental Windows support.';
-const version = '0.79.1';
+const version = '0.80.0';
 const homepage = 'https://xpm.link';
 const repository = 'https://github.com/verseles/xpm';
-const executables = {'xpm': null};
-const environment = {'sdk': '>=3.9.4 <4.0.0'};
-const devDependencies = {
-  'build_runner': '^2.4.13',
-  'isar_generator': '^3.1.0+1',
-  'lints': '^6.0.0',
-  'test': '^1.25.8',
-  'var_dump': '^0.5.0',
-  'yaml': '^3.1.2'
-};
-const dependencies = {
-  'all_exit_codes': '^2.2.0',
-  'args': '^2.5.0',
-  'console': '^4.1.0',
-  'console_bars': '^1.2.1',
-  'crypto': '^3.0.3',
-  'dio': '^5.9.0',
-  'dloader': '^1.2.7',
-  'executable': '^1.4.1',
-  'interact': '^2.2.0',
-  'isar': '^3.1.0+1',
-  'path': '^1.9.0',
-  'process_run': '^1.2.4',
-  'pub_semver': '^2.1.4',
-  'slug': '^1.0.2'
-};
+const executables = '{xpm: null}';
+const environment = '{sdk: >=3.9.4 <4.0.0}';
+const devDependencies =
+    '{build_runner: ^2.4.13, isar_generator: ^3.1.0+1, lints: ^6.0.0, test: ^1.25.8, var_dump: ^0.5.0, yaml: ^3.1.2}';
+const dependencies =
+    '{all_exit_codes: ^2.2.0, args: ^2.5.0, console: ^4.1.0, console_bars: ^1.2.1, crypto: ^3.0.3, dio: ^5.9.0, dloader: ^1.2.7, executable: ^1.4.1, interact: ^2.2.0, isar: ^3.1.0+1, path: ^1.9.0, process_run: ^1.2.4, pub_semver: ^2.1.4, slug: ^1.0.2}';

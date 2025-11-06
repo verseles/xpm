@@ -6,14 +6,7 @@ class NativePackage {
   final String? repo;
   final int? popularity;
 
-  NativePackage({
-    required this.name,
-    this.version,
-    this.description,
-    this.arch,
-    this.repo,
-    this.popularity,
-  });
+  NativePackage({required this.name, this.version, this.description, this.arch, this.repo, this.popularity});
 
   @override
   String toString() {

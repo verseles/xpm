@@ -103,9 +103,13 @@ class SearchCommand extends Command {
 
       for (final result in nativeResults) {
         final version = result.version != null && result.version!.isNotEmpty ? ' {@green}${result.version}{@end}' : '';
-        final popularity = result.popularity != null && result.popularity! > 0 ? ' {@yellow}(${result.popularity} votes){@end}' : '';
+        final popularity = result.popularity != null && result.popularity! > 0
+            ? ' {@yellow}(${result.popularity} votes){@end}'
+            : '';
         final repoInfo = result.repo != null && result.repo != 'aur' ? ' ${result.repo}/' : '';
-        out('{@yellow}[$managerLabel]{@end} {@blue}$repoInfo${result.name}{@end}$version$popularity - ${result.description ?? ''}');
+        out(
+          '{@yellow}[$managerLabel]{@end} {@blue}$repoInfo${result.name}{@end}$version$popularity - ${result.description ?? ''}',
+        );
       }
 
       // Then display xpm results (moved after native results)
