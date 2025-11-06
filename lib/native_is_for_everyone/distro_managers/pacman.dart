@@ -115,15 +115,27 @@ class PacmanPackageManager extends NativePackageManager {
       int? popularity;
 
       if (repositoryArch[0] == 'aur') {
-        // AUR format: "aur/package version [+popularity ~outdated]"
+        // AUR format: "aur/package version [+votes ~popularity]" (paru) or "aur/package version (+votes popularity)" (yay)
         name = repositoryArch[1]; // Second part is the package name
         version = parts[1];
 
-        // Extract popularity from stats like [+5 ~2.00]
-        final statsPattern = RegExp(r'\[(\d+)\s+~?[\d\.]*\]');
-        final match = statsPattern.firstMatch(line);
+        // Extract votes and popularity from stats like [+67 ~2.84] (paru) or (+67 2.84) (yay)
+        // Try both patterns
+        final paruPattern = RegExp(r'\[\+(\d+)\s+~([0-9\.]+)\]');
+        final yayPattern = RegExp(r'\(\+(\d+)\s+([0-9\.]+)\)');
+
+        var match = paruPattern.firstMatch(line);
         if (match != null) {
-          popularity = int.parse(match.group(1)!);
+          final popularityValue = double.parse(match.group(2)!);
+          // Store popularity as integer (multiply by 100 to preserve 2 decimal places)
+          popularity = (popularityValue * 100).round();
+        } else {
+          match = yayPattern.firstMatch(line);
+          if (match != null) {
+            final popularityValue = double.parse(match.group(2)!);
+            // Store popularity as integer (multiply by 100 to preserve 2 decimal places)
+            popularity = (popularityValue * 100).round();
+          }
         }
 
         // Description is on the next line if present

@@ -172,5 +172,71 @@ extra/fd 8.7.1-1 Alternative to find
       final packages = manager.parseSearchOutput(output);
       expect(packages.length, 3);
     });
+
+    test('should parse AUR packages with popularity correctly (paru format)', () {
+      final output = '''
+aur/cloudflare-warp-bin 2025.8.779-1 [+67 ~2.84]
+    Cloudflare Warp Client
+aur/cloudflare-ddns-bin 0.3.1-1 [+0 ~0.00]
+    Sync a Cloudflare DNS record with your current public IP
+aur/test-package 1.0-1 [+5 ~1.23]
+    Test package with popularity
+''';
+
+      final packages = manager.parseSearchOutput(output);
+
+      expect(packages.length, 3);
+
+      // Check cloudflare-warp-bin
+      expect(packages[0].name, equals('cloudflare-warp-bin'));
+      expect(packages[0].repo, equals('aur'));
+      expect(packages[0].version, equals('2025.8.779-1'));
+      expect(packages[0].popularity, equals(284)); // 2.84 * 100 = 284
+
+      // Check cloudflare-ddns-bin
+      expect(packages[1].name, equals('cloudflare-ddns-bin'));
+      expect(packages[1].repo, equals('aur'));
+      expect(packages[1].version, equals('0.3.1-1'));
+      expect(packages[1].popularity, equals(0)); // 0.00 * 100 = 0
+
+      // Check test-package
+      expect(packages[2].name, equals('test-package'));
+      expect(packages[2].repo, equals('aur'));
+      expect(packages[2].version, equals('1.0-1'));
+      expect(packages[2].popularity, equals(123)); // 1.23 * 100 = 123
+    });
+
+    test('should parse AUR packages with popularity correctly (yay format)', () {
+      final output = '''
+aur/cloudflare-warp-bin 2025.8.779-1 (+67 2.84)
+    Cloudflare Warp Client
+aur/cloudflare-ddns-bin 0.3.1-1 (+0 0.00)
+    Sync a Cloudflare DNS record with your current public IP
+aur/test-package 1.0-1 (+5 1.23)
+    Test package with popularity
+''';
+
+      final packages = manager.parseSearchOutput(output);
+
+      expect(packages.length, 3);
+
+      // Check cloudflare-warp-bin
+      expect(packages[0].name, equals('cloudflare-warp-bin'));
+      expect(packages[0].repo, equals('aur'));
+      expect(packages[0].version, equals('2025.8.779-1'));
+      expect(packages[0].popularity, equals(284)); // 2.84 * 100 = 284
+
+      // Check cloudflare-ddns-bin
+      expect(packages[1].name, equals('cloudflare-ddns-bin'));
+      expect(packages[1].repo, equals('aur'));
+      expect(packages[1].version, equals('0.3.1-1'));
+      expect(packages[1].popularity, equals(0)); // 0.00 * 100 = 0
+
+      // Check test-package
+      expect(packages[2].name, equals('test-package'));
+      expect(packages[2].repo, equals('aur'));
+      expect(packages[2].version, equals('1.0-1'));
+      expect(packages[2].popularity, equals(123)); // 1.23 * 100 = 123
+    });
   });
 }
