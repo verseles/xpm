@@ -78,19 +78,20 @@ class PacmanPackageManager extends NativePackageManager {
     officialPackages.sort((a, b) => a.name.compareTo(b.name));
 
     // Sort AUR packages by popularity (ascending - least popular first, most popular last)
-    // This ensures most popular AUR packages appear at the end for CLI users
+    // This ensures most popular AUR packages appear at the end for terminal output
     aurPackages.sort((a, b) {
       final aPop = a.popularity ?? 0;
       final bPop = b.popularity ?? 0;
       return aPop.compareTo(bPop);
     });
 
-    // Start with officials (limit to ~7)
+    // Return in order: AUR → PM (so terminal shows AUR first, then PM)
+    // This is because terminal output shows most recent messages at the top
+    // Terminal behavior: newest messages appear at the TOP
+    // User reads top to bottom: sees AUR (newest) → PM → XPM (oldest)
     final combined = <NativePackage>[];
-    combined.addAll(officialPackages.take(7));
-
-    // Add all AUR packages (don't limit them to ensure most popular appear at the end)
-    combined.addAll(aurPackages);
+    combined.addAll(aurPackages); // AUR first (appears at top in terminal)
+    combined.addAll(officialPackages.take(7)); // PM second (appears below AUR)
 
     // Only apply limit if it's a large value to ensure AUR packages aren't cut off
     // The search command will handle final limiting if needed

@@ -114,24 +114,14 @@ class SearchCommand extends Command {
         return aPop.compareTo(bPop);
       });
 
-      // First display xpm results
-      for (final result in xpmResults) {
-        final installed = result.installed != null ? '[{@green}installed{@end}] ' : '';
-        final unavailable = result.arch != null && !result.arch!.contains('any') && !result.arch!.contains(platform)
-            ? '[{@red}unavailable for $platform{@end}]'
-            : '';
-
-        out(
-          '$unavailable{@blue}${result.name}{@end} {@green}${result.version}{@end} $installed- ${result.title != result.name ? "${result.title} - " : ""}${result.desc}',
-        );
-      }
-
-      // Then display native results: extra/chaotic-aur, then others, then AUR
-      // Order: PM → AUR (so user sees PM first when reading top to bottom)
+      // First display native results: AUR first, then officials
+      // Order: AUR → PM (so terminal shows AUR at TOP, PM below, XPM at BOTTOM)
+      // Terminal behavior: newest output appears at the TOP
+      // User reads top to bottom: AUR (newest) → PM → XPM (oldest, seen first)
       final allNativePackages = <NativePackage>[];
+      allNativePackages.addAll(aurPackages);
       allNativePackages.addAll(extraChaoticPackages);
       allNativePackages.addAll(otherOfficialPackages);
-      allNativePackages.addAll(aurPackages);
 
       for (final result in allNativePackages) {
         final version = result.version != null && result.version!.isNotEmpty ? ' {@green}${result.version}{@end}' : '';
@@ -143,6 +133,18 @@ class SearchCommand extends Command {
         final fullName = repoInfo.isNotEmpty ? '$repoInfo${result.name}' : result.name;
 
         out('{@yellow}[$packageLabel]{@end} {@blue}$fullName{@end}$version$popularity - ${result.description ?? ''}');
+      }
+
+      // Then display xpm results (appears at the BOTTOM, seen first by user)
+      for (final result in xpmResults) {
+        final installed = result.installed != null ? '[{@green}installed{@end}] ' : '';
+        final unavailable = result.arch != null && !result.arch!.contains('any') && !result.arch!.contains(platform)
+            ? '[{@red}unavailable for $platform{@end}]'
+            : '';
+
+        out(
+          '$unavailable{@blue}${result.name}{@end} {@green}${result.version}{@end} $installed- ${result.title != result.name ? "${result.title} - " : ""}${result.desc}',
+        );
       }
     }
   }
