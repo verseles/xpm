@@ -62,11 +62,38 @@ class PacmanPackageManager extends NativePackageManager {
 
     final packages = _parseSearchOutput(result.first.stdout.toString());
 
-    if (limit != null) {
-      return packages.take(limit).toList();
+    // Separate official repo packages from AUR packages
+    final officialPackages = <NativePackage>[];
+    final aurPackages = <NativePackage>[];
+
+    for (final pkg in packages) {
+      if (pkg.repo == 'aur') {
+        aurPackages.add(pkg);
+      } else {
+        officialPackages.add(pkg);
+      }
     }
 
-    return packages;
+    // Sort official packages alphabetically
+    officialPackages.sort((a, b) => a.name.compareTo(b.name));
+
+    // Sort AUR packages by popularity (ascending - less popular first so user sees most popular first)
+    aurPackages.sort((a, b) {
+      final aPop = a.popularity ?? 0;
+      final bPop = b.popularity ?? 0;
+      return aPop.compareTo(bPop);
+    });
+
+    // Combine: officials first (limit to ~7), then AUR
+    final combined = <NativePackage>[];
+    combined.addAll(officialPackages.take(7));
+    combined.addAll(aurPackages);
+
+    if (limit != null) {
+      return combined.take(limit).toList();
+    }
+
+    return combined;
   }
 
   List<NativePackage> _parseSearchOutput(String output) {
@@ -84,11 +111,21 @@ class PacmanPackageManager extends NativePackageManager {
       String name;
       String version;
       String description = '';
+      String repo = repositoryArch[0];
+      int? popularity;
 
       if (repositoryArch[0] == 'aur') {
-        // AUR format: "aur/package version [stats]"
+        // AUR format: "aur/package version [+popularity ~outdated]"
         name = repositoryArch[1]; // Second part is the package name
         version = parts[1];
+
+        // Extract popularity from stats like [+5 ~2.00]
+        final statsPattern = RegExp(r'\[(\d+)\s+~?[\d\.]*\]');
+        final match = statsPattern.firstMatch(line);
+        if (match != null) {
+          popularity = int.parse(match.group(1)!);
+        }
+
         // Description is on the next line if present
         if (i + 1 < lines.length) {
           final nextLine = lines[i + 1];
@@ -99,9 +136,10 @@ class PacmanPackageManager extends NativePackageManager {
           }
         }
       } else if (repositoryArch.length >= 2) {
-        // Official repo format: "repo/package version description"
+        // Official repo format: "repo/package version [size1 size2] [installed: version]"
         name = repositoryArch[1];
         version = parts[1];
+        repo = repositoryArch[0]; // extra, core, community, etc.
         // Get description from the same line if present
         if (parts.length > 2) {
           description = parts.sublist(2).join(' ').trim();
@@ -110,10 +148,15 @@ class PacmanPackageManager extends NativePackageManager {
         continue;
       }
 
-      packages.add(NativePackage(name: name, version: version, description: description));
+      packages.add(NativePackage(
+        name: name,
+        version: version,
+        description: description,
+        repo: repo,
+        popularity: popularity,
+      ));
     }
 
-    packages.sort((a, b) => b.name.compareTo(a.name));
     return packages;
   }
 

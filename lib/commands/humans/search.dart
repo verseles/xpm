@@ -89,18 +89,8 @@ class SearchCommand extends Command {
       print('No packages found.');
     } else {
       print('Found ${xpmResults.length + nativeResults.length} packages:');
-      for (final result in xpmResults) {
-        final installed = result.installed != null ? '[{@green}installed{@end}] ' : '';
-        final unavailable = result.arch != null && !result.arch!.contains('any') && !result.arch!.contains(platform)
-            ? '[{@red}unavailable for $platform{@end}]'
-            : '';
 
-        out(
-          '$unavailable{@blue}${result.name}{@end} {@green}${result.version}{@end} $installed- ${result.title != result.name ? "${result.title} - " : ""}${result.desc}',
-        );
-      }
-
-      // Display native results with correct package manager label
+      // Display native results first (order changed from xpm results to native results)
       final nativeManager = await NativePackageManagerDetector.detect();
       String managerLabel;
       if (nativeManager is AptPackageManager) {
@@ -112,8 +102,22 @@ class SearchCommand extends Command {
       }
 
       for (final result in nativeResults) {
-        final version = result.version != null && result.version!.isNotEmpty ? ' ${result.version}' : '';
-        out('{@yellow}[$managerLabel]{@end} {@blue}${result.name}{@end}$version - ${result.description ?? ''}');
+        final version = result.version != null && result.version!.isNotEmpty ? ' {@green}${result.version}{@end}' : '';
+        final popularity = result.popularity != null && result.popularity! > 0 ? ' {@yellow}(${result.popularity} votes){@end}' : '';
+        final repoInfo = result.repo != null && result.repo != 'aur' ? ' ${result.repo}/' : '';
+        out('{@yellow}[$managerLabel]{@end} {@blue}$repoInfo${result.name}{@end}$version$popularity - ${result.description ?? ''}');
+      }
+
+      // Then display xpm results (moved after native results)
+      for (final result in xpmResults) {
+        final installed = result.installed != null ? '[{@green}installed{@end}] ' : '';
+        final unavailable = result.arch != null && !result.arch!.contains('any') && !result.arch!.contains(platform)
+            ? '[{@red}unavailable for $platform{@end}]'
+            : '';
+
+        out(
+          '$unavailable{@blue}${result.name}{@end} {@green}${result.version}{@end} $installed- ${result.title != result.name ? "${result.title} - " : ""}${result.desc}',
+        );
       }
     }
   }
