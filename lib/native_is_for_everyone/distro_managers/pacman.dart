@@ -50,7 +50,7 @@ class PacmanPackageManager extends NativePackageManager {
 
   @override
   Future<List<NativePackage>> search(String name, {int? limit}) async {
-    final shell = Shell();
+    final shell = Shell(verbose: false);
     final helper = await _getBestHelper();
 
     // Use the best available helper (Paru/Yay handle both repos + AUR automatically)
@@ -73,30 +73,39 @@ class PacmanPackageManager extends NativePackageManager {
     final packages = <NativePackage>[];
     final lines = output.split('\n').where((line) => line.isNotEmpty).toList();
 
-    for (final line in lines) {
-      // Parse lines like: "extra/jq 1.8.1-1 Command-line JSON processor" or "aur/whyq 0.15.0-1 [+0 ~0.00] Description"
+    for (var i = 0; i < lines.length; i++) {
+      final line = lines[i];
+
+      // Parse lines like: "extra/jq 1.8.1-1 Command-line JSON processor" or "aur/whyq 0.15.0-1 [+0 ~0.00]"
       final parts = line.split(' ');
-      if (parts.length < 3) continue;
+      if (parts.length < 2) continue;
 
       final repositoryArch = parts[0].split('/');
       String name;
       String version;
-      String description;
+      String description = '';
 
-      if (repositoryArch.length >= 2) {
+      if (repositoryArch[0] == 'aur') {
+        // AUR format: "aur/package version [stats]"
+        name = repositoryArch[1]; // Second part is the package name
+        version = parts[1];
+        // Description is on the next line if present
+        if (i + 1 < lines.length) {
+          final nextLine = lines[i + 1];
+          // Check if next line looks like a description (starts with spaces/tabs and has content)
+          if (nextLine.trim().isNotEmpty && (nextLine.startsWith(' ') || nextLine.startsWith('\t'))) {
+            description = nextLine.trim();
+            i++; // Skip the next line as it's been used as description
+          }
+        }
+      } else if (repositoryArch.length >= 2) {
         // Official repo format: "repo/package version description"
         name = repositoryArch[1];
         version = parts[1];
-        description = parts.sublist(2).join(' ').trim();
-      } else if (repositoryArch[0].startsWith('aur/')) {
-        // AUR format: "aur/package version [stats] description"
-        name = repositoryArch[0].substring(4); // Remove "aur/" prefix
-        version = parts[1];
-        // Skip stats like [+0 ~0.00] and join the rest
-        var descParts = parts.sublist(2);
-        // Remove stats (like [+0 ~0.00] or [Desatualizado desde: date])
-        descParts = descParts.where((p) => !p.startsWith('[') && !p.endsWith(']')).toList();
-        description = descParts.join(' ').trim();
+        // Get description from the same line if present
+        if (parts.length > 2) {
+          description = parts.sublist(2).join(' ').trim();
+        }
       } else {
         continue;
       }

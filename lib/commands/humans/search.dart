@@ -4,6 +4,8 @@ import 'package:args/command_runner.dart';
 import 'package:isar/isar.dart';
 import 'package:xpm/database/db.dart';
 import 'package:xpm/database/models/package.dart';
+import 'package:xpm/native_is_for_everyone/distro_managers/apt.dart';
+import 'package:xpm/native_is_for_everyone/distro_managers/pacman.dart';
 import 'package:xpm/native_is_for_everyone/models/native_package.dart';
 import 'package:xpm/native_is_for_everyone/native_package_manager_detector.dart';
 import 'package:xpm/os/get_archicteture.dart';
@@ -98,8 +100,20 @@ class SearchCommand extends Command {
         );
       }
 
+      // Display native results with correct package manager label
+      final nativeManager = await NativePackageManagerDetector.detect();
+      String managerLabel;
+      if (nativeManager is AptPackageManager) {
+        managerLabel = 'APT';
+      } else if (nativeManager is PacmanPackageManager) {
+        managerLabel = 'Pacman';
+      } else {
+        managerLabel = 'Native';
+      }
+
       for (final result in nativeResults) {
-        out('{@yellow}[APT]{@end} {@blue}${result.name}{@end} - ${result.description ?? ''}');
+        final version = result.version != null && result.version!.isNotEmpty ? ' ${result.version}' : '';
+        out('{@yellow}[$managerLabel]{@end} {@blue}${result.name}{@end}$version - ${result.description ?? ''}');
       }
     }
   }
