@@ -77,19 +77,23 @@ class PacmanPackageManager extends NativePackageManager {
     // Sort official packages alphabetically
     officialPackages.sort((a, b) => a.name.compareTo(b.name));
 
-    // Sort AUR packages by popularity (ascending - less popular first so user sees most popular first)
+    // Sort AUR packages by popularity (ascending - less popular first, most popular last)
     aurPackages.sort((a, b) {
       final aPop = a.popularity ?? 0;
       final bPop = b.popularity ?? 0;
       return aPop.compareTo(bPop);
     });
 
-    // Combine: officials first (limit to ~7), then AUR
+    // Start with officials (limit to ~7)
     final combined = <NativePackage>[];
     combined.addAll(officialPackages.take(7));
+
+    // Add all AUR packages (don't limit them to ensure most popular appear at the end)
     combined.addAll(aurPackages);
 
-    if (limit != null) {
+    // Only apply limit if it's a large value to ensure AUR packages aren't cut off
+    // The search command will handle final limiting if needed
+    if (limit != null && limit > 50) {
       return combined.take(limit).toList();
     }
 
