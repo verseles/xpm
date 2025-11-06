@@ -88,18 +88,6 @@ class SearchCommand extends Command {
     } else {
       print('Found ${xpmResults.length + nativeResults.length} packages:');
 
-      // First, display xpm results
-      for (final result in xpmResults) {
-        final installed = result.installed != null ? '[{@green}installed{@end}] ' : '';
-        final unavailable = result.arch != null && !result.arch!.contains('any') && !result.arch!.contains(platform)
-            ? '[{@red}unavailable for $platform{@end}]'
-            : '';
-
-        out(
-          '$unavailable{@blue}${result.name}{@end} {@green}${result.version}{@end} $installed- ${result.title != result.name ? "${result.title} - " : ""}${result.desc}',
-        );
-      }
-
       // Separate native results by type for proper ordering
       final extraChaoticPackages = <NativePackage>[];
       final otherOfficialPackages = <NativePackage>[];
@@ -126,7 +114,7 @@ class SearchCommand extends Command {
         return aPop.compareTo(bPop);
       });
 
-      // Display native results: extra/chaotic-aur, then others, then AUR
+      // Display native results first: extra/chaotic-aur, then others, then AUR
       final allNativePackages = <NativePackage>[];
       allNativePackages.addAll(extraChaoticPackages);
       allNativePackages.addAll(otherOfficialPackages);
@@ -137,11 +125,24 @@ class SearchCommand extends Command {
         final popularity = result.popularity != null && result.popularity! > 0
             ? ' {@yellow}(${result.popularity} votes){@end}'
             : '';
-        final repoInfo = result.repo != null && result.repo != 'aur' ? ' ${result.repo}/' : '';
+        final repoInfo = result.repo != null && result.repo != 'aur' ? '${result.repo}/' : '';
         final packageLabel = result.repo == 'aur' ? 'AUR' : 'PM';
+        final fullName = repoInfo.isNotEmpty ? '$repoInfo${result.name}' : result.name;
 
         out(
-          '{@yellow}[$packageLabel]{@end} {@blue}$repoInfo${result.name}{@end}$version$popularity - ${result.description ?? ''}',
+          '{@yellow}[$packageLabel]{@end} {@blue}$fullName{@end}$version$popularity - ${result.description ?? ''}',
+        );
+      }
+
+      // Then display xpm results (moved after native results)
+      for (final result in xpmResults) {
+        final installed = result.installed != null ? '[{@green}installed{@end}] ' : '';
+        final unavailable = result.arch != null && !result.arch!.contains('any') && !result.arch!.contains(platform)
+            ? '[{@red}unavailable for $platform{@end}]'
+            : '';
+
+        out(
+          '$unavailable{@blue}${result.name}{@end} {@green}${result.version}{@end} $installed- ${result.title != result.name ? "${result.title} - " : ""}${result.desc}',
         );
       }
     }
