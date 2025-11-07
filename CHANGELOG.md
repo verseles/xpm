@@ -1,3 +1,5 @@
+## v0.83.0
+- better pacman support - order xpm -> pm -> aur
 ## v0.82.0
 - better pacman support - order
 ## v0.81.0
