@@ -6,23 +6,16 @@ Este documento identifica oportunidades de melhoria no projeto XPM (Universal Pa
 
 ## 1. Arquitetura e Design
 
-### 1.1 Detector de Package Manager Incompleto
+### 1.1 ~~Detector de Package Manager Incompleto~~ ✅ CORRIGIDO
 **Arquivo:** `lib/native_is_for_everyone/native_package_manager_detector.dart`
 
-O detector atual só suporta APT e Pacman, mas o sistema declara suporte para DNF, Zypper, Brew, etc.
+~~O detector anterior so suportava APT e Pacman.~~
 
-```dart
-// Atual - apenas 2 gerenciadores
-if (await Executable('apt').find() != null) return AptPackageManager();
-if (await Executable('pacman').find() != null) return PacmanPackageManager();
-return null;
-```
-
-**Sugestao:** Implementar adaptadores para outros gerenciadores declarados:
-- DNF (Fedora)
-- Zypper (openSUSE)
-- Homebrew (macOS)
-- Swupd (Clear Linux)
+**Status:** Implementados novos adaptadores:
+- ✅ DNF (Fedora) - `lib/native_is_for_everyone/distro_managers/dnf.dart`
+- ✅ Zypper (openSUSE) - `lib/native_is_for_everyone/distro_managers/zypper.dart`
+- ✅ Homebrew (macOS) - `lib/native_is_for_everyone/distro_managers/homebrew.dart`
+- ⏳ Swupd (Clear Linux) - Pendente
 
 ### 1.2 Estado Global Mutavel
 **Arquivo:** `lib/global.dart`
@@ -82,21 +75,29 @@ Logger.error(error);
 
 ## 3. Testes
 
-### 3.1 Cobertura de Testes Limitada
-O projeto tem 14 arquivos de teste, mas varios componentes importantes nao tem testes:
-- `install.dart` - Comando principal, sem testes
-- `search.dart` - Comando principal, sem testes
-- `remove.dart` - Sem testes
-- `upgrade.dart` - Sem testes
-- `apt.dart` - Adaptador APT sem testes
-- `db.dart` - Camada de banco de dados sem testes
+### 3.1 ~~Cobertura de Testes Limitada~~ ✅ PARCIALMENTE CORRIGIDO
+~~O projeto tinha poucos testes para componentes importantes.~~
 
-**Sugestao:** Adicionar testes para os comandos principais e adaptadores.
+**Status:** Adicionados novos testes:
+- ✅ `test/apt_test.dart` - Testes para adaptador APT
+- ✅ `test/dnf_test.dart` - Testes para adaptador DNF
+- ✅ `test/zypper_test.dart` - Testes para adaptador Zypper
+- ✅ `test/homebrew_test.dart` - Testes para adaptador Homebrew
+- ✅ `test/native_package_test.dart` - Testes para modelo NativePackage
+- ✅ `test/db_test.dart` - Testes para camada de banco de dados
+- ⏳ Comandos principais (install, search, remove, upgrade) - Pendente
 
-### 3.2 Testes Dependentes de Ambiente
-Varios testes dependem de executaveis do sistema (`git`, `bash`, `pacman`), tornando-os frageis em diferentes ambientes.
+**Infraestrutura de testes adicionada:**
+- `docker-compose.yml` - Testes multi-sistema
+- `docker/test/` - Dockerfiles para Ubuntu, Fedora, Arch, openSUSE
+- `make coverage` - Geracao de relatorios de cobertura
+- `make test-all` - Executar testes em todas as plataformas
 
-**Sugestao:** Usar mocks para dependencias externas ou melhorar a configuracao de skip para CI.
+### 3.2 ~~Testes Dependentes de Ambiente~~ ✅ PARCIALMENTE CORRIGIDO
+~~Testes dependiam de executaveis do sistema.~~
+
+**Status:** Adicionado `docker-compose.yml` para rodar testes em ambientes isolados.
+Use `make test-ubuntu`, `make test-fedora`, `make test-arch`, `make test-opensuse`.
 
 ---
 
@@ -149,24 +150,25 @@ Cada chamada a `DB.instance()` verifica a existencia do arquivo core e pode tent
 
 ## 6. UX/Usabilidade
 
-### 6.1 Mensagens de Erro Pouco Informativas
-Algumas mensagens de erro nao dao contexto suficiente:
+### 6.1 ~~Mensagens de Erro Pouco Informativas~~ ✅ CORRIGIDO
+~~Mensagens de erro nao davam contexto suficiente.~~
 
-```dart
-leave(message: 'Package "{@gold}$packageRequested{@end}" not found.', exitCode: cantExecute);
-```
-
-**Sugestao:** Adicionar sugestoes como "Voce quis dizer...?" ou "Tente: xpm refresh".
+**Status:** Criado `lib/utils/error_helper.dart` com funcoes para:
+- Mostrar pacotes similares ("Did you mean...?")
+- Sugerir comandos uteis (xpm refresh, xpm search)
+- Dicas de troubleshooting para erros de instalacao/remocao
 
 ### 6.2 Sem Confirmacao para Operacoes Destrutivas
 O comando `remove` nao pede confirmacao antes de desinstalar, embora seja um valor chave do projeto ser nao-interativo.
 
 **Sugestao:** Adicionar flag `--yes` obrigatoria ou `--dry-run` para preview.
 
-### 6.3 Sem Comando de Info/Show
-Nao existe um comando para mostrar detalhes de um pacote sem instala-lo (como `apt show` ou `pacman -Si`).
+### 6.3 ~~Sem Comando de Info/Show~~ ✅ CORRIGIDO
+~~Nao existia um comando para mostrar detalhes de um pacote.~~
 
-**Sugestao:** Adicionar comando `xpm info <package>`.
+**Status:** Adicionado `xpm info <package>` em `lib/commands/humans/info.dart`.
+Aliases: `show`, `details`, `i`.
+Mostra informacoes do repositorio XPM e do gerenciador de pacotes nativo.
 
 ---
 
@@ -241,18 +243,49 @@ Scripts de instalacao nao sao verificados criptograficamente.
 |------------|-----------|------|--------|
 | Alta | Seguranca | Injecao de comando em writeToFile | ✅ CORRIGIDO |
 | Alta | Bug | Typo em nome de arquivo (archicteture) | ✅ CORRIGIDO |
-| Alta | Testes | Cobertura de comandos principais | ⏳ Pendente |
+| Alta | Testes | Cobertura de testes | ✅ PARCIAL (6 novos arquivos) |
+| Alta | Testes | Infraestrutura de testes multi-sistema | ✅ CORRIGIDO |
 | Media | Qualidade | Hard-coded strings em portugues | ✅ CORRIGIDO |
 | Media | Qualidade | Async/await em transacoes lazy | ✅ CORRIGIDO |
 | Media | Arquitetura | Parametro nao utilizado na interface | ✅ CORRIGIDO |
 | Media | Codigo | Logica de ordenacao duplicada | ✅ CORRIGIDO |
-| Media | UX | Mensagens de erro informativas | ⏳ Pendente |
-| Media | Feature | Comando `info` para detalhes de pacote | ⏳ Pendente |
-| Media | Arquitetura | Implementar mais adaptadores nativos | ⏳ Pendente |
+| Media | UX | Mensagens de erro informativas | ✅ CORRIGIDO |
+| Media | Feature | Comando `info` para detalhes de pacote | ✅ CORRIGIDO |
+| Media | Arquitetura | Implementar mais adaptadores nativos | ✅ CORRIGIDO (DNF, Zypper, Brew) |
 | Baixa | Performance | Cache de executaveis | ⏳ Pendente |
 | Baixa | Manutencao | Automatizacao de releases | ⏳ Pendente |
 
 ---
 
+## Novos Arquivos Criados
+
+### Adaptadores de Package Manager
+- `lib/native_is_for_everyone/distro_managers/dnf.dart` - Fedora/RHEL
+- `lib/native_is_for_everyone/distro_managers/zypper.dart` - openSUSE/SLES
+- `lib/native_is_for_everyone/distro_managers/homebrew.dart` - macOS
+
+### Comandos
+- `lib/commands/humans/info.dart` - Comando `xpm info`
+
+### Utilitarios
+- `lib/utils/error_helper.dart` - Helper para mensagens de erro
+
+### Testes
+- `test/apt_test.dart`
+- `test/dnf_test.dart`
+- `test/zypper_test.dart`
+- `test/homebrew_test.dart`
+- `test/native_package_test.dart`
+- `test/db_test.dart`
+
+### Docker/CI
+- `docker-compose.yml` - Orquestracao de testes multi-sistema
+- `docker/test/Dockerfile.ubuntu`
+- `docker/test/Dockerfile.fedora`
+- `docker/test/Dockerfile.arch`
+- `docker/test/Dockerfile.opensuse`
+
+---
+
 *Documento gerado em: 2025-11-23*
-*Atualizado em: 2025-11-23 - 6 itens corrigidos*
+*Atualizado em: 2025-11-23 - 12 itens corrigidos, 19 arquivos criados*
