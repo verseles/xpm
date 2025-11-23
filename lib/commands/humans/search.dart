@@ -6,7 +6,7 @@ import 'package:xpm/database/db.dart';
 import 'package:xpm/database/models/package.dart';
 import 'package:xpm/native_is_for_everyone/models/native_package.dart';
 import 'package:xpm/native_is_for_everyone/native_package_manager_detector.dart';
-import 'package:xpm/os/get_archicteture.dart';
+import 'package:xpm/os/get_architecture.dart';
 import 'package:xpm/utils/out.dart';
 import 'package:xpm/utils/show_usage.dart';
 
@@ -88,42 +88,10 @@ class SearchCommand extends Command {
     } else {
       print('Found ${xpmResults.length + nativeResults.length} packages:');
 
-      // Separate native results by type for proper ordering
-      final extraChaoticPackages = <NativePackage>[];
-      final otherOfficialPackages = <NativePackage>[];
-      final aurPackages = <NativePackage>[];
+      // Sort native packages for display (AUR by popularity, official alphabetically)
+      final sortedNativePackages = NativePackage.sortForDisplay(nativeResults);
 
-      for (final result in nativeResults) {
-        if (result.repo == 'aur') {
-          aurPackages.add(result);
-        } else if (result.repo == 'extra' || result.repo == 'chaotic-aur') {
-          extraChaoticPackages.add(result);
-        } else {
-          otherOfficialPackages.add(result);
-        }
-      }
-
-      // Sort official packages alphabetically
-      extraChaoticPackages.sort((a, b) => a.name.compareTo(b.name));
-      otherOfficialPackages.sort((a, b) => a.name.compareTo(b.name));
-
-      // Sort AUR packages by popularity (ascending - less popular first so user sees most popular first)
-      aurPackages.sort((a, b) {
-        final aPop = a.popularity ?? 0;
-        final bPop = b.popularity ?? 0;
-        return aPop.compareTo(bPop);
-      });
-
-      // First display native results: AUR first, then officials
-      // Order: AUR → PM (so terminal shows AUR at TOP, PM below, XPM at BOTTOM)
-      // Terminal behavior: newest output appears at the TOP
-      // User reads top to bottom: AUR (newest) → PM → XPM (oldest, seen first)
-      final allNativePackages = <NativePackage>[];
-      allNativePackages.addAll(aurPackages);
-      allNativePackages.addAll(extraChaoticPackages);
-      allNativePackages.addAll(otherOfficialPackages);
-
-      for (final result in allNativePackages) {
+      for (final result in sortedNativePackages) {
         final version = result.version != null && result.version!.isNotEmpty ? ' {@green}${result.version}{@end}' : '';
         final popularity = result.popularity != null && result.popularity! > 0
             ? ' {@yellow}(${result.popularity} votes){@end}'

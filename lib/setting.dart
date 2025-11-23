@@ -21,7 +21,8 @@ class Setting {
 
     final db = await DB.instance();
     if (lazy) {
-      db.writeTxn(() async => db.kVs.putByKey(data));
+      // Fire-and-forget: don't await the transaction but await the inner operation
+      db.writeTxn(() async => await db.kVs.putByKey(data));
     } else {
       await db.writeTxn(() async => await db.kVs.putByKey(data));
     }
@@ -68,7 +69,8 @@ class Setting {
     final lcKeys = listOfKeys.map((String key) => key.toLowerCase()).toList();
 
     if (lazy) {
-      db.writeTxn(() async => db.kVs.deleteAllByKey(lcKeys));
+      // Fire-and-forget: don't await the transaction but await the inner operation
+      db.writeTxn(() async => await db.kVs.deleteAllByKey(lcKeys));
     } else {
       await db.writeTxn(() async => await db.kVs.deleteAllByKey(lcKeys));
     }
@@ -92,8 +94,9 @@ class Setting {
     final now = DateTime.now();
 
     if (lazy) {
+      // Fire-and-forget: don't await the transaction but await the inner operation
       db.writeTxn(() async {
-        db.kVs.where().expiresAtLessThan(now).deleteAll();
+        await db.kVs.where().expiresAtLessThan(now).deleteAll();
       });
     } else {
       await db.writeTxn(() async {

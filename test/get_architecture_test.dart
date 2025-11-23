@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:xpm/os/get_archicteture.dart';
+import 'package:xpm/os/get_architecture.dart';
 
 void main() {
   group('getArchitecture', () {

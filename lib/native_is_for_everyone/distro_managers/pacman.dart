@@ -62,36 +62,15 @@ class PacmanPackageManager extends NativePackageManager {
 
     final packages = _parseSearchOutput(result.first.stdout.toString());
 
-    // Separate official repo packages from AUR packages
-    final officialPackages = <NativePackage>[];
-    final aurPackages = <NativePackage>[];
+    // Use the shared sorting utility, then apply pacman-specific limits
+    final sorted = NativePackage.sortForDisplay(packages);
 
-    for (final pkg in packages) {
-      if (pkg.repo == 'aur') {
-        aurPackages.add(pkg);
-      } else {
-        officialPackages.add(pkg);
-      }
-    }
+    // Limit official packages to avoid overwhelming the results
+    // AUR packages are kept in full, official packages limited to 7
+    final aurPackages = sorted.where((p) => p.isAur).toList();
+    final officialPackages = sorted.where((p) => !p.isAur).take(7).toList();
 
-    // Sort official packages alphabetically
-    officialPackages.sort((a, b) => a.name.compareTo(b.name));
-
-    // Sort AUR packages by popularity (ascending - least popular first, most popular last)
-    // This ensures most popular AUR packages appear at the end for terminal output
-    aurPackages.sort((a, b) {
-      final aPop = a.popularity ?? 0;
-      final bPop = b.popularity ?? 0;
-      return aPop.compareTo(bPop);
-    });
-
-    // Return in order: AUR → PM (so terminal shows AUR first, then PM)
-    // This is because terminal output shows most recent messages at the top
-    // Terminal behavior: newest messages appear at the TOP
-    // User reads top to bottom: sees AUR (newest) → PM → XPM (oldest)
-    final combined = <NativePackage>[];
-    combined.addAll(aurPackages); // AUR first (appears at top in terminal)
-    combined.addAll(officialPackages.take(7)); // PM second (appears below AUR)
+    final combined = [...aurPackages, ...officialPackages];
 
     // Only apply limit if it's a large value to ensure AUR packages aren't cut off
     // The search command will handle final limiting if needed
@@ -200,22 +179,39 @@ class PacmanPackageManager extends NativePackageManager {
   }
 
   /// Parse package information output
+  /// Supports multiple locales (English, Portuguese, Spanish, German, etc.)
   NativePackage parsePackageInfo(String output) {
     String? name;
     String? version;
     String? description;
     String? arch;
 
+    // Field name patterns for different locales
+    // English: Name, Version, Description, Architecture
+    // Portuguese: Nome, Versão, Descrição, Arquitetura
+    // Spanish: Nombre, Versión, Descripción, Arquitectura
+    // German: Name, Version, Beschreibung, Architektur
+    final namePatterns = ['name', 'nome', 'nombre'];
+    final versionPatterns = ['version', 'versão', 'versión'];
+    final descPatterns = ['description', 'descrição', 'descripción', 'beschreibung'];
+    final archPatterns = ['architecture', 'arquitetura', 'arquitectura', 'architektur'];
+
     for (final line in output.split('\n')) {
-      final trimmedLine = line.trim();
-      if (trimmedLine.startsWith('Nome                 :')) {
-        name = trimmedLine.substring('Nome                 :'.length).trim();
-      } else if (trimmedLine.startsWith('Versão               :')) {
-        version = trimmedLine.substring('Versão               :'.length).trim();
-      } else if (trimmedLine.startsWith('Descrição            :')) {
-        description = trimmedLine.substring('Descrição            :'.length).trim();
-      } else if (trimmedLine.startsWith('Arquitetura          :')) {
-        arch = trimmedLine.substring('Arquitetura          :'.length).trim();
+      // Parse lines with format: "Field Name    : value"
+      final colonIndex = line.indexOf(':');
+      if (colonIndex == -1) continue;
+
+      final fieldName = line.substring(0, colonIndex).trim().toLowerCase();
+      final value = line.substring(colonIndex + 1).trim();
+
+      if (namePatterns.any((p) => fieldName == p)) {
+        name = value;
+      } else if (versionPatterns.any((p) => fieldName == p)) {
+        version = value;
+      } else if (descPatterns.any((p) => fieldName == p)) {
+        description = value;
+      } else if (archPatterns.any((p) => fieldName == p)) {
+        arch = value;
       }
     }
 
@@ -223,7 +219,7 @@ class PacmanPackageManager extends NativePackageManager {
   }
 
   @override
-  Future<void> install(String name, {bool a = true}) async {
+  Future<void> install(String name) async {
     final shell = Shell();
 
     // Try helpers in priority order: Paru → Yay → Pacman

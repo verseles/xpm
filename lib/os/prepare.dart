@@ -6,7 +6,7 @@ import 'package:xpm/database/models/repo.dart';
 import 'package:xpm/os/bash_script.dart';
 import 'package:xpm/os/bin_directory.dart';
 import 'package:xpm/os/executable.dart';
-import 'package:xpm/os/get_archicteture.dart';
+import 'package:xpm/os/get_architecture.dart';
 import 'package:xpm/os/os_release.dart';
 import 'package:xpm/os/repositories.dart';
 import 'package:xpm/utils/logger.dart';

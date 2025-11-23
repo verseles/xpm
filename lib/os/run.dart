@@ -42,13 +42,18 @@ class Run {
   /// If [sudo] is true, the file will be written with sudo permissions
   Future<bool> writeToFile(String filePath, String text, {sudo = false}) async {
     try {
-      if (Platform.isWindows) {
+      if (Platform.isWindows || !sudo) {
+        // Direct file write when no sudo is needed or on Windows
         await File(filePath).writeAsString(text);
         return true;
       } else {
-        List<String> args = ['-c', 'echo "$text" > $filePath'];
-        final result = await simple('sh', args, sudo: sudo);
-        return result.exitCode == 0;
+        // Use tee with stdin to safely write content without shell interpolation
+        // This avoids command injection vulnerabilities
+        final process = await Process.start('sudo', ['tee', filePath]);
+        process.stdin.write(text);
+        await process.stdin.close();
+        final exitCode = await process.exitCode;
+        return exitCode == 0;
       }
     } catch (e) {
       return false;

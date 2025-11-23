@@ -31,7 +31,7 @@ class AptPackageManager extends NativePackageManager {
   }
 
   @override
-  Future<void> install(String name, {bool a = true}) async {
+  Future<void> install(String name) async {
     final sudo = await Executable('sudo').find();
     if (sudo == null) {
       throw Exception('sudo not found');
