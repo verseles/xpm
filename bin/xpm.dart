@@ -11,6 +11,7 @@ import 'package:xpm/commands/devs/log.dart';
 import 'package:xpm/commands/devs/make.dart';
 import 'package:xpm/commands/devs/repo/repo.dart';
 import 'package:xpm/commands/devs/shortcut.dart';
+import 'package:xpm/commands/humans/info.dart';
 import 'package:xpm/commands/humans/install.dart';
 import 'package:xpm/commands/humans/refresh.dart';
 import 'package:xpm/commands/humans/remove.dart';
@@ -55,6 +56,7 @@ void main(List<String> args) async {
     ..addCommand(InstallCommand())
     ..addCommand(UpgradeCommand())
     ..addCommand(RemoveCommand())
+    ..addCommand(InfoCommand())
     ..addCommand(MakeCommand())
     ..addCommand(CheckCommand())
     ..addCommand(RepoCommand())

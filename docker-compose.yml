@@ -1,0 +1,96 @@
+# Docker Compose for XPM multi-system testing
+# Usage:
+#   docker-compose build                    # Build all images
+#   docker-compose run ubuntu-test          # Run tests on Ubuntu
+#   docker-compose run fedora-test          # Run tests on Fedora
+#   docker-compose run arch-test            # Run tests on Arch Linux
+#   docker-compose run opensuse-test        # Run tests on openSUSE
+#   docker-compose up                       # Run all tests
+
+version: '3.8'
+
+x-common-env: &common-env
+  DART_SDK: /usr/lib/dart
+  PUB_CACHE: /root/.pub-cache
+
+services:
+  # Ubuntu/Debian (APT)
+  ubuntu-test:
+    build:
+      context: .
+      dockerfile: docker/test/Dockerfile.ubuntu
+    volumes:
+      - .:/app
+      - dart-cache-ubuntu:/root/.pub-cache
+    working_dir: /app
+    environment:
+      <<: *common-env
+      XPM_TEST_DISTRO: ubuntu
+    command: >
+      sh -c "dart pub get && dart test --tags='!skip-ci' --concurrency=4"
+
+  # Fedora (DNF)
+  fedora-test:
+    build:
+      context: .
+      dockerfile: docker/test/Dockerfile.fedora
+    volumes:
+      - .:/app
+      - dart-cache-fedora:/root/.pub-cache
+    working_dir: /app
+    environment:
+      <<: *common-env
+      XPM_TEST_DISTRO: fedora
+    command: >
+      sh -c "dart pub get && dart test --tags='!skip-ci' --concurrency=4"
+
+  # Arch Linux (Pacman)
+  arch-test:
+    build:
+      context: .
+      dockerfile: docker/test/Dockerfile.arch
+    volumes:
+      - .:/app
+      - dart-cache-arch:/root/.pub-cache
+    working_dir: /app
+    environment:
+      <<: *common-env
+      XPM_TEST_DISTRO: arch
+    command: >
+      sh -c "dart pub get && dart test --tags='!skip-ci' --concurrency=4"
+
+  # openSUSE (Zypper)
+  opensuse-test:
+    build:
+      context: .
+      dockerfile: docker/test/Dockerfile.opensuse
+    volumes:
+      - .:/app
+      - dart-cache-opensuse:/root/.pub-cache
+    working_dir: /app
+    environment:
+      <<: *common-env
+      XPM_TEST_DISTRO: opensuse
+    command: >
+      sh -c "dart pub get && dart test --tags='!skip-ci' --concurrency=4"
+
+  # Test coverage (Ubuntu-based)
+  coverage:
+    build:
+      context: .
+      dockerfile: docker/test/Dockerfile.ubuntu
+    volumes:
+      - .:/app
+      - dart-cache-coverage:/root/.pub-cache
+    working_dir: /app
+    environment:
+      <<: *common-env
+    command: >
+      sh -c "dart pub get && dart pub global activate coverage && dart test --coverage=coverage && dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --report-on=lib"
+
+volumes:
+  dart-cache-ubuntu:
+  dart-cache-fedora:
+  dart-cache-arch:
+  dart-cache-opensuse:
+  dart-cache-coverage:

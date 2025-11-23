@@ -1,0 +1,28 @@
+# openSUSE test environment for XPM
+FROM opensuse/tumbleweed:latest
+
+# Install dependencies
+RUN zypper refresh \
+    && zypper install -y \
+    curl \
+    git \
+    unzip \
+    xz \
+    tar \
+    gzip \
+    && zypper clean -a
+
+# Install Dart SDK
+RUN curl -fsSL https://storage.googleapis.com/dart-archive/channels/stable/release/latest/sdk/dartsdk-linux-x64-release.zip -o dart-sdk.zip \
+    && unzip dart-sdk.zip -d /usr/lib \
+    && rm dart-sdk.zip
+
+ENV PATH="/usr/lib/dart-sdk/bin:${PATH}"
+
+WORKDIR /app
+
+# Pre-cache pub dependencies
+COPY pubspec.* ./
+RUN dart pub get || true
+
+CMD ["dart", "test", "--concurrency=4"]

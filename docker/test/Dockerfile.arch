@@ -1,0 +1,22 @@
+# Arch Linux test environment for XPM
+FROM archlinux:latest
+
+# Update and install dependencies
+RUN pacman -Syu --noconfirm \
+    && pacman -S --noconfirm \
+    curl \
+    git \
+    unzip \
+    dart \
+    base-devel \
+    && pacman -Scc --noconfirm
+
+ENV PATH="/usr/bin:${PATH}"
+
+WORKDIR /app
+
+# Pre-cache pub dependencies
+COPY pubspec.* ./
+RUN dart pub get || true
+
+CMD ["dart", "test", "--concurrency=4"]
