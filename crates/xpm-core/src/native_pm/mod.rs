@@ -1,12 +1,20 @@
 //! Native package manager integration
 
 mod apt;
+mod brew;
 mod detector;
+mod dnf;
 mod pacman;
+mod swupd;
+mod zypper;
 
 pub use apt::AptPackageManager;
+pub use brew::BrewPackageManager;
 pub use detector::detect_native_pm;
+pub use dnf::DnfPackageManager;
 pub use pacman::PacmanPackageManager;
+pub use swupd::SwupdPackageManager;
+pub use zypper::ZypperPackageManager;
 
 use anyhow::Result;
 use async_trait::async_trait;
@@ -99,10 +107,13 @@ pub trait NativePackageManager: Send + Sync {
     async fn update_db(&self) -> Result<()>;
 }
 
-/// Wrapper enum for dynamic dispatch
 pub enum NativePM {
     Apt(AptPackageManager),
     Pacman(PacmanPackageManager),
+    Dnf(DnfPackageManager),
+    Zypper(ZypperPackageManager),
+    Brew(BrewPackageManager),
+    Swupd(SwupdPackageManager),
 }
 
 #[async_trait]
@@ -111,6 +122,10 @@ impl NativePackageManager for NativePM {
         match self {
             NativePM::Apt(pm) => pm.name(),
             NativePM::Pacman(pm) => pm.name(),
+            NativePM::Dnf(pm) => pm.name(),
+            NativePM::Zypper(pm) => pm.name(),
+            NativePM::Brew(pm) => pm.name(),
+            NativePM::Swupd(pm) => pm.name(),
         }
     }
 
@@ -118,6 +133,10 @@ impl NativePackageManager for NativePM {
         match self {
             NativePM::Apt(pm) => pm.search(query, limit).await,
             NativePM::Pacman(pm) => pm.search(query, limit).await,
+            NativePM::Dnf(pm) => pm.search(query, limit).await,
+            NativePM::Zypper(pm) => pm.search(query, limit).await,
+            NativePM::Brew(pm) => pm.search(query, limit).await,
+            NativePM::Swupd(pm) => pm.search(query, limit).await,
         }
     }
 
@@ -125,6 +144,10 @@ impl NativePackageManager for NativePM {
         match self {
             NativePM::Apt(pm) => pm.install(name).await,
             NativePM::Pacman(pm) => pm.install(name).await,
+            NativePM::Dnf(pm) => pm.install(name).await,
+            NativePM::Zypper(pm) => pm.install(name).await,
+            NativePM::Brew(pm) => pm.install(name).await,
+            NativePM::Swupd(pm) => pm.install(name).await,
         }
     }
 
@@ -132,6 +155,10 @@ impl NativePackageManager for NativePM {
         match self {
             NativePM::Apt(pm) => pm.remove(name).await,
             NativePM::Pacman(pm) => pm.remove(name).await,
+            NativePM::Dnf(pm) => pm.remove(name).await,
+            NativePM::Zypper(pm) => pm.remove(name).await,
+            NativePM::Brew(pm) => pm.remove(name).await,
+            NativePM::Swupd(pm) => pm.remove(name).await,
         }
     }
 
@@ -139,6 +166,10 @@ impl NativePackageManager for NativePM {
         match self {
             NativePM::Apt(pm) => pm.is_installed(name).await,
             NativePM::Pacman(pm) => pm.is_installed(name).await,
+            NativePM::Dnf(pm) => pm.is_installed(name).await,
+            NativePM::Zypper(pm) => pm.is_installed(name).await,
+            NativePM::Brew(pm) => pm.is_installed(name).await,
+            NativePM::Swupd(pm) => pm.is_installed(name).await,
         }
     }
 
@@ -146,6 +177,10 @@ impl NativePackageManager for NativePM {
         match self {
             NativePM::Apt(pm) => pm.get(name).await,
             NativePM::Pacman(pm) => pm.get(name).await,
+            NativePM::Dnf(pm) => pm.get(name).await,
+            NativePM::Zypper(pm) => pm.get(name).await,
+            NativePM::Brew(pm) => pm.get(name).await,
+            NativePM::Swupd(pm) => pm.get(name).await,
         }
     }
 
@@ -153,6 +188,10 @@ impl NativePackageManager for NativePM {
         match self {
             NativePM::Apt(pm) => pm.update_db().await,
             NativePM::Pacman(pm) => pm.update_db().await,
+            NativePM::Dnf(pm) => pm.update_db().await,
+            NativePM::Zypper(pm) => pm.update_db().await,
+            NativePM::Brew(pm) => pm.update_db().await,
+            NativePM::Swupd(pm) => pm.update_db().await,
         }
     }
 }

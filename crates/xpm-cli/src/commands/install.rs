@@ -10,13 +10,21 @@ use tokio::process::Command;
 use xpm_core::{
     db::{Database, Package},
     native_pm::{detect_native_pm, NativePackageManager},
-    os::{get_os_info, OsType},
+    os::{get_architecture, get_os_info, OsType, XpmDirs, Executable},
     script::BashScript,
     utils::logger::Logger,
 };
 
 /// Run the install command
-pub async fn run(package: &str, method: &str, channel: Option<&str>) -> Result<()> {
+pub async fn run(
+    package: &str,
+    method: &str,
+    force_method: bool,
+    channel: Option<&str>,
+    _custom_flags: &[String],
+    _native_mode: &str,
+) -> Result<()> {
+    let _ = force_method;
     Logger::info(&format!("Installing {}...", package.green().bold()));
 
     let db = Database::instance()?;
@@ -67,8 +75,7 @@ async fn install_xpm_package(pkg: &Package, method: &str, channel: Option<&str>)
     // Check for validate function
     let has_validate = script.has_function("validate");
 
-    // Build installation script
-    let install_script = build_install_script(script_path, &install_method, channel)?;
+    let install_script = build_install_script(script_path, &install_method, channel, &pkg.name)?;
 
     // Run installation
     run_script(&install_script, &pkg.name).await?;
@@ -147,9 +154,11 @@ fn determine_method(requested: &str, pkg: &Package, script: &BashScript) -> Resu
     anyhow::bail!("No suitable installation method found")
 }
 
-fn build_install_script(script_path: &str, method: &str, channel: Option<&str>) -> Result<String> {
+fn build_install_script(script_path: &str, method: &str, channel: Option<&str>, pkg_name: &str) -> Result<String> {
     let os_info = get_os_info();
+    let arch = get_architecture();
 
+    // Determine sudo command
     let sudo_cmd = if os_info.os_type == OsType::Android {
         "".to_string()
     } else {
@@ -158,21 +167,95 @@ fn build_install_script(script_path: &str, method: &str, channel: Option<&str>) 
 
     let channel = channel.unwrap_or("stable");
 
+    // Get XPM executable path
+    let xpm_path = std::env::current_exe()
+        .map(|p| p.display().to_string())
+        .unwrap_or_else(|_| "xpm".to_string());
+
+    // Get OS string for xOS variable
+    let x_os = os_info.os_type.as_str();
+
+    // OS boolean flags
+    let is_linux = os_info.os_type == OsType::Linux;
+    let is_macos = os_info.os_type == OsType::MacOS;
+    let is_windows = os_info.os_type == OsType::Windows;
+    let is_android = os_info.os_type == OsType::Android;
+
+    // Architecture string
+    let x_arch = arch.as_str();
+
+    // Directory paths
+    let x_bin = XpmDirs::bin_dir()
+        .map(|p| p.display().to_string())
+        .unwrap_or_else(|_| "/usr/local/bin".to_string());
+
+    let x_home = XpmDirs::home_dir()
+        .map(|p| p.display().to_string())
+        .unwrap_or_else(|_| std::env::var("HOME").unwrap_or_else(|_| "/tmp".to_string()));
+
+    let x_tmp = XpmDirs::temp_dir(Some(pkg_name))
+        .map(|p| p.display().to_string())
+        .unwrap_or_else(|_| format!("/tmp/xpm/{}", pkg_name));
+
+    // Check for snap and flatpak availability
+    let has_snap = Executable::new("snap").exists();
+    let has_flatpak = Executable::new("flatpak").exists();
+
     let script = format!(
         r#"#!/bin/bash
 set -e
 
+# XPM environment variables
+export XPM="{xpm_path}"
+export xSUDO="{sudo_cmd}"
+export xCHANNEL="{channel}"
+
+# OS detection
+export xOS="{x_os}"
+export isLinux={is_linux}
+export isMacOS={is_macos}
+export isWindows={is_windows}
+export isAndroid={is_android}
+
+# Architecture
+export xARCH="{x_arch}"
+
+# Directories
+export xBIN="{x_bin}"
+export xHOME="{x_home}"
+export xTMP="{x_tmp}"
+
+# Package manager availability
+export hasSnap={has_snap}
+export hasFlatpak={has_flatpak}
+
+# Legacy compatibility
 export XPM_SUDO="{sudo_cmd}"
 export XPM_CHANNEL="{channel}"
+
+# Create temp directory if needed
+mkdir -p "$xTMP"
 
 # Source the package script
 source "{script_path}"
 
 # Run installation
-install_{method} "$XPM_SUDO"
+install_{method} "$xSUDO"
 "#,
+        xpm_path = xpm_path,
         sudo_cmd = sudo_cmd,
         channel = channel,
+        x_os = x_os,
+        is_linux = is_linux,
+        is_macos = is_macos,
+        is_windows = is_windows,
+        is_android = is_android,
+        x_arch = x_arch,
+        x_bin = x_bin,
+        x_home = x_home,
+        x_tmp = x_tmp,
+        has_snap = has_snap,
+        has_flatpak = has_flatpak,
         script_path = script_path,
         method = method
     );

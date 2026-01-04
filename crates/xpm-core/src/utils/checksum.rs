@@ -141,6 +141,22 @@ impl Checksum {
     }
 }
 
+pub fn compute_md5(path: &std::path::Path) -> Result<String> {
+    Checksum::calculate(path, ChecksumAlgorithm::Md5)
+}
+
+pub fn compute_sha1(path: &std::path::Path) -> Result<String> {
+    Checksum::calculate(path, ChecksumAlgorithm::Sha1)
+}
+
+pub fn compute_sha256(path: &std::path::Path) -> Result<String> {
+    Checksum::calculate(path, ChecksumAlgorithm::Sha256)
+}
+
+pub fn compute_sha512(path: &std::path::Path) -> Result<String> {
+    Checksum::calculate(path, ChecksumAlgorithm::Sha512)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -58,9 +58,21 @@ enum Commands {
         #[arg(short, long, default_value = "auto")]
         method: String,
 
+        /// Force method bypassing auto-detection
+        #[arg(long)]
+        force_method: bool,
+
         /// Release channel (stable, beta, etc.)
         #[arg(short, long)]
         channel: Option<String>,
+
+        /// Custom flags to pass to installer
+        #[arg(short = 'e', long = "flags")]
+        custom_flags: Vec<String>,
+
+        /// Native package manager mode (auto, only, off)
+        #[arg(short, long, default_value = "auto")]
+        native: String,
     },
 
     /// Remove a package
@@ -84,6 +96,46 @@ enum Commands {
         /// Output filename (optional)
         #[arg(short, long)]
         output: Option<String>,
+
+        /// Custom filename without path
+        #[arg(short, long)]
+        name: Option<String>,
+
+        /// Custom User-Agent header
+        #[arg(short, long)]
+        user_agent: Option<String>,
+
+        /// Disable User-Agent header
+        #[arg(long)]
+        no_user_agent: bool,
+
+        /// Make file executable after download
+        #[arg(short = 'x', long)]
+        exec: bool,
+
+        /// Move to bin directory after download
+        #[arg(short, long)]
+        bin: bool,
+
+        /// Disable progress bar
+        #[arg(long)]
+        no_progress: bool,
+
+        /// Expected MD5 hash
+        #[arg(long)]
+        md5: Option<String>,
+
+        /// Expected SHA1 hash
+        #[arg(long)]
+        sha1: Option<String>,
+
+        /// Expected SHA256 hash
+        #[arg(long)]
+        sha256: Option<String>,
+
+        /// Expected SHA512 hash
+        #[arg(long)]
+        sha512: Option<String>,
     },
 
     /// File operations
@@ -221,12 +273,54 @@ async fn run(cli: Cli) -> anyhow::Result<()> {
         Commands::Install {
             package,
             method,
+            force_method,
             channel,
-        } => commands::install::run(&package, &method, channel.as_deref()).await,
+            custom_flags,
+            native,
+        } => {
+            commands::install::run(
+                &package,
+                &method,
+                force_method,
+                channel.as_deref(),
+                &custom_flags,
+                &native,
+            )
+            .await
+        }
         Commands::Remove { package } => commands::remove::run(&package).await,
         Commands::Refresh => commands::refresh::run().await,
         Commands::Upgrade => commands::upgrade::run().await,
-        Commands::Get { url, output } => commands::get::run(&url, output.as_deref()).await,
+        Commands::Get {
+            url,
+            output,
+            name,
+            user_agent,
+            no_user_agent,
+            exec,
+            bin,
+            no_progress,
+            md5,
+            sha1,
+            sha256,
+            sha512,
+        } => {
+            commands::get::run(
+                &url,
+                output.as_deref(),
+                name.as_deref(),
+                user_agent.as_deref(),
+                no_user_agent,
+                exec,
+                bin,
+                no_progress,
+                md5.as_deref(),
+                sha1.as_deref(),
+                sha256.as_deref(),
+                sha512.as_deref(),
+            )
+            .await
+        }
         Commands::File { action } => commands::file::run(action).await,
         Commands::Repo { action } => commands::repo::run(action).await,
         Commands::Checksum { file, algorithm } => commands::checksum::run(&file, &algorithm).await,

@@ -13,7 +13,7 @@ pub mod utils;
 // Re-export commonly used types
 pub use db::{Database, Package, Repo, Setting};
 pub use native_pm::{NativePackage, NativePackageManager};
-pub use os::{Architecture, OsInfo, OsType};
+pub use os::{get_architecture, get_os_info, Architecture, Executable, OsInfo, OsType, XpmDirs};
 pub use utils::logger::Logger;
 
 /// XPM version from Cargo.toml

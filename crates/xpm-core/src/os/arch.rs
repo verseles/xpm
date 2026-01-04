@@ -37,10 +37,12 @@ impl Architecture {
         match s.to_lowercase().as_str() {
             "x86_64" | "amd64" | "x64" => Architecture::X86_64,
             "x86" | "i386" | "i486" | "i586" | "i686" => Architecture::X86,
-            "aarch64" | "arm64" => Architecture::Aarch64,
-            "arm" | "armv7" | "armv7l" | "armhf" => Architecture::Arm,
+            "aarch64" | "arm64" | "arm64v8" | "armv8" | "m1" | "m2" | "m3" | "apple" => {
+                Architecture::Aarch64
+            }
+            "arm" | "armv6l" | "armv7" | "armv7l" | "armhf" => Architecture::Arm,
             "ppc64" | "powerpc64" => Architecture::Ppc64,
-            "ppc64le" | "powerpc64le" => Architecture::Ppc64Le,
+            "ppc64le" | "ppc64el" | "powerpc64le" => Architecture::Ppc64Le,
             "s390x" => Architecture::S390x,
             "riscv64" | "riscv64gc" => Architecture::Riscv64,
             _ => Architecture::Unknown,
@@ -148,6 +150,14 @@ mod tests {
         assert_eq!(Architecture::parse("amd64"), Architecture::X86_64);
         assert_eq!(Architecture::parse("aarch64"), Architecture::Aarch64);
         assert_eq!(Architecture::parse("arm64"), Architecture::Aarch64);
+        assert_eq!(Architecture::parse("m1"), Architecture::Aarch64);
+        assert_eq!(Architecture::parse("m2"), Architecture::Aarch64);
+        assert_eq!(Architecture::parse("m3"), Architecture::Aarch64);
+        assert_eq!(Architecture::parse("apple"), Architecture::Aarch64);
+        assert_eq!(Architecture::parse("arm64v8"), Architecture::Aarch64);
+        assert_eq!(Architecture::parse("armv8"), Architecture::Aarch64);
+        assert_eq!(Architecture::parse("armv6l"), Architecture::Arm);
+        assert_eq!(Architecture::parse("ppc64el"), Architecture::Ppc64Le);
         assert_eq!(Architecture::parse("unknown"), Architecture::Unknown);
     }
 

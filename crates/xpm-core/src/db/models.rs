@@ -43,18 +43,22 @@ pub struct Package {
     pub defaults: Vec<String>,
 
     /// Installed version (None if not installed)
+    #[secondary_key]
     pub installed: Option<String>,
 
     /// Method used for installation
+    #[secondary_key]
     pub method: Option<String>,
 
     /// Channel used for installation
+    #[secondary_key]
     pub channel: Option<String>,
 
     /// Whether this is a native package (from system PM)
     pub is_native: bool,
 
     /// Repository ID this package belongs to
+    #[secondary_key]
     pub repo_id: Option<u64>,
 }
 
