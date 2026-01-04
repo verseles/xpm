@@ -1,0 +1,63 @@
+[package]
+name = "xpm-core"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Core library for XPM - Universal Package Manager"
+
+[dependencies]
+# Async
+tokio = { workspace = true }
+futures = { workspace = true }
+async-trait = "0.1"
+
+# HTTP
+reqwest = { workspace = true }
+
+# Database
+native_db = { workspace = true }
+native_model = { workspace = true }
+
+# Git
+git2 = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# File system
+dirs = { workspace = true }
+walkdir = { workspace = true }
+
+# Terminal
+owo-colors = { workspace = true }
+indicatif = { workspace = true }
+console = { workspace = true }
+
+# Crypto
+sha2 = { workspace = true }
+md-5 = { workspace = true }
+sha1 = { workspace = true }
+digest = { workspace = true }
+
+# Utilities
+semver = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+regex = { workspace = true }
+slug = { workspace = true }
+chrono = { workspace = true }
+once_cell = { workspace = true }
+parking_lot = { workspace = true }
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+# Logging
+tracing = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util", "macros"] }
+tempfile = "3"
