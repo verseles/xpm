@@ -37,7 +37,7 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     /// Search for packages
-    #[command(alias = "s")]
+    #[command(aliases = ["s", "query", "q"])]
     Search {
         /// Search terms
         #[arg(required = true)]
