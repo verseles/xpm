@@ -6,7 +6,9 @@ use xpm_core::utils::logger::Logger;
 /// Run the upgrade command
 pub async fn run() -> Result<()> {
     Logger::warning("Upgrade is not yet implemented");
-    Logger::info("This feature will allow upgrading all installed packages to their latest versions.");
+    Logger::info(
+        "This feature will allow upgrading all installed packages to their latest versions.",
+    );
 
     // TODO: Implement upgrade logic
     // 1. Get all installed packages from database

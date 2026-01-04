@@ -34,11 +34,7 @@ impl Logger {
 
     /// Log a success message (green)
     pub fn success(message: &str) {
-        eprintln!(
-            "{} {}",
-            "[ok]".green().bold(),
-            Self::format_colors(message)
-        );
+        eprintln!("{} {}", "[ok]".green().bold(), Self::format_colors(message));
     }
 
     /// Log a warning message (yellow)
@@ -67,21 +63,13 @@ impl Logger {
 
     /// Log a tip message (cyan)
     pub fn tip(message: &str) {
-        eprintln!(
-            "{} {}",
-            "[tip]".cyan().bold(),
-            Self::format_colors(message)
-        );
+        eprintln!("{} {}", "[tip]".cyan().bold(), Self::format_colors(message));
     }
 
     /// Log a debug message (dimmed)
     pub fn debug(message: &str) {
         if std::env::var("XPM_DEBUG").is_ok() {
-            eprintln!(
-                "{} {}",
-                "[debug]".dimmed(),
-                message.dimmed()
-            );
+            eprintln!("{} {}", "[debug]".dimmed(), message.dimmed());
         }
     }
 
@@ -168,9 +156,7 @@ impl Logger {
         let version_str = version
             .map(|v| format!(" {}", v.green()))
             .unwrap_or_default();
-        let desc_str = desc
-            .map(|d| format!(" - {}", d))
-            .unwrap_or_default();
+        let desc_str = desc.map(|d| format!(" - {}", d)).unwrap_or_default();
         format!("{}{}{}", name.blue(), version_str, desc_str)
     }
 }

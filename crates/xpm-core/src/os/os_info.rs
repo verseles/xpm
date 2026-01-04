@@ -67,9 +67,7 @@ impl Default for OsInfo {
 impl OsInfo {
     /// Check if distro is Debian-based
     pub fn is_debian_based(&self) -> bool {
-        self.id == "debian"
-            || self.id_like.contains(&"debian".to_string())
-            || self.id == "ubuntu"
+        self.id == "debian" || self.id_like.contains(&"debian".to_string()) || self.id == "ubuntu"
     }
 
     /// Check if distro is Arch-based
@@ -109,33 +107,29 @@ pub fn get_os_info() -> OsInfo {
     let os_type = get_os_type();
 
     match os_type {
-        OsType::Linux | OsType::Android => parse_os_release().unwrap_or_else(|_| {
-            let mut info = OsInfo::default();
-            info.os_type = os_type;
-            info.id = os_type.as_str().to_string();
-            info
+        OsType::Linux | OsType::Android => parse_os_release().unwrap_or_else(|_| OsInfo {
+            os_type,
+            id: os_type.as_str().to_string(),
+            ..Default::default()
         }),
-        OsType::MacOS => {
-            let mut info = OsInfo::default();
-            info.os_type = OsType::MacOS;
-            info.id = "macos".to_string();
-            info.name = "macOS".to_string();
-            info.pretty_name = get_macos_version().unwrap_or_else(|| "macOS".to_string());
-            info
-        }
-        OsType::Windows => {
-            let mut info = OsInfo::default();
-            info.os_type = OsType::Windows;
-            info.id = "windows".to_string();
-            info.name = "Windows".to_string();
-            info.pretty_name = get_windows_version().unwrap_or_else(|| "Windows".to_string());
-            info
-        }
-        _ => {
-            let mut info = OsInfo::default();
-            info.os_type = os_type;
-            info
-        }
+        OsType::MacOS => OsInfo {
+            os_type: OsType::MacOS,
+            id: "macos".to_string(),
+            name: "macOS".to_string(),
+            pretty_name: get_macos_version().unwrap_or_else(|| "macOS".to_string()),
+            ..Default::default()
+        },
+        OsType::Windows => OsInfo {
+            os_type: OsType::Windows,
+            id: "windows".to_string(),
+            name: "Windows".to_string(),
+            pretty_name: get_windows_version().unwrap_or_else(|| "Windows".to_string()),
+            ..Default::default()
+        },
+        _ => OsInfo {
+            os_type,
+            ..Default::default()
+        },
     }
 }
 
@@ -225,7 +219,10 @@ fn get_macos_version() -> Option<String> {
         .ok()
         .and_then(|output| {
             if output.status.success() {
-                Some(format!("macOS {}", String::from_utf8_lossy(&output.stdout).trim()))
+                Some(format!(
+                    "macOS {}",
+                    String::from_utf8_lossy(&output.stdout).trim()
+                ))
             } else {
                 None
             }
@@ -248,16 +245,18 @@ fn get_windows_version() -> Option<String> {
 
 /// Get a specific value from os-release
 pub fn os_release(key: &str) -> Option<String> {
-    fs::read_to_string("/etc/os-release").ok().and_then(|content| {
-        for line in content.lines() {
-            if let Some((k, v)) = line.split_once('=') {
-                if k == key {
-                    return Some(v.trim_matches('"').to_string());
+    fs::read_to_string("/etc/os-release")
+        .ok()
+        .and_then(|content| {
+            for line in content.lines() {
+                if let Some((k, v)) = line.split_once('=') {
+                    if k == key {
+                        return Some(v.trim_matches('"').to_string());
+                    }
                 }
             }
-        }
-        None
-    })
+            None
+        })
 }
 
 #[cfg(test)]

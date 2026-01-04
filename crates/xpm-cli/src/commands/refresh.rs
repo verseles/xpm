@@ -4,10 +4,7 @@ use anyhow::Result;
 use indicatif::{ProgressBar, ProgressStyle};
 use owo_colors::OwoColorize;
 use std::time::Duration;
-use xpm_core::{
-    repo::Repositories,
-    utils::logger::Logger,
-};
+use xpm_core::{repo::Repositories, utils::logger::Logger};
 
 /// Run the refresh command
 pub async fn run() -> Result<()> {
@@ -17,7 +14,7 @@ pub async fn run() -> Result<()> {
     spinner.set_style(
         ProgressStyle::default_spinner()
             .template("{spinner:.cyan} {msg}")
-            .unwrap()
+            .unwrap(),
     );
     spinner.set_message("Pulling repositories...");
     spinner.enable_steady_tick(Duration::from_millis(100));

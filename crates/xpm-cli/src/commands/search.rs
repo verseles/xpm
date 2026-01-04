@@ -91,7 +91,11 @@ pub async fn run(terms: &[String], limit: usize, json: bool) -> Result<()> {
             for pkg in &official {
                 let name = format!("{}", pkg.name.yellow().bold());
                 let version = format!("{}", pkg.version.as_deref().unwrap_or("").dimmed());
-                let repo = pkg.repo.as_deref().map(|r| format!("[{}]", r)).unwrap_or_default();
+                let repo = pkg
+                    .repo
+                    .as_deref()
+                    .map(|r| format!("[{}]", r))
+                    .unwrap_or_default();
                 let installed_str = if pkg.installed {
                     format!("{}", " [installed]".green())
                 } else {
@@ -116,14 +120,23 @@ pub async fn run(terms: &[String], limit: usize, json: bool) -> Result<()> {
             for pkg in &aur {
                 let name = format!("{}", pkg.name.magenta().bold());
                 let version = format!("{}", pkg.version.as_deref().unwrap_or("").dimmed());
-                let popularity = pkg.popularity.map(|p| format!("(⭐ {:.1})", p as f64 / 100.0)).unwrap_or_default();
+                let popularity = pkg
+                    .popularity
+                    .map(|p| format!("(⭐ {:.1})", p as f64 / 100.0))
+                    .unwrap_or_default();
                 let installed_str = if pkg.installed {
                     format!("{}", " [installed]".green())
                 } else {
                     String::new()
                 };
 
-                println!("  {} {} {} {}", name, version, popularity.yellow(), installed_str);
+                println!(
+                    "  {} {} {} {}",
+                    name,
+                    version,
+                    popularity.yellow(),
+                    installed_str
+                );
 
                 if let Some(desc) = &pkg.description {
                     println!("    {}", desc.dimmed());

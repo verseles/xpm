@@ -190,8 +190,7 @@ impl Repositories {
         let path = path.to_path_buf();
 
         tokio::task::spawn_blocking(move || -> Result<()> {
-            let repo = Repository::open(&path)
-                .context("Failed to open repository")?;
+            let repo = Repository::open(&path).context("Failed to open repository")?;
 
             // Reset hard first
             let head = repo.head()?.peel_to_commit()?;

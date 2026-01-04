@@ -5,10 +5,7 @@ use anyhow::Result;
 use indicatif::{ProgressBar, ProgressStyle};
 use owo_colors::OwoColorize;
 use std::time::Duration;
-use xpm_core::{
-    repo::Repositories,
-    utils::logger::Logger,
-};
+use xpm_core::{repo::Repositories, utils::logger::Logger};
 
 /// Run the repo command
 pub async fn run(action: RepoAction) -> Result<()> {
@@ -26,7 +23,7 @@ async fn add(url: &str) -> Result<()> {
     spinner.set_style(
         ProgressStyle::default_spinner()
             .template("{spinner:.cyan} {msg}")
-            .unwrap()
+            .unwrap(),
     );
     spinner.set_message("Cloning repository...");
     spinner.enable_steady_tick(Duration::from_millis(100));
@@ -77,11 +74,12 @@ async fn list() -> Result<()> {
 
     for repo in repos {
         let name = Repositories::repo_name(&repo.url);
-        let last_sync = repo.last_sync
+        let last_sync = repo
+            .last_sync
             .map(|t| t.format("%Y-%m-%d %H:%M:%S").to_string())
             .unwrap_or_else(|| "never".to_string());
 
-        println!("  {} {}", "📦".to_string(), name.green().bold());
+        println!("  📦 {}", name.green().bold());
         println!("     URL: {}", repo.url.dimmed());
         println!("     Last sync: {}", last_sync.dimmed());
         println!();

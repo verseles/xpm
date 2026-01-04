@@ -30,8 +30,14 @@ pub const DEFAULT_REPO: &str = "https://github.com/verseles/xpm-popular.git";
 
 /// Supported installation methods
 pub const INSTALL_METHODS: &[(&str, &str)] = &[
-    ("auto", "Automatically choose the best method or fallback to [any]"),
-    ("any", "Use the generic method. Sometimes this is the best method"),
+    (
+        "auto",
+        "Automatically choose the best method or fallback to [any]",
+    ),
+    (
+        "any",
+        "Use the generic method. Sometimes this is the best method",
+    ),
     ("apt", "Use apt or apt-like package manager"),
     ("flatpak", "Use flatpak package manager"),
     ("snap", "Use snap package manager"),

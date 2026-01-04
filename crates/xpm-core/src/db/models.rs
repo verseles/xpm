@@ -87,7 +87,9 @@ impl Package {
 
     /// Check if package supports a specific architecture
     pub fn supports_arch(&self, arch: &str) -> bool {
-        self.arch.is_empty() || self.arch.contains(&"any".to_string()) || self.arch.contains(&arch.to_string())
+        self.arch.is_empty()
+            || self.arch.contains(&"any".to_string())
+            || self.arch.contains(&arch.to_string())
     }
 
     /// Check if package supports a specific installation method
@@ -160,7 +162,11 @@ impl Setting {
     }
 
     /// Create a setting with expiration
-    pub fn with_expiry(key: impl Into<String>, value: impl Into<String>, expires_at: DateTime<Utc>) -> Self {
+    pub fn with_expiry(
+        key: impl Into<String>,
+        value: impl Into<String>,
+        expires_at: DateTime<Utc>,
+    ) -> Self {
         Self {
             id: 0,
             key: key.into().to_lowercase(),
@@ -207,11 +213,8 @@ mod tests {
         let setting = Setting::new("test", "value");
         assert!(!setting.is_expired());
 
-        let expired = Setting::with_expiry(
-            "test",
-            "value",
-            Utc::now() - chrono::Duration::hours(1),
-        );
+        let expired =
+            Setting::with_expiry("test", "value", Utc::now() - chrono::Duration::hours(1));
         assert!(expired.is_expired());
     }
 }

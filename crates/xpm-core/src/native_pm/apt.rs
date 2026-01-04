@@ -23,7 +23,10 @@ impl AptPackageManager {
 
         let sudo_path = Executable::new("sudo").find();
 
-        Self { apt_path, sudo_path }
+        Self {
+            apt_path,
+            sudo_path,
+        }
     }
 
     /// Run apt command
@@ -73,7 +76,10 @@ impl AptPackageManager {
         for line in output.lines() {
             // apt search format: package/release version arch [installed]
             // Or: package - description
-            if line.trim().is_empty() || line.starts_with("Sorting") || line.starts_with("Full Text") {
+            if line.trim().is_empty()
+                || line.starts_with("Sorting")
+                || line.starts_with("Full Text")
+            {
                 continue;
             }
 
@@ -137,10 +143,7 @@ impl NativePackageManager for AptPackageManager {
     }
 
     async fn is_installed(&self, name: &str) -> Result<bool> {
-        let output = Command::new("dpkg")
-            .args(["-s", name])
-            .output()
-            .await?;
+        let output = Command::new("dpkg").args(["-s", name]).output().await?;
 
         Ok(output.status.success())
     }

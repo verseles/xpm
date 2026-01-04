@@ -6,7 +6,10 @@ use xpm_core::utils::logger::Logger;
 
 /// Run the shortcut command
 pub async fn run(name: &str, exec: &str, icon: Option<&str>, category: Option<&str>) -> Result<()> {
-    Logger::info(&format!("Creating desktop shortcut for {}...", name.green()));
+    Logger::info(&format!(
+        "Creating desktop shortcut for {}...",
+        name.green()
+    ));
 
     // Get applications directory using the dirs crate pattern
     let apps_dir = dirs::data_dir()
@@ -73,7 +76,13 @@ StartupNotify=true
 fn slugify(s: &str) -> String {
     s.to_lowercase()
         .chars()
-        .map(|c| if c.is_alphanumeric() || c == '-' { c } else { '-' })
+        .map(|c| {
+            if c.is_alphanumeric() || c == '-' {
+                c
+            } else {
+                '-'
+            }
+        })
         .collect::<String>()
         .trim_matches('-')
         .to_string()

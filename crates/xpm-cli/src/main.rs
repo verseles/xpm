@@ -141,24 +141,20 @@ enum Commands {
         /// Package name
         name: String,
     },
+
+    /// Fallback: treat unknown commands as search terms
+    #[command(external_subcommand)]
+    External(Vec<String>),
 }
 
 #[derive(Subcommand)]
 pub(crate) enum FileAction {
     /// Copy a file
-    Copy {
-        source: String,
-        destination: String,
-    },
+    Copy { source: String, destination: String },
     /// Move a file
-    Move {
-        source: String,
-        destination: String,
-    },
+    Move { source: String, destination: String },
     /// Delete a file
-    Delete {
-        path: String,
-    },
+    Delete { path: String },
     /// Execute a file
     Exec {
         path: String,
@@ -172,9 +168,7 @@ pub(crate) enum FileAction {
         name: Option<String>,
     },
     /// Remove file from bin directory
-    Unbin {
-        name: String,
-    },
+    Unbin { name: String },
 }
 
 #[derive(Subcommand)]
@@ -197,8 +191,9 @@ fn init_logging(verbose: bool) {
     let filter = if verbose { "debug" } else { "info" };
 
     tracing_subscriber::registry()
-        .with(tracing_subscriber::EnvFilter::try_from_default_env()
-            .unwrap_or_else(|_| filter.into()))
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| filter.into()),
+        )
         .with(tracing_subscriber::fmt::layer().without_time())
         .init();
 }
@@ -222,44 +217,31 @@ async fn main() -> ExitCode {
 
 async fn run(cli: Cli) -> anyhow::Result<()> {
     match cli.command {
-        Commands::Search { terms, limit } => {
-            commands::search::run(&terms, limit, cli.json).await
-        }
-        Commands::Install { package, method, channel } => {
-            commands::install::run(&package, &method, channel.as_deref()).await
-        }
-        Commands::Remove { package } => {
-            commands::remove::run(&package).await
-        }
-        Commands::Refresh => {
-            commands::refresh::run().await
-        }
-        Commands::Upgrade => {
-            commands::upgrade::run().await
-        }
-        Commands::Get { url, output } => {
-            commands::get::run(&url, output.as_deref()).await
-        }
-        Commands::File { action } => {
-            commands::file::run(action).await
-        }
-        Commands::Repo { action } => {
-            commands::repo::run(action).await
-        }
-        Commands::Checksum { file, algorithm } => {
-            commands::checksum::run(&file, &algorithm).await
-        }
-        Commands::Shortcut { name, exec, icon, category } => {
-            commands::shortcut::run(&name, &exec, icon.as_deref(), category.as_deref()).await
-        }
-        Commands::Log { count } => {
-            commands::log::run(count).await
-        }
-        Commands::Check => {
-            commands::check::run().await
-        }
-        Commands::Make { name } => {
-            commands::make::run(&name).await
+        Commands::Search { terms, limit } => commands::search::run(&terms, limit, cli.json).await,
+        Commands::Install {
+            package,
+            method,
+            channel,
+        } => commands::install::run(&package, &method, channel.as_deref()).await,
+        Commands::Remove { package } => commands::remove::run(&package).await,
+        Commands::Refresh => commands::refresh::run().await,
+        Commands::Upgrade => commands::upgrade::run().await,
+        Commands::Get { url, output } => commands::get::run(&url, output.as_deref()).await,
+        Commands::File { action } => commands::file::run(action).await,
+        Commands::Repo { action } => commands::repo::run(action).await,
+        Commands::Checksum { file, algorithm } => commands::checksum::run(&file, &algorithm).await,
+        Commands::Shortcut {
+            name,
+            exec,
+            icon,
+            category,
+        } => commands::shortcut::run(&name, &exec, icon.as_deref(), category.as_deref()).await,
+        Commands::Log { count } => commands::log::run(count).await,
+        Commands::Check => commands::check::run().await,
+        Commands::Make { name } => commands::make::run(&name).await,
+        Commands::External(args) => {
+            // Treat unknown commands as search terms
+            commands::search::run(&args, 30, cli.json).await
         }
     }
 }

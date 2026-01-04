@@ -110,7 +110,7 @@ async fn run_script(script: &str, name: &str) -> Result<()> {
     spinner.set_style(
         ProgressStyle::default_spinner()
             .template("{spinner:.red} {msg}")
-            .unwrap()
+            .unwrap(),
     );
     spinner.set_message(format!("Removing {}...", name));
     spinner.enable_steady_tick(Duration::from_millis(100));

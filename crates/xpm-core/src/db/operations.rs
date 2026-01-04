@@ -16,9 +16,15 @@ use super::models::{Package, PackageKey, Repo, RepoKey, Setting, SettingKey};
 /// Static models definition - must live for 'static
 static MODELS: Lazy<Models> = Lazy::new(|| {
     let mut models = Models::new();
-    models.define::<Package>().expect("Failed to define Package model");
-    models.define::<Repo>().expect("Failed to define Repo model");
-    models.define::<Setting>().expect("Failed to define Setting model");
+    models
+        .define::<Package>()
+        .expect("Failed to define Package model");
+    models
+        .define::<Repo>()
+        .expect("Failed to define Repo model");
+    models
+        .define::<Setting>()
+        .expect("Failed to define Setting model");
     models
 });
 
@@ -49,13 +55,12 @@ impl Database {
 
         // Ensure parent directory exists
         if let Some(parent) = db_path.parent() {
-            std::fs::create_dir_all(parent)
-                .context("Failed to create database directory")?;
+            std::fs::create_dir_all(parent).context("Failed to create database directory")?;
         }
 
         // Create database using static models
         let db = Builder::new()
-            .create(&*MODELS, &db_path)
+            .create(&MODELS, &db_path)
             .context("Failed to create database")?;
 
         Ok(Self {
@@ -75,12 +80,7 @@ impl Database {
     /// Get all packages
     pub fn get_all_packages(&self) -> Result<Vec<Package>> {
         let r = self.db.r_transaction()?;
-        let packages: Vec<Package> = r
-            .scan()
-            .primary()?
-            .all()?
-            .filter_map(|p| p.ok())
-            .collect();
+        let packages: Vec<Package> = r.scan().primary()?.all()?.filter_map(|p| p.ok()).collect();
         Ok(packages)
     }
 
@@ -107,12 +107,8 @@ impl Database {
     /// Search packages by term (searches name, desc, title)
     pub fn search_packages(&self, terms: &[String], limit: usize) -> Result<Vec<Package>> {
         let r = self.db.r_transaction()?;
-        let all_packages: Vec<Package> = r
-            .scan()
-            .primary()?
-            .all()?
-            .filter_map(|p| p.ok())
-            .collect();
+        let all_packages: Vec<Package> =
+            r.scan().primary()?.all()?.filter_map(|p| p.ok()).collect();
 
         let terms_lower: Vec<String> = terms.iter().map(|t| t.to_lowercase()).collect();
 
@@ -121,8 +117,16 @@ impl Database {
             .filter(|pkg| {
                 terms_lower.iter().any(|term| {
                     pkg.name.to_lowercase().contains(term)
-                        || pkg.desc.as_ref().map(|d| d.to_lowercase().contains(term)).unwrap_or(false)
-                        || pkg.title.as_ref().map(|t| t.to_lowercase().contains(term)).unwrap_or(false)
+                        || pkg
+                            .desc
+                            .as_ref()
+                            .map(|d| d.to_lowercase().contains(term))
+                            .unwrap_or(false)
+                        || pkg
+                            .title
+                            .as_ref()
+                            .map(|t| t.to_lowercase().contains(term))
+                            .unwrap_or(false)
                 })
             })
             .take(limit)
@@ -136,12 +140,8 @@ impl Database {
     /// Get installed packages
     pub fn get_installed_packages(&self) -> Result<Vec<Package>> {
         let r = self.db.r_transaction()?;
-        let all_packages: Vec<Package> = r
-            .scan()
-            .primary()?
-            .all()?
-            .filter_map(|p| p.ok())
-            .collect();
+        let all_packages: Vec<Package> =
+            r.scan().primary()?.all()?.filter_map(|p| p.ok()).collect();
 
         let installed: Vec<Package> = all_packages
             .into_iter()
@@ -156,7 +156,8 @@ impl Database {
         let rw = self.db.rw_transaction()?;
 
         // Check if package exists
-        let existing: Option<Package> = rw.get().secondary(PackageKey::name, package.name.clone())?;
+        let existing: Option<Package> =
+            rw.get().secondary(PackageKey::name, package.name.clone())?;
 
         if let Some(existing) = existing {
             let mut updated = package;
@@ -169,7 +170,8 @@ impl Database {
             rw.commit()?;
             // Get the inserted package with ID
             let r = self.db.r_transaction()?;
-            let inserted: Option<Package> = r.get().secondary(PackageKey::name, package.name.clone())?;
+            let inserted: Option<Package> =
+                r.get().secondary(PackageKey::name, package.name.clone())?;
             Ok(inserted.unwrap_or(package))
         }
     }
@@ -177,12 +179,8 @@ impl Database {
     /// Delete packages that are not installed
     pub fn delete_uninstalled_packages(&self) -> Result<usize> {
         let rw = self.db.rw_transaction()?;
-        let all_packages: Vec<Package> = rw
-            .scan()
-            .primary()?
-            .all()?
-            .filter_map(|p| p.ok())
-            .collect();
+        let all_packages: Vec<Package> =
+            rw.scan().primary()?.all()?.filter_map(|p| p.ok()).collect();
 
         let mut deleted = 0;
         for pkg in all_packages {
@@ -201,12 +199,7 @@ impl Database {
     /// Get all repositories
     pub fn get_all_repos(&self) -> Result<Vec<Repo>> {
         let r = self.db.r_transaction()?;
-        let repos: Vec<Repo> = r
-            .scan()
-            .primary()?
-            .all()?
-            .filter_map(|p| p.ok())
-            .collect();
+        let repos: Vec<Repo> = r.scan().primary()?.all()?.filter_map(|p| p.ok()).collect();
         Ok(repos)
     }
 
@@ -367,12 +360,8 @@ impl Database {
     /// Delete all expired settings
     pub fn delete_expired_settings(&self) -> Result<usize> {
         let rw = self.db.rw_transaction()?;
-        let all_settings: Vec<Setting> = rw
-            .scan()
-            .primary()?
-            .all()?
-            .filter_map(|p| p.ok())
-            .collect();
+        let all_settings: Vec<Setting> =
+            rw.scan().primary()?.all()?.filter_map(|p| p.ok()).collect();
 
         let mut deleted = 0;
         for setting in all_settings {

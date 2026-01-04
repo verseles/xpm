@@ -14,13 +14,18 @@ pub async fn run(url: &str, output: Option<&str>) -> Result<()> {
     let filename = output
         .map(String::from)
         .or_else(|| {
-            url.split('/').last()
+            url.split('/')
+                .next_back()
                 .filter(|s| !s.is_empty() && s.contains('.'))
                 .map(String::from)
         })
         .unwrap_or_else(|| "download".to_string());
 
-    Logger::info(&format!("Downloading {} to {}...", url.cyan(), filename.green()));
+    Logger::info(&format!(
+        "Downloading {} to {}...",
+        url.cyan(),
+        filename.green()
+    ));
 
     // Create client
     let client = reqwest::Client::new();
@@ -48,7 +53,7 @@ pub async fn run(url: &str, output: Option<&str>) -> Result<()> {
         pb.set_style(
             ProgressStyle::default_spinner()
                 .template("{spinner:.green} {bytes} downloaded ({bytes_per_sec})")
-                .unwrap()
+                .unwrap(),
         );
         pb
     };

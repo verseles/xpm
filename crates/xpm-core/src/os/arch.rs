@@ -33,7 +33,7 @@ impl Architecture {
     }
 
     /// Parse architecture from string
-    pub fn from_str(s: &str) -> Self {
+    pub fn parse(s: &str) -> Self {
         match s.to_lowercase().as_str() {
             "x86_64" | "amd64" | "x64" => Architecture::X86_64,
             "x86" | "i386" | "i486" | "i586" | "i686" => Architecture::X86,
@@ -99,14 +99,14 @@ fn detect_architecture_runtime() -> Architecture {
     if cfg!(target_os = "windows") {
         // On Windows, use PROCESSOR_ARCHITECTURE env var
         if let Ok(arch) = std::env::var("PROCESSOR_ARCHITECTURE") {
-            return Architecture::from_str(&arch);
+            return Architecture::parse(&arch);
         }
     } else {
         // On Unix-like systems, use uname -m
         if let Ok(output) = Command::new("uname").arg("-m").output() {
             if output.status.success() {
                 let arch_str = String::from_utf8_lossy(&output.stdout);
-                return Architecture::from_str(arch_str.trim());
+                return Architecture::parse(arch_str.trim());
             }
         }
     }
@@ -144,11 +144,11 @@ mod tests {
 
     #[test]
     fn test_arch_from_str() {
-        assert_eq!(Architecture::from_str("x86_64"), Architecture::X86_64);
-        assert_eq!(Architecture::from_str("amd64"), Architecture::X86_64);
-        assert_eq!(Architecture::from_str("aarch64"), Architecture::Aarch64);
-        assert_eq!(Architecture::from_str("arm64"), Architecture::Aarch64);
-        assert_eq!(Architecture::from_str("unknown"), Architecture::Unknown);
+        assert_eq!(Architecture::parse("x86_64"), Architecture::X86_64);
+        assert_eq!(Architecture::parse("amd64"), Architecture::X86_64);
+        assert_eq!(Architecture::parse("aarch64"), Architecture::Aarch64);
+        assert_eq!(Architecture::parse("arm64"), Architecture::Aarch64);
+        assert_eq!(Architecture::parse("unknown"), Architecture::Unknown);
     }
 
     #[test]

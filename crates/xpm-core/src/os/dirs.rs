@@ -1,7 +1,7 @@
 //! XDG-compliant directory management for XPM
 
 use anyhow::{Context, Result};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 /// XPM directory management following XDG Base Directory Specification
 pub struct XpmDirs;
@@ -12,8 +12,7 @@ impl XpmDirs {
 
     /// Get the configuration directory (~/.config/xpm)
     pub fn config_dir() -> Result<PathBuf> {
-        let base = dirs::config_dir()
-            .context("Could not determine config directory")?;
+        let base = dirs::config_dir().context("Could not determine config directory")?;
         let path = base.join(Self::APP_NAME);
         std::fs::create_dir_all(&path)?;
         Ok(path)
@@ -21,8 +20,7 @@ impl XpmDirs {
 
     /// Get the data directory (~/.local/share/xpm)
     pub fn data_dir() -> Result<PathBuf> {
-        let base = dirs::data_dir()
-            .context("Could not determine data directory")?;
+        let base = dirs::data_dir().context("Could not determine data directory")?;
         let path = base.join(Self::APP_NAME);
         std::fs::create_dir_all(&path)?;
         Ok(path)
@@ -30,8 +28,7 @@ impl XpmDirs {
 
     /// Get the cache directory (~/.cache/xpm)
     pub fn cache_dir() -> Result<PathBuf> {
-        let base = dirs::cache_dir()
-            .context("Could not determine cache directory")?;
+        let base = dirs::cache_dir().context("Could not determine cache directory")?;
         let path = base.join(Self::APP_NAME);
         std::fs::create_dir_all(&path)?;
         Ok(path)
@@ -80,11 +77,7 @@ impl XpmDirs {
     /// Get the bin directory (first writable directory in PATH)
     pub fn bin_dir() -> Result<PathBuf> {
         // Preferred directories in order
-        let preferred = [
-            "/usr/local/bin",
-            "/usr/bin",
-            "~/.local/bin",
-        ];
+        let preferred = ["/usr/local/bin", "/usr/bin", "~/.local/bin"];
 
         // Try preferred directories first
         for dir in &preferred {
@@ -127,8 +120,8 @@ impl XpmDirs {
     /// Clean old cache files older than specified days
     pub fn clean_cache(days: u64) -> Result<usize> {
         let cache = Self::cache_dir()?;
-        let cutoff = std::time::SystemTime::now()
-            - std::time::Duration::from_secs(days * 24 * 60 * 60);
+        let cutoff =
+            std::time::SystemTime::now() - std::time::Duration::from_secs(days * 24 * 60 * 60);
 
         let mut deleted = 0;
         if let Ok(entries) = std::fs::read_dir(&cache) {
@@ -153,7 +146,7 @@ impl XpmDirs {
 }
 
 /// Check if a path is writable
-fn is_writable(path: &PathBuf) -> bool {
+fn is_writable(path: &Path) -> bool {
     #[cfg(unix)]
     {
         use std::os::unix::fs::MetadataExt;

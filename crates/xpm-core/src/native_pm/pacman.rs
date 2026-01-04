@@ -16,6 +16,7 @@ pub struct PacmanPackageManager {
     /// Helper name
     helper_name: String,
     /// Pacman path (for operations that need it)
+    #[allow(dead_code)]
     pacman_path: PathBuf,
     /// Sudo path
     sudo_path: Option<PathBuf>,
@@ -51,6 +52,7 @@ impl PacmanPackageManager {
     }
 
     /// Check if using an AUR helper
+    #[allow(dead_code)]
     fn has_aur(&self) -> bool {
         self.helper_name == "paru" || self.helper_name == "yay"
     }
@@ -240,7 +242,8 @@ impl NativePackageManager for PacmanPackageManager {
     }
 
     async fn install(&self, name: &str) -> Result<()> {
-        self.run_helper_sudo(&["-S", "--noconfirm", "--needed", name]).await?;
+        self.run_helper_sudo(&["-S", "--noconfirm", "--needed", name])
+            .await?;
         Ok(())
     }
 
@@ -270,7 +273,9 @@ impl NativePackageManager for PacmanPackageManager {
                         let value = value.trim();
                         match key.trim() {
                             "Version" | "Versão" => pkg.version = Some(value.to_string()),
-                            "Description" | "Descrição" => pkg.description = Some(value.to_string()),
+                            "Description" | "Descrição" => {
+                                pkg.description = Some(value.to_string())
+                            }
                             "Architecture" | "Arquitetura" => pkg.arch = Some(value.to_string()),
                             "Repository" => pkg.repo = Some(value.to_string()),
                             _ => {}
@@ -338,9 +343,13 @@ core/base 3-1 [installed]
 
         let mut packages = vec![
             NativePackage::new("zed").with_repo("extra"),
-            NativePackage::new("aur-pkg1").with_repo("aur").with_popularity(100),
+            NativePackage::new("aur-pkg1")
+                .with_repo("aur")
+                .with_popularity(100),
             NativePackage::new("abc").with_repo("core"),
-            NativePackage::new("aur-pkg2").with_repo("aur").with_popularity(500),
+            NativePackage::new("aur-pkg2")
+                .with_repo("aur")
+                .with_popularity(500),
         ];
 
         pm.sort_packages(&mut packages);

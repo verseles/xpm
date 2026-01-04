@@ -2,10 +2,7 @@
 
 use anyhow::Result;
 use owo_colors::OwoColorize;
-use xpm_core::{
-    db::Database,
-    utils::logger::Logger,
-};
+use xpm_core::{db::Database, utils::logger::Logger};
 
 /// Run the log command
 pub async fn run(count: usize) -> Result<()> {
@@ -31,7 +28,11 @@ pub async fn run(count: usize) -> Result<()> {
         let channel = pkg.channel.as_deref().unwrap_or("stable");
 
         println!("  {} {}", name, version);
-        println!("    Method: {}  Channel: {}", method.cyan(), channel.yellow());
+        println!(
+            "    Method: {}  Channel: {}",
+            method.cyan(),
+            channel.yellow()
+        );
         println!();
     }
 

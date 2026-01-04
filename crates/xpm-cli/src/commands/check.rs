@@ -5,7 +5,7 @@ use owo_colors::OwoColorize;
 use xpm_core::{
     db::Database,
     native_pm::{detect_native_pm, NativePackageManager},
-    os::{dirs::XpmDirs, get_architecture, get_os_info, executable::Executable},
+    os::{dirs::XpmDirs, executable::Executable, get_architecture, get_os_info},
     repo::Repositories,
     utils::logger::Logger,
     VERSION,
@@ -26,7 +26,11 @@ pub async fn run() -> Result<()> {
     let arch = get_architecture();
 
     println!("{}", "System".bold());
-    println!("  OS: {} ({})", format!("{:?}", os_info.os_type).green(), os_info.pretty_name.as_str());
+    println!(
+        "  OS: {} ({})",
+        format!("{:?}", os_info.os_type).green(),
+        os_info.pretty_name.as_str()
+    );
     println!("  Architecture: {}", format!("{:?}", arch).green());
     println!();
 
@@ -35,7 +39,11 @@ pub async fn run() -> Result<()> {
     match XpmDirs::data_dir() {
         Ok(dir) => {
             let exists = dir.exists();
-            let status = if exists { format!("{}", "✓".green()) } else { format!("{}", "✗".red()) };
+            let status = if exists {
+                format!("{}", "✓".green())
+            } else {
+                format!("{}", "✗".red())
+            };
             println!("  Data: {} {}", dir.display(), status);
         }
         Err(e) => println!("  Data: {} {}", "Error".red(), e),
@@ -43,7 +51,11 @@ pub async fn run() -> Result<()> {
     match XpmDirs::cache_dir() {
         Ok(dir) => {
             let exists = dir.exists();
-            let status = if exists { format!("{}", "✓".green()) } else { format!("{}", "✗".red()) };
+            let status = if exists {
+                format!("{}", "✓".green())
+            } else {
+                format!("{}", "✗".red())
+            };
             println!("  Cache: {} {}", dir.display(), status);
         }
         Err(e) => println!("  Cache: {} {}", "Error".red(), e),
@@ -61,7 +73,11 @@ pub async fn run() -> Result<()> {
             } else {
                 format!("{}", "✗".red())
             };
-            let path_note = if !in_path && exists { format!("{}", "(not in PATH)".yellow()) } else { String::new() };
+            let path_note = if !in_path && exists {
+                format!("{}", "(not in PATH)".yellow())
+            } else {
+                String::new()
+            };
             println!("  Bin: {} {} {}", dir.display(), status, path_note);
         }
         Err(e) => println!("  Bin: {} {}", "Error".red(), e),
@@ -82,7 +98,11 @@ pub async fn run() -> Result<()> {
     let tools = ["git", "bash", "curl", "sudo"];
     for tool in tools {
         let found = Executable::new(tool).find().is_some();
-        let status = if found { format!("{}", "✓".green()) } else { format!("{}", "✗".red()) };
+        let status = if found {
+            format!("{}", "✓".green())
+        } else {
+            format!("{}", "✗".red())
+        };
         println!("  {}: {}", tool, status);
     }
     println!();
@@ -107,7 +127,10 @@ pub async fn run() -> Result<()> {
         Ok(repos) => {
             if repos.is_empty() {
                 println!("  Status: {}", "No repositories configured".yellow());
-                println!("  Tip: Run {} to add the default repository", "xpm refresh".cyan());
+                println!(
+                    "  Tip: Run {} to add the default repository",
+                    "xpm refresh".cyan()
+                );
             } else {
                 println!("  Configured: {}", repos.len().to_string().green());
                 for repo in &repos {

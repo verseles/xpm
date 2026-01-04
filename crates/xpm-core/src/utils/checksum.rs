@@ -21,7 +21,7 @@ pub enum ChecksumAlgorithm {
 
 impl ChecksumAlgorithm {
     /// Parse algorithm from string
-    pub fn from_str(s: &str) -> Option<Self> {
+    pub fn parse(s: &str) -> Option<Self> {
         match s.to_lowercase().as_str() {
             "md5" => Some(Self::Md5),
             "sha1" => Some(Self::Sha1),
@@ -56,8 +56,8 @@ pub struct Checksum;
 impl Checksum {
     /// Calculate checksum of a file
     pub fn calculate(path: &Path, algorithm: ChecksumAlgorithm) -> Result<String> {
-        let mut file = File::open(path)
-            .with_context(|| format!("Failed to open file: {}", path.display()))?;
+        let mut file =
+            File::open(path).with_context(|| format!("Failed to open file: {}", path.display()))?;
 
         let mut buffer = Vec::new();
         file.read_to_end(&mut buffer)
@@ -133,7 +133,7 @@ impl Checksum {
 
     /// Calculate checksum from file path string and algorithm name
     pub async fn from_file(file_path: &str, algorithm: &str) -> Result<String> {
-        let algo = ChecksumAlgorithm::from_str(algorithm)
+        let algo = ChecksumAlgorithm::parse(algorithm)
             .ok_or_else(|| anyhow::anyhow!("Unsupported algorithm: {}", algorithm))?;
 
         let path = std::path::PathBuf::from(file_path);
@@ -186,8 +186,16 @@ mod tests {
         file.write_all(b"hello world")?;
 
         let expected = "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9";
-        assert!(Checksum::verify(file.path(), expected, ChecksumAlgorithm::Sha256)?);
-        assert!(!Checksum::verify(file.path(), "wrong_hash", ChecksumAlgorithm::Sha256)?);
+        assert!(Checksum::verify(
+            file.path(),
+            expected,
+            ChecksumAlgorithm::Sha256
+        )?);
+        assert!(!Checksum::verify(
+            file.path(),
+            "wrong_hash",
+            ChecksumAlgorithm::Sha256
+        )?);
 
         Ok(())
     }
@@ -195,18 +203,18 @@ mod tests {
     #[test]
     fn test_algorithm_from_str() {
         assert_eq!(
-            ChecksumAlgorithm::from_str("sha256"),
+            ChecksumAlgorithm::parse("sha256"),
             Some(ChecksumAlgorithm::Sha256)
         );
         assert_eq!(
-            ChecksumAlgorithm::from_str("MD5"),
+            ChecksumAlgorithm::parse("MD5"),
             Some(ChecksumAlgorithm::Md5)
         );
         assert_eq!(
-            ChecksumAlgorithm::from_str("sha512-256"),
+            ChecksumAlgorithm::parse("sha512-256"),
             Some(ChecksumAlgorithm::Sha512_256)
         );
-        assert_eq!(ChecksumAlgorithm::from_str("unknown"), None);
+        assert_eq!(ChecksumAlgorithm::parse("unknown"), None);
     }
 
     #[tokio::test]

@@ -20,8 +20,9 @@ impl FileOps {
         if sudo && cfg!(unix) {
             Self::run_with_sudo(&["cp", "-f"], &[src, dest])?;
         } else {
-            std::fs::copy(src, dest)
-                .with_context(|| format!("Failed to copy {} to {}", src.display(), dest.display()))?;
+            std::fs::copy(src, dest).with_context(|| {
+                format!("Failed to copy {} to {}", src.display(), dest.display())
+            })?;
         }
         Ok(())
     }
@@ -31,8 +32,9 @@ impl FileOps {
         if sudo && cfg!(unix) {
             Self::run_with_sudo(&["mv", "-f"], &[src, dest])?;
         } else {
-            std::fs::rename(src, dest)
-                .with_context(|| format!("Failed to move {} to {}", src.display(), dest.display()))?;
+            std::fs::rename(src, dest).with_context(|| {
+                format!("Failed to move {} to {}", src.display(), dest.display())
+            })?;
         }
         Ok(())
     }
@@ -157,8 +159,13 @@ impl FileOps {
             if dest.exists() || dest.is_symlink() {
                 std::fs::remove_file(dest).ok();
             }
-            std::os::unix::fs::symlink(src, dest)
-                .with_context(|| format!("Failed to create symlink {} -> {}", dest.display(), src.display()))?;
+            std::os::unix::fs::symlink(src, dest).with_context(|| {
+                format!(
+                    "Failed to create symlink {} -> {}",
+                    dest.display(),
+                    src.display()
+                )
+            })?;
         }
         Ok(())
     }

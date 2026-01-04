@@ -1,17 +1,13 @@
 //! URL-safe slug generation
 
-use regex::Regex;
 use once_cell::sync::Lazy;
+use regex::Regex;
 
 /// Regex for non-alphanumeric characters
-static NON_ALNUM: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"[^a-zA-Z0-9]+").unwrap()
-});
+static NON_ALNUM: Lazy<Regex> = Lazy::new(|| Regex::new(r"[^a-zA-Z0-9]+").unwrap());
 
 /// Regex for multiple dashes
-static MULTI_DASH: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"-+").unwrap()
-});
+static MULTI_DASH: Lazy<Regex> = Lazy::new(|| Regex::new(r"-+").unwrap());
 
 /// Convert a string to a URL-safe slug
 ///

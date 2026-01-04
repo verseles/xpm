@@ -6,15 +6,22 @@ use xpm_core::utils::logger::Logger;
 
 /// Run the make command
 pub async fn run(name: &str) -> Result<()> {
-    Logger::warning(&format!("Package creation for '{}' is not yet implemented", name.cyan()));
+    Logger::warning(&format!(
+        "Package creation for '{}' is not yet implemented",
+        name.cyan()
+    ));
 
     println!();
-    println!("{}", "This feature will help you create XPM package scripts.".dimmed());
+    println!(
+        "{}",
+        "This feature will help you create XPM package scripts.".dimmed()
+    );
     println!();
     println!("For now, you can manually create a package script with this structure:");
     println!();
 
-    let template = format!(r#"  {}
+    let template = format!(
+        r#"  {}
   readonly xNAME="{}"
   readonly xVERSION="1.0.0"
   readonly xTITLE="{}"
@@ -38,11 +45,20 @@ pub async fn run(name: &str) -> Result<()> {
       # Validation logic - return 0 if installed correctly
       which {} >/dev/null
   }}
-"#, "#!/bin/bash".cyan(), name, name, name);
+"#,
+        "#!/bin/bash".cyan(),
+        name,
+        name,
+        name
+    );
 
     println!("{}", template.dimmed());
     println!();
-    println!("Save this as {}/{}.bash in your repository.", "packages".cyan(), name.green());
+    println!(
+        "Save this as {}/{}.bash in your repository.",
+        "packages".cyan(),
+        name.green()
+    );
 
     Ok(())
 }

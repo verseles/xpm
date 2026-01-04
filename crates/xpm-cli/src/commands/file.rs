@@ -7,16 +7,19 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 use std::process::Stdio;
 use tokio::process::Command;
-use xpm_core::{
-    os::dirs::XpmDirs,
-    utils::logger::Logger,
-};
+use xpm_core::{os::dirs::XpmDirs, utils::logger::Logger};
 
 /// Run the file command
 pub async fn run(action: FileAction) -> Result<()> {
     match action {
-        FileAction::Copy { source, destination } => copy(&source, &destination).await,
-        FileAction::Move { source, destination } => move_file(&source, &destination).await,
+        FileAction::Copy {
+            source,
+            destination,
+        } => copy(&source, &destination).await,
+        FileAction::Move {
+            source,
+            destination,
+        } => move_file(&source, &destination).await,
         FileAction::Delete { path } => delete(&path).await,
         FileAction::Exec { path, args } => exec(&path, &args).await,
         FileAction::Bin { path, name } => bin(&path, name.as_deref()).await,
@@ -25,7 +28,11 @@ pub async fn run(action: FileAction) -> Result<()> {
 }
 
 async fn copy(source: &str, destination: &str) -> Result<()> {
-    Logger::info(&format!("Copying {} to {}...", source.cyan(), destination.green()));
+    Logger::info(&format!(
+        "Copying {} to {}...",
+        source.cyan(),
+        destination.green()
+    ));
 
     tokio::fs::copy(source, destination).await?;
 
@@ -34,7 +41,11 @@ async fn copy(source: &str, destination: &str) -> Result<()> {
 }
 
 async fn move_file(source: &str, destination: &str) -> Result<()> {
-    Logger::info(&format!("Moving {} to {}...", source.cyan(), destination.green()));
+    Logger::info(&format!(
+        "Moving {} to {}...",
+        source.cyan(),
+        destination.green()
+    ));
 
     // Try rename first (faster if same filesystem)
     if tokio::fs::rename(source, destination).await.is_err() {
@@ -90,14 +101,12 @@ async fn bin(path: &str, name: Option<&str>) -> Result<()> {
     let bin_dir = XpmDirs::bin_dir()?;
     let source_path = Path::new(path);
 
-    let dest_name = name
-        .map(String::from)
-        .unwrap_or_else(|| {
-            source_path
-                .file_stem()
-                .map(|s| s.to_string_lossy().to_string())
-                .unwrap_or_else(|| "binary".to_string())
-        });
+    let dest_name = name.map(String::from).unwrap_or_else(|| {
+        source_path
+            .file_stem()
+            .map(|s| s.to_string_lossy().to_string())
+            .unwrap_or_else(|| "binary".to_string())
+    });
 
     let dest_path = bin_dir.join(&dest_name);
 

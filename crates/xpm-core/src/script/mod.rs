@@ -124,8 +124,8 @@ impl BashScript {
     /// Check which install methods are available
     pub fn available_install_methods(&self) -> Vec<String> {
         let methods = [
-            "any", "apt", "pacman", "dnf", "brew", "choco", "snap",
-            "flatpak", "zypper", "swupd", "termux", "appimage",
+            "any", "apt", "pacman", "dnf", "brew", "choco", "snap", "flatpak", "zypper", "swupd",
+            "termux", "appimage",
         ];
 
         methods
@@ -138,8 +138,8 @@ impl BashScript {
     /// Check which remove methods are available
     pub fn available_remove_methods(&self) -> Vec<String> {
         let methods = [
-            "any", "apt", "pacman", "dnf", "brew", "choco", "snap",
-            "flatpak", "zypper", "swupd", "termux", "appimage",
+            "any", "apt", "pacman", "dnf", "brew", "choco", "snap", "flatpak", "zypper", "swupd",
+            "termux", "appimage",
         ];
 
         methods

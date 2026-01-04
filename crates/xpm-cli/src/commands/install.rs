@@ -33,7 +33,10 @@ pub async fn run(package: &str, method: &str, channel: Option<&str>) -> Result<(
 
     // Try native package manager
     if let Some(pm) = detect_native_pm().await {
-        Logger::info(&format!("Package not in XPM, trying {}...", pm.name().cyan()));
+        Logger::info(&format!(
+            "Package not in XPM, trying {}...",
+            pm.name().cyan()
+        ));
 
         if let Ok(Some(_)) = pm.get(package).await {
             Logger::info(&format!("Installing via {}...", pm.name().cyan()));
@@ -47,7 +50,9 @@ pub async fn run(package: &str, method: &str, channel: Option<&str>) -> Result<(
 }
 
 async fn install_xpm_package(pkg: &Package, method: &str, channel: Option<&str>) -> Result<()> {
-    let script_path = pkg.script.as_ref()
+    let script_path = pkg
+        .script
+        .as_ref()
         .ok_or_else(|| anyhow::anyhow!("Package has no installation script"))?;
 
     let script = BashScript::new(script_path);
@@ -70,10 +75,7 @@ async fn install_xpm_package(pkg: &Package, method: &str, channel: Option<&str>)
 
     // Validate installation if possible
     if has_validate {
-        let validate_script = format!(
-            r#"source "{}" && validate"#,
-            script_path
-        );
+        let validate_script = format!(r#"source "{}" && validate"#, script_path);
 
         match run_script(&validate_script, "validation").await {
             Ok(_) => Logger::success("Validation passed"),
@@ -183,7 +185,7 @@ async fn run_script(script: &str, name: &str) -> Result<()> {
     spinner.set_style(
         ProgressStyle::default_spinner()
             .template("{spinner:.cyan} {msg}")
-            .unwrap()
+            .unwrap(),
     );
     spinner.set_message(format!("Running {}...", name));
     spinner.enable_steady_tick(Duration::from_millis(100));

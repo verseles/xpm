@@ -17,7 +17,11 @@ pub async fn run(file: &str, algorithm: &str) -> Result<()> {
         );
     }
 
-    Logger::info(&format!("Computing {} checksum for {}...", algo.cyan(), file.green()));
+    Logger::info(&format!(
+        "Computing {} checksum for {}...",
+        algo.cyan(),
+        file.green()
+    ));
 
     let hash = Checksum::from_file(file, &algo).await?;
 
