@@ -158,3 +158,52 @@ impl NativePackageManager for DnfPackageManager {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_search_output() {
+        let pm = DnfPackageManager {
+            dnf_path: PathBuf::from("/usr/bin/dnf"),
+            sudo_path: None,
+        };
+
+        let output = "vim-enhanced.x86_64    2:9.0.1000-1.fc38    fedora\n\
+                      vim-minimal.x86_64    2:9.0.1000-1.fc38    fedora";
+
+        let packages = pm.parse_search_output(output);
+
+        assert_eq!(packages.len(), 2);
+        assert_eq!(packages[0].name, "vim-enhanced");
+        assert_eq!(packages[0].version, Some("2:9.0.1000-1.fc38".to_string()));
+        assert_eq!(packages[0].arch, Some("x86_64".to_string()));
+    }
+
+    #[test]
+    fn test_parse_search_output_skips_headers() {
+        let pm = DnfPackageManager {
+            dnf_path: PathBuf::from("/usr/bin/dnf"),
+            sudo_path: None,
+        };
+
+        let output = "Last metadata expiration check: 0:30:00 ago\n\
+                      ======================== Name Matched ========================\n\
+                      git.x86_64    2.40.0-1.fc38    updates";
+
+        let packages = pm.parse_search_output(output);
+
+        assert_eq!(packages.len(), 1);
+        assert_eq!(packages[0].name, "git");
+    }
+
+    #[test]
+    fn test_name() {
+        let pm = DnfPackageManager {
+            dnf_path: PathBuf::from("/usr/bin/dnf"),
+            sudo_path: None,
+        };
+        assert_eq!(pm.name(), "dnf");
+    }
+}

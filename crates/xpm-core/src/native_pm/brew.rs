@@ -112,3 +112,47 @@ impl NativePackageManager for BrewPackageManager {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_search_output() {
+        let pm = BrewPackageManager {
+            brew_path: PathBuf::from("/opt/homebrew/bin/brew"),
+        };
+
+        let output = "==> Formulae\n\
+                      vim\n\
+                      neovim\n\
+                      macvim";
+
+        let packages = pm.parse_search_output(output);
+
+        assert_eq!(packages.len(), 3);
+        assert_eq!(packages[0].name, "vim");
+        assert_eq!(packages[1].name, "neovim");
+        assert_eq!(packages[2].name, "macvim");
+    }
+
+    #[test]
+    fn test_parse_search_output_filters_headers() {
+        let pm = BrewPackageManager {
+            brew_path: PathBuf::from("/opt/homebrew/bin/brew"),
+        };
+
+        let output = "==> Formulae\ngit\n==> Casks\ngit-gui";
+        let packages = pm.parse_search_output(output);
+
+        assert_eq!(packages.len(), 2);
+    }
+
+    #[test]
+    fn test_name() {
+        let pm = BrewPackageManager {
+            brew_path: PathBuf::from("/opt/homebrew/bin/brew"),
+        };
+        assert_eq!(pm.name(), "brew");
+    }
+}

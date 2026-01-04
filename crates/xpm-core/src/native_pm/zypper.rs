@@ -162,3 +162,38 @@ impl NativePackageManager for ZypperPackageManager {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_search_output() {
+        let pm = ZypperPackageManager {
+            zypper_path: PathBuf::from("/usr/bin/zypper"),
+            sudo_path: None,
+        };
+
+        let output = "S  | Name       | Summary          | Type   \n\
+                      ---+------------+------------------+--------\n\
+                      i  | vim        | Vi IMproved      | package\n\
+                         | vim-data   | Vim data files   | package";
+
+        let packages = pm.parse_search_output(output);
+
+        assert_eq!(packages.len(), 2);
+        assert_eq!(packages[0].name, "vim");
+        assert!(packages[0].installed);
+        assert_eq!(packages[1].name, "vim-data");
+        assert!(!packages[1].installed);
+    }
+
+    #[test]
+    fn test_name() {
+        let pm = ZypperPackageManager {
+            zypper_path: PathBuf::from("/usr/bin/zypper"),
+            sudo_path: None,
+        };
+        assert_eq!(pm.name(), "zypper");
+    }
+}

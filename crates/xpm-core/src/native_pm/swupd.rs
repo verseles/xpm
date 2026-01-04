@@ -136,3 +136,36 @@ impl NativePackageManager for SwupdPackageManager {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_search_output() {
+        let pm = SwupdPackageManager {
+            swupd_path: PathBuf::from("/usr/bin/swupd"),
+            sudo_path: None,
+        };
+
+        let output = "Searching for 'vim'...\n\
+                      Bundle vim-go\n\
+                      vim\n\
+                      neovim";
+
+        let packages = pm.parse_search_output(output);
+
+        assert_eq!(packages.len(), 2);
+        assert_eq!(packages[0].name, "vim");
+        assert_eq!(packages[1].name, "neovim");
+    }
+
+    #[test]
+    fn test_name() {
+        let pm = SwupdPackageManager {
+            swupd_path: PathBuf::from("/usr/bin/swupd"),
+            sudo_path: None,
+        };
+        assert_eq!(pm.name(), "swupd");
+    }
+}
