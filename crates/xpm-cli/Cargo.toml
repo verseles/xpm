@@ -33,6 +33,8 @@ console = { workspace = true }
 anyhow = { workspace = true }
 thiserror = { workspace = true }
 serde_json = { workspace = true }
+reqwest = { workspace = true }
+dirs = { workspace = true }
 
 # Logging
 tracing = { workspace = true }

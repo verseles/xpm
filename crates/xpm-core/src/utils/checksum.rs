@@ -130,6 +130,15 @@ impl Checksum {
             .await
             .context("Checksum task panicked")?
     }
+
+    /// Calculate checksum from file path string and algorithm name
+    pub async fn from_file(file_path: &str, algorithm: &str) -> Result<String> {
+        let algo = ChecksumAlgorithm::from_str(algorithm)
+            .ok_or_else(|| anyhow::anyhow!("Unsupported algorithm: {}", algorithm))?;
+
+        let path = std::path::PathBuf::from(file_path);
+        Self::calculate_async(&path, algo).await
+    }
 }
 
 #[cfg(test)]

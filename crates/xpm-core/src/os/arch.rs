@@ -122,19 +122,19 @@ pub fn get_platform() -> String {
 }
 
 /// Architecture correspondence map for legacy compatibility
-pub fn normalize_arch(arch: &str) -> &str {
+pub fn normalize_arch(arch: &str) -> String {
     match arch.to_lowercase().as_str() {
-        "linux64" => "linux-x86_64",
-        "linux32" => "linux-i686",
-        "linuxarm" => "linux-armv7l",
-        "linuxarm64" => "linux-aarch64",
-        "windows32" | "win32" => "windows-i686",
-        "win64" => "windows-x86_64",
-        "macos64" => "darwin-x86_64",
-        "macos-aarch64" | "macos-arm64" => "darwin-aarch64",
-        "freebsd32" => "freebsd-i686",
-        "freebsd64" => "freebsd-x86_64",
-        other => other,
+        "linux64" => "linux-x86_64".to_string(),
+        "linux32" => "linux-i686".to_string(),
+        "linuxarm" => "linux-armv7l".to_string(),
+        "linuxarm64" => "linux-aarch64".to_string(),
+        "windows32" | "win32" => "windows-i686".to_string(),
+        "win64" => "windows-x86_64".to_string(),
+        "macos64" => "darwin-x86_64".to_string(),
+        "macos-aarch64" | "macos-arm64" => "darwin-aarch64".to_string(),
+        "freebsd32" => "freebsd-i686".to_string(),
+        "freebsd64" => "freebsd-x86_64".to_string(),
+        other => other.to_string(),
     }
 }
 
@@ -166,8 +166,8 @@ mod tests {
 
     #[test]
     fn test_normalize_arch() {
-        assert_eq!(normalize_arch("linux64"), "linux-x86_64");
-        assert_eq!(normalize_arch("win64"), "windows-x86_64");
-        assert_eq!(normalize_arch("custom"), "custom");
+        assert_eq!(normalize_arch("linux64"), "linux-x86_64".to_string());
+        assert_eq!(normalize_arch("win64"), "windows-x86_64".to_string());
+        assert_eq!(normalize_arch("custom"), "custom".to_string());
     }
 }

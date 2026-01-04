@@ -1,6 +1,6 @@
 //! Bash script parsing module
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 use once_cell::sync::OnceCell;
 use regex::Regex;
 use std::fs;

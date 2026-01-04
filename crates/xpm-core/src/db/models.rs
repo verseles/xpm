@@ -2,7 +2,7 @@
 
 use chrono::{DateTime, Utc};
 use native_db::*;
-use native_model::native_model;
+use native_model::{native_model, Model};
 use serde::{Deserialize, Serialize};
 
 /// Package model representing a package in the XPM database

@@ -11,7 +11,7 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::OnceLock;
 
-use super::models::{Package, Repo, Setting};
+use super::models::{Package, PackageKey, Repo, RepoKey, Setting, SettingKey};
 
 /// Static models definition - must live for 'static
 static MODELS: Lazy<Models> = Lazy::new(|| {
