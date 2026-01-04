@@ -20,7 +20,10 @@ impl SwupdPackageManager {
 
         let sudo_path = Executable::new("sudo").find();
 
-        Self { swupd_path, sudo_path }
+        Self {
+            swupd_path,
+            sudo_path,
+        }
     }
 
     async fn run_swupd(&self, args: &[&str]) -> Result<String> {
@@ -66,7 +69,10 @@ impl SwupdPackageManager {
 
         for line in output.lines() {
             let trimmed = line.trim();
-            if trimmed.is_empty() || trimmed.starts_with("Searching") || trimmed.starts_with("Bundle") {
+            if trimmed.is_empty()
+                || trimmed.starts_with("Searching")
+                || trimmed.starts_with("Bundle")
+            {
                 continue;
             }
 

@@ -20,7 +20,10 @@ impl ZypperPackageManager {
 
         let sudo_path = Executable::new("sudo").find();
 
-        Self { zypper_path, sudo_path }
+        Self {
+            zypper_path,
+            sudo_path,
+        }
     }
 
     async fn run_zypper(&self, args: &[&str]) -> Result<String> {
@@ -65,7 +68,11 @@ impl ZypperPackageManager {
         let mut packages = Vec::new();
 
         for line in output.lines() {
-            if line.trim().is_empty() || line.starts_with("Loading") || line.starts_with("S ") || line.starts_with("--") {
+            if line.trim().is_empty()
+                || line.starts_with("Loading")
+                || line.starts_with("S ")
+                || line.starts_with("--")
+            {
                 continue;
             }
 
@@ -123,10 +130,7 @@ impl NativePackageManager for ZypperPackageManager {
     }
 
     async fn is_installed(&self, name: &str) -> Result<bool> {
-        let output = Command::new("rpm")
-            .args(["-q", name])
-            .output()
-            .await?;
+        let output = Command::new("rpm").args(["-q", name]).output().await?;
 
         Ok(output.status.success())
     }

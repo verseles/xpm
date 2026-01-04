@@ -5,44 +5,47 @@ use xpm_core::utils::logger::Logger;
 
 pub async fn run(name: &str) -> Result<()> {
     Logger::info(&format!("Creating package script for '{}'...", name.cyan()));
-    
+
     print!("Package title [{}]: ", name);
     io::stdout().flush()?;
     let mut title = String::new();
     io::stdin().read_line(&mut title)?;
     let title = title.trim();
     let title = if title.is_empty() { name } else { title };
-    
+
     print!("Version [1.0.0]: ");
     io::stdout().flush()?;
     let mut version = String::new();
     io::stdin().read_line(&mut version)?;
     let version = version.trim();
     let version = if version.is_empty() { "1.0.0" } else { version };
-    
+
     print!("Description: ");
     io::stdout().flush()?;
     let mut desc = String::new();
     io::stdin().read_line(&mut desc)?;
     let desc = desc.trim();
-    
+
     print!("Homepage URL: ");
     io::stdout().flush()?;
     let mut url = String::new();
     io::stdin().read_line(&mut url)?;
     let url = url.trim();
-    
-    print!("Validation command (e.g., 'which {}') [which {}]: ", name, name);
+
+    print!(
+        "Validation command (e.g., 'which {}') [which {}]: ",
+        name, name
+    );
     io::stdout().flush()?;
     let mut validate_cmd = String::new();
     io::stdin().read_line(&mut validate_cmd)?;
     let validate_cmd = validate_cmd.trim();
-    let validate_cmd = if validate_cmd.is_empty() { 
-        format!("which {}", name) 
-    } else { 
-        validate_cmd.to_string() 
+    let validate_cmd = if validate_cmd.is_empty() {
+        format!("which {}", name)
+    } else {
+        validate_cmd.to_string()
     };
-    
+
     let script = format!(
         r#"#!/bin/bash
 
@@ -97,15 +100,15 @@ validate() {{
         url = url,
         validate_cmd = validate_cmd,
     );
-    
+
     let filename = format!("{}.bash", name);
     std::fs::write(&filename, &script)?;
-    
+
     Logger::success(&format!("Created {}", filename.green()));
     Logger::info("Next steps:");
     println!("  1. Edit {} to add installation logic", filename.cyan());
     println!("  2. Move it to your repository's packages/ directory");
     println!("  3. Run {} to update the index", "xpm refresh".cyan());
-    
+
     Ok(())
 }

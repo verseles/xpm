@@ -1,4 +1,4 @@
-.PHONY: all build release test fmt clippy check precommit clean install
+.PHONY: all build release test fmt clippy check precommit clean install docker-ubuntu docker-arch docker-test
 
 # Default target
 all: build
@@ -73,3 +73,33 @@ outdated:
 # Security audit (requires cargo-audit)
 audit:
 	cargo audit
+
+# === Container Testing (Podman) ===
+
+# Build Ubuntu test container
+docker-ubuntu:
+	podman-compose -f docker/podman-compose.yml build ubuntu
+
+# Build Arch test container
+docker-arch:
+	podman-compose -f docker/podman-compose.yml build arch
+
+# Build all test containers
+docker-build: docker-ubuntu docker-arch
+
+# Test on Ubuntu
+test-ubuntu:
+	podman-compose -f docker/podman-compose.yml run --rm ubuntu
+
+# Test on Arch
+test-arch:
+	podman-compose -f docker/podman-compose.yml run --rm arch
+
+# Test on all distros
+docker-test: docker-build test-ubuntu test-arch
+	@echo ""
+	@echo "✓ All container tests completed!"
+
+# Clean container images
+docker-clean:
+	podman-compose -f docker/podman-compose.yml down --rmi all 2>/dev/null || true

@@ -20,7 +20,10 @@ impl DnfPackageManager {
 
         let sudo_path = Executable::new("sudo").find();
 
-        Self { dnf_path, sudo_path }
+        Self {
+            dnf_path,
+            sudo_path,
+        }
     }
 
     async fn run_dnf(&self, args: &[&str]) -> Result<String> {
@@ -65,7 +68,8 @@ impl DnfPackageManager {
         let mut packages = Vec::new();
 
         for line in output.lines() {
-            if line.trim().is_empty() || line.starts_with('=') || line.starts_with("Last metadata") {
+            if line.trim().is_empty() || line.starts_with('=') || line.starts_with("Last metadata")
+            {
                 continue;
             }
 
@@ -119,10 +123,7 @@ impl NativePackageManager for DnfPackageManager {
     }
 
     async fn is_installed(&self, name: &str) -> Result<bool> {
-        let output = Command::new("rpm")
-            .args(["-q", name])
-            .output()
-            .await?;
+        let output = Command::new("rpm").args(["-q", name]).output().await?;
 
         Ok(output.status.success())
     }

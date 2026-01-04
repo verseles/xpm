@@ -100,7 +100,7 @@ pub async fn run(
     }
 
     let file_path = Path::new(&filename);
-    
+
     if let Some(expected) = md5 {
         let actual = checksum::compute_md5(file_path)?;
         if actual != expected {
@@ -157,7 +157,11 @@ pub async fn run(
     Logger::success(&format!(
         "Downloaded {} {}",
         filename.green(),
-        if !size.is_empty() { format!("({})", size.cyan()) } else { String::new() }
+        if !size.is_empty() {
+            format!("({})", size.cyan())
+        } else {
+            String::new()
+        }
     ));
 
     Ok(())

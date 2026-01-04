@@ -10,7 +10,7 @@ use tokio::process::Command;
 use xpm_core::{
     db::{Database, Package},
     native_pm::{detect_native_pm, NativePackageManager},
-    os::{get_architecture, get_os_info, OsType, XpmDirs, Executable},
+    os::{get_architecture, get_os_info, Executable, OsType, XpmDirs},
     script::BashScript,
     utils::logger::Logger,
 };
@@ -154,7 +154,12 @@ fn determine_method(requested: &str, pkg: &Package, script: &BashScript) -> Resu
     anyhow::bail!("No suitable installation method found")
 }
 
-fn build_install_script(script_path: &str, method: &str, channel: Option<&str>, pkg_name: &str) -> Result<String> {
+fn build_install_script(
+    script_path: &str,
+    method: &str,
+    channel: Option<&str>,
+    pkg_name: &str,
+) -> Result<String> {
     let os_info = get_os_info();
     let arch = get_architecture();
 

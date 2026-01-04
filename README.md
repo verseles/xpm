@@ -193,6 +193,27 @@ cargo test
 
 # Run with verbose output
 cargo run -- --verbose check
+
+# Pre-commit checks (format + lint + test)
+make precommit
+```
+
+## Container Testing
+
+Test xpm on different distributions using Podman:
+
+```bash
+# Build and test on Ubuntu
+make test-ubuntu
+
+# Build and test on Arch Linux
+make test-arch
+
+# Build and test all distros
+make docker-test
+
+# Clean container images
+make docker-clean
 ```
 
 ## Contributing
