@@ -1,6 +1,9 @@
 # XPM - Dart to Rust Migration Roadmap
 
 > **Status**: ✅ **COMPLETE** - All phases implemented successfully.
+>
+> **Migration Note**: The original Dart implementation has been preserved in the `old_dart` branch for reference.
+>
 > See [MIGRATION_GAPS.md](./MIGRATION_GAPS.md) for detailed analysis of Dart vs Rust differences.
 
 ## Phase 1: Feature Parity (Script Environment) ✅

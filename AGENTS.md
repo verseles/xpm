@@ -10,6 +10,7 @@ This is **xpm** (uniX Package Manager) - a universal package manager for Unix-li
 
 - **Repository**: https://github.com/verseles/xpm
 - **License**: BSD 4-Clause "Original"
+- **Migration**: The original Dart implementation is preserved in the `old_dart` branch
 
 ## Quick Start
 
