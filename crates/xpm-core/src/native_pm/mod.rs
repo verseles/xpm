@@ -113,6 +113,11 @@ pub trait NativePackageManager: Send + Sync {
 
     /// Update package database
     async fn update_db(&self) -> Result<()>;
+
+    /// Whether search results are pre-sorted by relevance (most relevant last)
+    fn results_pre_sorted(&self) -> bool {
+        false
+    }
 }
 
 pub enum NativePM {
@@ -240,6 +245,13 @@ impl NativePackageManager for NativePM {
             NativePM::Flatpak(pm) => pm.update_db().await,
             NativePM::Choco(pm) => pm.update_db().await,
             NativePM::Scoop(pm) => pm.update_db().await,
+        }
+    }
+
+    fn results_pre_sorted(&self) -> bool {
+        match self {
+            NativePM::Pacman(pm) => pm.results_pre_sorted(),
+            _ => false,
         }
     }
 }

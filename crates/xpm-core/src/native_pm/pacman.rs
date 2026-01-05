@@ -130,14 +130,15 @@ impl PacmanPackageManager {
             let name = repo_pkg[1].to_string();
             let version = parts.get(1).map(|s| s.to_string());
 
-            // Parse popularity for AUR packages
+            // Parse popularity for AUR packages (votes count, not score)
             let mut popularity = None;
             if repo == "aur" {
+                // Capture group 1 = votes (integer), group 2 = score (float)
                 if let Some(ref pat) = paru_pattern {
                     if let Some(cap) = pat.captures(line) {
-                        if let Some(pop) = cap.get(2) {
-                            if let Ok(p) = pop.as_str().parse::<f64>() {
-                                popularity = Some((p * 100.0) as i32);
+                        if let Some(votes) = cap.get(1) {
+                            if let Ok(v) = votes.as_str().parse::<i32>() {
+                                popularity = Some(v);
                             }
                         }
                     }
@@ -145,9 +146,9 @@ impl PacmanPackageManager {
                 if popularity.is_none() {
                     if let Some(ref pat) = yay_pattern {
                         if let Some(cap) = pat.captures(line) {
-                            if let Some(pop) = cap.get(2) {
-                                if let Ok(p) = pop.as_str().parse::<f64>() {
-                                    popularity = Some((p * 100.0) as i32);
+                            if let Some(votes) = cap.get(1) {
+                                if let Ok(v) = votes.as_str().parse::<i32>() {
+                                    popularity = Some(v);
                                 }
                             }
                         }
@@ -211,6 +212,10 @@ impl PacmanPackageManager {
 impl NativePackageManager for PacmanPackageManager {
     fn name(&self) -> &str {
         &self.helper_name
+    }
+
+    fn results_pre_sorted(&self) -> bool {
+        true
     }
 
     async fn search(&self, query: &str, limit: Option<usize>) -> Result<Vec<NativePackage>> {
@@ -331,7 +336,7 @@ core/base 3-1 [installed]
         assert_eq!(packages[1].name, "jqp");
         assert_eq!(packages[1].repo, Some("aur".to_string()));
         assert!(packages[1].is_aur());
-        assert!(packages[1].popularity.is_some());
+        assert_eq!(packages[1].popularity, Some(67)); // votes, not score
 
         assert_eq!(packages[2].name, "base");
         assert!(packages[2].installed);
