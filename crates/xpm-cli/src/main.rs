@@ -98,6 +98,7 @@ enum Commands {
     },
 
     /// Refresh package database
+    #[command(visible_alias = "ref")]
     Refresh,
 
     /// Upgrade installed packages (stub)
