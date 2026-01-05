@@ -2,18 +2,26 @@
 
 mod apt;
 mod brew;
+mod choco;
 mod detector;
 mod dnf;
+mod flatpak;
 mod pacman;
+mod snap;
 mod swupd;
+mod termux;
 mod zypper;
 
 pub use apt::AptPackageManager;
 pub use brew::BrewPackageManager;
+pub use choco::{ChocoPackageManager, ScoopPackageManager};
 pub use detector::detect_native_pm;
 pub use dnf::DnfPackageManager;
+pub use flatpak::FlatpakPackageManager;
 pub use pacman::PacmanPackageManager;
+pub use snap::SnapPackageManager;
 pub use swupd::SwupdPackageManager;
+pub use termux::TermuxPackageManager;
 pub use zypper::ZypperPackageManager;
 
 use anyhow::Result;
@@ -114,6 +122,11 @@ pub enum NativePM {
     Zypper(ZypperPackageManager),
     Brew(BrewPackageManager),
     Swupd(SwupdPackageManager),
+    Termux(TermuxPackageManager),
+    Snap(SnapPackageManager),
+    Flatpak(FlatpakPackageManager),
+    Choco(ChocoPackageManager),
+    Scoop(ScoopPackageManager),
 }
 
 #[async_trait]
@@ -126,6 +139,11 @@ impl NativePackageManager for NativePM {
             NativePM::Zypper(pm) => pm.name(),
             NativePM::Brew(pm) => pm.name(),
             NativePM::Swupd(pm) => pm.name(),
+            NativePM::Termux(pm) => pm.name(),
+            NativePM::Snap(pm) => pm.name(),
+            NativePM::Flatpak(pm) => pm.name(),
+            NativePM::Choco(pm) => pm.name(),
+            NativePM::Scoop(pm) => pm.name(),
         }
     }
 
@@ -137,6 +155,11 @@ impl NativePackageManager for NativePM {
             NativePM::Zypper(pm) => pm.search(query, limit).await,
             NativePM::Brew(pm) => pm.search(query, limit).await,
             NativePM::Swupd(pm) => pm.search(query, limit).await,
+            NativePM::Termux(pm) => pm.search(query, limit).await,
+            NativePM::Snap(pm) => pm.search(query, limit).await,
+            NativePM::Flatpak(pm) => pm.search(query, limit).await,
+            NativePM::Choco(pm) => pm.search(query, limit).await,
+            NativePM::Scoop(pm) => pm.search(query, limit).await,
         }
     }
 
@@ -148,6 +171,11 @@ impl NativePackageManager for NativePM {
             NativePM::Zypper(pm) => pm.install(name).await,
             NativePM::Brew(pm) => pm.install(name).await,
             NativePM::Swupd(pm) => pm.install(name).await,
+            NativePM::Termux(pm) => pm.install(name).await,
+            NativePM::Snap(pm) => pm.install(name).await,
+            NativePM::Flatpak(pm) => pm.install(name).await,
+            NativePM::Choco(pm) => pm.install(name).await,
+            NativePM::Scoop(pm) => pm.install(name).await,
         }
     }
 
@@ -159,6 +187,11 @@ impl NativePackageManager for NativePM {
             NativePM::Zypper(pm) => pm.remove(name).await,
             NativePM::Brew(pm) => pm.remove(name).await,
             NativePM::Swupd(pm) => pm.remove(name).await,
+            NativePM::Termux(pm) => pm.remove(name).await,
+            NativePM::Snap(pm) => pm.remove(name).await,
+            NativePM::Flatpak(pm) => pm.remove(name).await,
+            NativePM::Choco(pm) => pm.remove(name).await,
+            NativePM::Scoop(pm) => pm.remove(name).await,
         }
     }
 
@@ -170,6 +203,11 @@ impl NativePackageManager for NativePM {
             NativePM::Zypper(pm) => pm.is_installed(name).await,
             NativePM::Brew(pm) => pm.is_installed(name).await,
             NativePM::Swupd(pm) => pm.is_installed(name).await,
+            NativePM::Termux(pm) => pm.is_installed(name).await,
+            NativePM::Snap(pm) => pm.is_installed(name).await,
+            NativePM::Flatpak(pm) => pm.is_installed(name).await,
+            NativePM::Choco(pm) => pm.is_installed(name).await,
+            NativePM::Scoop(pm) => pm.is_installed(name).await,
         }
     }
 
@@ -181,6 +219,11 @@ impl NativePackageManager for NativePM {
             NativePM::Zypper(pm) => pm.get(name).await,
             NativePM::Brew(pm) => pm.get(name).await,
             NativePM::Swupd(pm) => pm.get(name).await,
+            NativePM::Termux(pm) => pm.get(name).await,
+            NativePM::Snap(pm) => pm.get(name).await,
+            NativePM::Flatpak(pm) => pm.get(name).await,
+            NativePM::Choco(pm) => pm.get(name).await,
+            NativePM::Scoop(pm) => pm.get(name).await,
         }
     }
 
@@ -192,6 +235,11 @@ impl NativePackageManager for NativePM {
             NativePM::Zypper(pm) => pm.update_db().await,
             NativePM::Brew(pm) => pm.update_db().await,
             NativePM::Swupd(pm) => pm.update_db().await,
+            NativePM::Termux(pm) => pm.update_db().await,
+            NativePM::Snap(pm) => pm.update_db().await,
+            NativePM::Flatpak(pm) => pm.update_db().await,
+            NativePM::Choco(pm) => pm.update_db().await,
+            NativePM::Scoop(pm) => pm.update_db().await,
         }
     }
 }

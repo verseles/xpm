@@ -100,6 +100,22 @@ impl OsInfo {
     pub fn is_clear_linux(&self) -> bool {
         self.id == "clear-linux-os" || self.id_like.contains(&"clear-linux-os".to_string())
     }
+
+    pub fn is_android(&self) -> bool {
+        self.os_type == OsType::Android
+    }
+
+    pub fn is_windows(&self) -> bool {
+        self.os_type == OsType::Windows
+    }
+
+    pub fn is_macos(&self) -> bool {
+        self.os_type == OsType::MacOS
+    }
+
+    pub fn is_linux(&self) -> bool {
+        self.os_type == OsType::Linux
+    }
 }
 
 /// Get current OS information

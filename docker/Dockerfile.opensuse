@@ -1,0 +1,21 @@
+FROM opensuse/tumbleweed
+
+RUN zypper refresh && zypper install -y \
+    curl \
+    git \
+    gcc \
+    libopenssl-devel \
+    pkg-config \
+    && zypper clean --all
+
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+WORKDIR /app
+COPY . .
+
+RUN cargo build --release
+
+RUN cp target/release/xpm /usr/local/bin/xpm
+
+CMD ["xpm", "--version"]

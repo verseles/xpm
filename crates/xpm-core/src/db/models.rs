@@ -21,13 +21,13 @@ pub struct Package {
     /// Path to the package script
     pub script: Option<String>,
 
-    /// Package description
+    #[secondary_key]
     pub desc: Option<String>,
 
     /// Package version
     pub version: Option<String>,
 
-    /// User-friendly title
+    #[secondary_key]
     pub title: Option<String>,
 
     /// Package URL/homepage
@@ -63,11 +63,12 @@ pub struct Package {
 }
 
 impl Package {
-    /// Create a new package with just a name
     pub fn new(name: impl Into<String>) -> Self {
+        let name_str = name.into();
+        let id = Self::generate_id(&name_str);
         Self {
-            id: 0,
-            name: name.into(),
+            id,
+            name: name_str,
             script: None,
             desc: None,
             version: None,
@@ -87,6 +88,14 @@ impl Package {
     /// Check if package is installed
     pub fn is_installed(&self) -> bool {
         self.installed.is_some()
+    }
+
+    fn generate_id(name: &str) -> u64 {
+        use std::collections::hash_map::DefaultHasher;
+        use std::hash::{Hash, Hasher};
+        let mut hasher = DefaultHasher::new();
+        name.hash(&mut hasher);
+        hasher.finish()
     }
 
     /// Check if package supports a specific architecture

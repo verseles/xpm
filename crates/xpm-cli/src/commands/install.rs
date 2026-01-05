@@ -15,31 +15,49 @@ use xpm_core::{
     utils::logger::Logger,
 };
 
-/// Run the install command
 pub async fn run(
     package: &str,
     method: &str,
     force_method: bool,
     channel: Option<&str>,
-    _custom_flags: &[String],
-    _native_mode: &str,
+    custom_flags: &[String],
+    native_mode: &str,
 ) -> Result<()> {
-    let _ = force_method;
     Logger::info(&format!("Installing {}...", package.green().bold()));
 
     let db = Database::instance()?;
 
-    // Try to find package in XPM database
+    match native_mode {
+        "only" => {
+            return install_via_native_pm(package).await;
+        }
+        "off" => {
+            if let Some(pkg) = db.find_package_by_name(package)? {
+                if pkg.is_installed() {
+                    Logger::warning(&format!("{} is already installed", package));
+                    return Ok(());
+                }
+                return install_xpm_package(&pkg, method, force_method, channel, custom_flags)
+                    .await;
+            }
+            anyhow::bail!("Package '{}' not found in XPM database", package);
+        }
+        _ => {}
+    }
+
     if let Some(pkg) = db.find_package_by_name(package)? {
         if pkg.is_installed() {
             Logger::warning(&format!("{} is already installed", package));
             return Ok(());
         }
 
-        return install_xpm_package(&pkg, method, channel).await;
+        return install_xpm_package(&pkg, method, force_method, channel, custom_flags).await;
     }
 
-    // Try native package manager
+    install_via_native_pm(package).await
+}
+
+async fn install_via_native_pm(package: &str) -> Result<()> {
     if let Some(pm) = detect_native_pm().await {
         Logger::info(&format!(
             "Package not in XPM, trying {}...",
@@ -57,7 +75,13 @@ pub async fn run(
     anyhow::bail!("Package '{}' not found", package)
 }
 
-async fn install_xpm_package(pkg: &Package, method: &str, channel: Option<&str>) -> Result<()> {
+async fn install_xpm_package(
+    pkg: &Package,
+    method: &str,
+    force_method: bool,
+    channel: Option<&str>,
+    custom_flags: &[String],
+) -> Result<()> {
     let script_path = pkg
         .script
         .as_ref()
@@ -68,14 +92,21 @@ async fn install_xpm_package(pkg: &Package, method: &str, channel: Option<&str>)
         anyhow::bail!("Installation script not found: {}", script_path);
     }
 
-    // Determine installation method
-    let install_method = determine_method(method, pkg, &script)?;
+    let install_method = if force_method && method != "auto" {
+        if !script.has_function(&format!("install_{}", method)) {
+            anyhow::bail!("Method '{}' not available for this package", method);
+        }
+        method.to_string()
+    } else {
+        determine_method(method, pkg, &script)?
+    };
+
     Logger::info(&format!("Using method: {}", install_method.cyan()));
 
-    // Check for validate function
     let has_validate = script.has_function("validate");
 
-    let install_script = build_install_script(script_path, &install_method, channel, &pkg.name)?;
+    let install_script =
+        build_install_script(script_path, &install_method, channel, &pkg.name, custom_flags)?;
 
     // Run installation
     run_script(&install_script, &pkg.name).await?;
@@ -159,6 +190,7 @@ fn build_install_script(
     method: &str,
     channel: Option<&str>,
     pkg_name: &str,
+    custom_flags: &[String],
 ) -> Result<String> {
     let os_info = get_os_info();
     let arch = get_architecture();
@@ -172,24 +204,19 @@ fn build_install_script(
 
     let channel = channel.unwrap_or("stable");
 
-    // Get XPM executable path
     let xpm_path = std::env::current_exe()
         .map(|p| p.display().to_string())
         .unwrap_or_else(|_| "xpm".to_string());
 
-    // Get OS string for xOS variable
     let x_os = os_info.os_type.as_str();
 
-    // OS boolean flags
     let is_linux = os_info.os_type == OsType::Linux;
     let is_macos = os_info.os_type == OsType::MacOS;
     let is_windows = os_info.os_type == OsType::Windows;
     let is_android = os_info.os_type == OsType::Android;
 
-    // Architecture string
     let x_arch = arch.as_str();
 
-    // Directory paths
     let x_bin = XpmDirs::bin_dir()
         .map(|p| p.display().to_string())
         .unwrap_or_else(|_| "/usr/local/bin".to_string());
@@ -202,9 +229,10 @@ fn build_install_script(
         .map(|p| p.display().to_string())
         .unwrap_or_else(|_| format!("/tmp/xpm/{}", pkg_name));
 
-    // Check for snap and flatpak availability
     let has_snap = Executable::new("snap").exists();
     let has_flatpak = Executable::new("flatpak").exists();
+
+    let flags_str = custom_flags.join(" ");
 
     let script = format!(
         r#"#!/bin/bash
@@ -234,6 +262,9 @@ export xTMP="{x_tmp}"
 export hasSnap={has_snap}
 export hasFlatpak={has_flatpak}
 
+# Custom flags
+export xFLAGS="{flags_str}"
+
 # Legacy compatibility
 export XPM_SUDO="{sudo_cmd}"
 export XPM_CHANNEL="{channel}"
@@ -261,6 +292,7 @@ install_{method} "$xSUDO"
         x_tmp = x_tmp,
         has_snap = has_snap,
         has_flatpak = has_flatpak,
+        flags_str = flags_str,
         script_path = script_path,
         method = method
     );
