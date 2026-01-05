@@ -77,6 +77,7 @@ impl ChocoPackageManager {
     }
 
     /// Parse choco list (local) output
+    #[allow(dead_code)]
     fn parse_list_output(&self, output: &str) -> Vec<NativePackage> {
         let mut packages = Vec::new();
 
@@ -166,9 +167,7 @@ impl NativePackageManager for ChocoPackageManager {
                                 }
                             }
                             "Version" => pkg.version = Some(value.to_string()),
-                            "Summary" | "Description" => {
-                                pkg.description = Some(value.to_string())
-                            }
+                            "Summary" | "Description" => pkg.description = Some(value.to_string()),
                             _ => {}
                         }
                     }
@@ -194,12 +193,11 @@ pub struct ScoopPackageManager {
 impl ScoopPackageManager {
     /// Create a new Scoop package manager
     pub async fn new() -> Self {
-        let scoop_path = Executable::new("scoop")
-            .find()
-            .unwrap_or_else(|| {
-                let home = std::env::var("USERPROFILE").unwrap_or_else(|_| "C:\\Users\\Default".to_string());
-                PathBuf::from(format!("{}\\scoop\\shims\\scoop.cmd", home))
-            });
+        let scoop_path = Executable::new("scoop").find().unwrap_or_else(|| {
+            let home =
+                std::env::var("USERPROFILE").unwrap_or_else(|_| "C:\\Users\\Default".to_string());
+            PathBuf::from(format!("{}\\scoop\\shims\\scoop.cmd", home))
+        });
 
         Self { scoop_path }
     }

@@ -1,7 +1,7 @@
 use super::{
     AptPackageManager, BrewPackageManager, ChocoPackageManager, DnfPackageManager,
-    FlatpakPackageManager, NativePM, PacmanPackageManager, ScoopPackageManager,
-    SnapPackageManager, SwupdPackageManager, TermuxPackageManager, ZypperPackageManager,
+    FlatpakPackageManager, NativePM, PacmanPackageManager, ScoopPackageManager, SnapPackageManager,
+    SwupdPackageManager, TermuxPackageManager, ZypperPackageManager,
 };
 use crate::os::{executable::Executable, os_info::get_os_info};
 
@@ -70,14 +70,17 @@ pub async fn detect_native_pm() -> Option<NativePM> {
     None
 }
 
+#[allow(dead_code)]
 pub fn has_snap() -> bool {
     Executable::new("snap").exists()
 }
 
+#[allow(dead_code)]
 pub fn has_flatpak() -> bool {
     Executable::new("flatpak").exists()
 }
 
+#[allow(dead_code)]
 pub async fn get_snap_pm() -> Option<NativePM> {
     if has_snap() {
         Some(NativePM::Snap(SnapPackageManager::new().await))
@@ -86,6 +89,7 @@ pub async fn get_snap_pm() -> Option<NativePM> {
     }
 }
 
+#[allow(dead_code)]
 pub async fn get_flatpak_pm() -> Option<NativePM> {
     if has_flatpak() {
         Some(NativePM::Flatpak(FlatpakPackageManager::new().await))

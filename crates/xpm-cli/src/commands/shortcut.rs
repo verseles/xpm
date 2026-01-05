@@ -5,6 +5,7 @@ use owo_colors::OwoColorize;
 use xpm_core::utils::logger::Logger;
 
 /// Run the shortcut command
+#[allow(clippy::too_many_arguments)]
 pub async fn run(
     name: &str,
     exec: Option<&str>,

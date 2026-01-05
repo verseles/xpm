@@ -30,7 +30,7 @@ native_db = "0.8"
 native_model = "0.4"
 
 # Git
-git2 = "0.19"
+git2 = { version = "0.19", features = ["vendored-openssl"] }
 
 # Serialization
 serde = { version = "1", features = ["derive"] }

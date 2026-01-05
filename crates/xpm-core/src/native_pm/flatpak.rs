@@ -102,7 +102,11 @@ impl FlatpakPackageManager {
             packages.push(NativePackage {
                 name: app_id,
                 version,
-                description: Some(format!("{}{}", name, description.map(|d| format!(" - {}", d)).unwrap_or_default())),
+                description: Some(format!(
+                    "{}{}",
+                    name,
+                    description.map(|d| format!(" - {}", d)).unwrap_or_default()
+                )),
                 arch: None,
                 repo: Some("flatpak".to_string()),
                 popularity: None,
@@ -114,6 +118,7 @@ impl FlatpakPackageManager {
     }
 
     /// Parse flatpak list output
+    #[allow(dead_code)]
     fn parse_list_output(&self, output: &str) -> Vec<NativePackage> {
         let mut packages = Vec::new();
 
@@ -213,9 +218,7 @@ impl NativePackageManager for FlatpakPackageManager {
                         let value = value.trim();
                         match key.trim() {
                             "Version" => pkg.version = Some(value.to_string()),
-                            "Description" | "Subject" => {
-                                pkg.description = Some(value.to_string())
-                            }
+                            "Description" | "Subject" => pkg.description = Some(value.to_string()),
                             "Arch" => pkg.arch = Some(value.to_string()),
                             _ => {}
                         }

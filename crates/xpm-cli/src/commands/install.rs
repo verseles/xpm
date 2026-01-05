@@ -114,8 +114,13 @@ async fn install_xpm_package(
 
     let has_validate = script.has_function("validate");
 
-    let install_script =
-        build_install_script(script_path, &install_method, channel, &pkg.name, custom_flags)?;
+    let install_script = build_install_script(
+        script_path,
+        &install_method,
+        channel,
+        &pkg.name,
+        custom_flags,
+    )?;
 
     // Run installation
     run_script(&install_script, &pkg.name).await?;

@@ -93,10 +93,7 @@ pub async fn run(
     }
 
     let total = xpm_packages.len() + native_packages.len();
-    println!(
-        "{}",
-        format!("Found {} packages:", total).cyan().bold()
-    );
+    println!("{}", format!("Found {} packages:", total).cyan().bold());
     println!();
 
     // Display XPM packages first

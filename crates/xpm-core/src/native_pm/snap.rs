@@ -103,6 +103,7 @@ impl SnapPackageManager {
     }
 
     /// Parse snap list output for installed packages
+    #[allow(dead_code)]
     fn parse_list_output(&self, output: &str) -> Vec<NativePackage> {
         let mut packages = Vec::new();
 
