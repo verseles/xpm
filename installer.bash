@@ -58,7 +58,7 @@ chmod +x ./xpm || err "Could not make xpm executable"
 $SUDO mv -f ./xpm "$BIN_DIR/xpm" || err "Could not move xpm to $BIN_DIR"
 
 # Check if XPM was installed correctly.
-xpm -v >/dev/null 2>&1 || err "XPM was not installed correctly."
+xpm --version >/dev/null 2>&1 || err "XPM was not installed correctly."
 
 # Refresh the repository index for the first time.
 xpm ref
