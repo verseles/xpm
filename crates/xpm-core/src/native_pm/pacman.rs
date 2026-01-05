@@ -371,4 +371,31 @@ core/base 3-1 [installed]
         assert!(!packages[3].is_aur());
         assert_eq!(packages[3].name, "zed");
     }
+
+    #[test]
+    fn test_parse_yay_format() {
+        let pm = create_test_pm();
+
+        let output = r#"aur/neovim-git 0.10.0.r1+g1234567-1 (+320 5.67)
+    Vim-fork focused on extensibility and agility (git version)
+aur/neovim-nightly-bin 0.10.0-1 (+89 2.34)
+    Nightly build of neovim
+"#;
+
+        let packages = pm.parse_search_output(output);
+        assert_eq!(packages.len(), 2);
+
+        assert_eq!(packages[0].name, "neovim-git");
+        assert_eq!(packages[0].popularity, Some(320));
+        assert!(packages[0].is_aur());
+
+        assert_eq!(packages[1].name, "neovim-nightly-bin");
+        assert_eq!(packages[1].popularity, Some(89));
+    }
+
+    #[test]
+    fn test_results_pre_sorted() {
+        let pm = create_test_pm();
+        assert!(pm.results_pre_sorted());
+    }
 }

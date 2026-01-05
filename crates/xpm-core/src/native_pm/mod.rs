@@ -255,3 +255,39 @@ impl NativePackageManager for NativePM {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_native_package_is_aur() {
+        let aur_pkg = NativePackage::new("test").with_repo("aur");
+        assert!(aur_pkg.is_aur());
+
+        let extra_pkg = NativePackage::new("test").with_repo("extra");
+        assert!(!extra_pkg.is_aur());
+
+        let core_pkg = NativePackage::new("test").with_repo("core");
+        assert!(!core_pkg.is_aur());
+
+        let no_repo_pkg = NativePackage::new("test");
+        assert!(!no_repo_pkg.is_aur());
+    }
+
+    #[test]
+    fn test_native_package_builder() {
+        let pkg = NativePackage::new("test-pkg")
+            .with_version("1.0.0")
+            .with_description("Test package")
+            .with_repo("extra")
+            .with_popularity(100);
+
+        assert_eq!(pkg.name, "test-pkg");
+        assert_eq!(pkg.version, Some("1.0.0".to_string()));
+        assert_eq!(pkg.description, Some("Test package".to_string()));
+        assert_eq!(pkg.repo, Some("extra".to_string()));
+        assert_eq!(pkg.popularity, Some(100));
+        assert!(!pkg.installed);
+    }
+}

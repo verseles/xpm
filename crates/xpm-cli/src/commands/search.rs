@@ -224,3 +224,68 @@ fn print_native_package(pkg: &NativePackage, is_aur: bool) {
         println!("    {}", desc.dimmed());
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn create_test_package(name: &str, title: Option<&str>) -> Package {
+        let mut pkg = Package::new(name);
+        pkg.title = title.map(|t| t.to_string());
+        pkg
+    }
+
+    #[test]
+    fn test_calculate_relevance_exact_match() {
+        let pkg = create_test_package("vim", None);
+        let terms = vec!["vim".to_string()];
+        assert_eq!(calculate_relevance(&pkg, &terms), 1000);
+    }
+
+    #[test]
+    fn test_calculate_relevance_starts_with() {
+        let pkg = create_test_package("vim-airline", None);
+        let terms = vec!["vim".to_string()];
+        assert_eq!(calculate_relevance(&pkg, &terms), 100);
+    }
+
+    #[test]
+    fn test_calculate_relevance_contains() {
+        let pkg = create_test_package("neovim", None);
+        let terms = vec!["vim".to_string()];
+        assert_eq!(calculate_relevance(&pkg, &terms), 30);
+    }
+
+    #[test]
+    fn test_calculate_relevance_title_match() {
+        let pkg = create_test_package("something-else", Some("Vim-fork editor"));
+        let terms = vec!["vim".to_string()];
+        assert_eq!(calculate_relevance(&pkg, &terms), 10);
+    }
+
+    #[test]
+    fn test_calculate_relevance_multiple_terms() {
+        let pkg = create_test_package("vim", Some("Text editor"));
+        let terms = vec!["vim".to_string(), "editor".to_string()];
+        // vim exact match (1000) + editor in title (10)
+        assert_eq!(calculate_relevance(&pkg, &terms), 1010);
+    }
+
+    #[test]
+    fn test_calculate_relevance_no_match() {
+        let pkg = create_test_package("emacs", None);
+        let terms = vec!["vim".to_string()];
+        assert_eq!(calculate_relevance(&pkg, &terms), 0);
+    }
+
+    #[test]
+    fn test_calculate_relevance_case_insensitive() {
+        let pkg = create_test_package("VIM", None);
+        let terms = vec!["vim".to_string()];
+        assert_eq!(calculate_relevance(&pkg, &terms), 1000);
+
+        let pkg2 = create_test_package("vim", None);
+        let terms2 = vec!["VIM".to_string()];
+        assert_eq!(calculate_relevance(&pkg2, &terms2), 1000);
+    }
+}
