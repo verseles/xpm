@@ -34,8 +34,7 @@ pub async fn run(
         "off" => {
             if let Some(pkg) = db.find_package_by_name(package)? {
                 if pkg.is_installed() {
-                    Logger::warning(&format!("{} is already installed", package));
-                    return Ok(());
+                    Logger::info(&format!("Reinstalling {}...", package.cyan()));
                 }
                 return install_xpm_package(&pkg, method, force_method, channel, custom_flags)
                     .await;
@@ -47,8 +46,7 @@ pub async fn run(
 
     if let Some(pkg) = db.find_package_by_name(package)? {
         if pkg.is_installed() {
-            Logger::warning(&format!("{} is already installed", package));
-            return Ok(());
+            Logger::info(&format!("Reinstalling {}...", package.cyan()));
         }
 
         return install_xpm_package(&pkg, method, force_method, channel, custom_flags).await;
@@ -64,9 +62,20 @@ async fn install_via_native_pm(package: &str) -> Result<()> {
             pm.name().cyan()
         ));
 
-        if let Ok(Some(_)) = pm.get(package).await {
+        if let Ok(Some(native_pkg)) = pm.get(package).await {
             Logger::info(&format!("Installing via {}...", pm.name().cyan()));
             pm.install(package).await?;
+
+            // Track native package in XPM database
+            let db = Database::instance()?;
+            let mut pkg = Package::new(package);
+            pkg.version = native_pkg.version.clone();
+            pkg.desc = native_pkg.description.clone();
+            pkg.installed = Some(native_pkg.version.unwrap_or_else(|| "native".to_string()));
+            pkg.is_native = true;
+            pkg.method = Some(pm.name().to_string());
+            db.upsert_package(pkg)?;
+
             Logger::success(&format!("{} installed successfully", package.green()));
             return Ok(());
         }
@@ -185,6 +194,27 @@ fn determine_method(requested: &str, pkg: &Package, script: &BashScript) -> Resu
     anyhow::bail!("No suitable installation method found")
 }
 
+/// Get the update command for a given installation method
+fn get_update_command(method: &str, sudo_cmd: &str) -> String {
+    let error_fallback = r#"echo -e "\033[38;5;208m Update failed, continuing... \033[0m""#;
+
+    match method {
+        "apt" => format!("{} apt update || {}", sudo_cmd, error_fallback),
+        "pacman" => format!("{} pacman -Sy || {}", sudo_cmd, error_fallback),
+        "dnf" => format!("{} dnf check-update || true", sudo_cmd), // dnf check-update returns 100 if updates available
+        "zypper" => format!("{} zypper refresh || {}", sudo_cmd, error_fallback),
+        "brew" => format!("brew update || {}", error_fallback),
+        "termux" => format!("pkg update || {}", error_fallback),
+        "swupd" => String::new(), // swupd has no separate update command
+        "snap" => String::new(),  // snap updates automatically
+        "flatpak" => format!(
+            "{} flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo || true",
+            sudo_cmd
+        ),
+        _ => String::new(),
+    }
+}
+
 fn build_install_script(
     script_path: &str,
     method: &str,
@@ -234,6 +264,14 @@ fn build_install_script(
 
     let flags_str = custom_flags.join(" ");
 
+    // Get update command for this method
+    let update_command = get_update_command(method, &sudo_cmd);
+    let update_section = if update_command.is_empty() {
+        String::new()
+    } else {
+        format!("# Update package manager cache\n{}\n", update_command)
+    };
+
     let script = format!(
         r#"#!/bin/bash
 set -e
@@ -275,6 +313,7 @@ mkdir -p "$xTMP"
 # Source the package script
 source "{script_path}"
 
+{update_section}
 # Run installation
 install_{method} "$xSUDO"
 "#,
@@ -294,6 +333,7 @@ install_{method} "$xSUDO"
         has_flatpak = has_flatpak,
         flags_str = flags_str,
         script_path = script_path,
+        update_section = update_section,
         method = method
     );
 

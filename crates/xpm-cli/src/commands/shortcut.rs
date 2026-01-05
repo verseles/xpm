@@ -5,43 +5,106 @@ use owo_colors::OwoColorize;
 use xpm_core::utils::logger::Logger;
 
 /// Run the shortcut command
-pub async fn run(name: &str, exec: &str, icon: Option<&str>, category: Option<&str>) -> Result<()> {
+pub async fn run(
+    name: &str,
+    exec: Option<&str>,
+    icon: Option<&str>,
+    category: Option<&str>,
+    description: Option<&str>,
+    terminal: bool,
+    shortcut_type: &str,
+    mime: Option<&str>,
+    startup: bool,
+    remove: bool,
+) -> Result<()> {
+    // Get applications directory
+    let apps_dir = dirs::data_dir()
+        .map(|d| d.join("applications"))
+        .ok_or_else(|| anyhow::anyhow!("Could not determine applications directory"))?;
+
+    let desktop_file = apps_dir.join(format!("{}.desktop", slugify(name)));
+
+    // Handle removal
+    if remove {
+        if desktop_file.exists() {
+            tokio::fs::remove_file(&desktop_file).await?;
+            Logger::success(&format!(
+                "Removed shortcut: {}",
+                desktop_file.display().to_string().green()
+            ));
+
+            // Update desktop database
+            update_desktop_database(&apps_dir).await;
+        } else {
+            Logger::warning(&format!("Shortcut not found: {}", name));
+        }
+        return Ok(());
+    }
+
+    // For creation, exec is required
+    let exec = exec.ok_or_else(|| anyhow::anyhow!("Executable path is required"))?;
+
     Logger::info(&format!(
         "Creating desktop shortcut for {}...",
         name.green()
     ));
 
-    // Get applications directory using the dirs crate pattern
-    let apps_dir = dirs::data_dir()
-        .map(|d| d.join("applications"))
-        .ok_or_else(|| anyhow::anyhow!("Could not determine applications directory"))?;
-
     tokio::fs::create_dir_all(&apps_dir).await?;
 
-    // Create .desktop file
-    let desktop_file = apps_dir.join(format!("{}.desktop", slugify(name)));
-
+    // Build icon line
     let icon_line = icon
         .map(|i| format!("Icon={}", i))
         .unwrap_or_else(|| "Icon=application-x-executable".to_string());
 
-    let category = category.unwrap_or("Utility");
+    // Build category (ensure it ends with semicolon)
+    let categories = category
+        .map(|c| {
+            if c.ends_with(';') {
+                c.to_string()
+            } else {
+                format!("{};", c)
+            }
+        })
+        .unwrap_or_else(|| "Utility;".to_string());
+
+    // Build optional lines
+    let comment_line = description
+        .map(|d| format!("Comment={}\n", d))
+        .unwrap_or_default();
+
+    let mime_line = mime
+        .map(|m| {
+            if m.ends_with(';') {
+                format!("MimeType={}\n", m)
+            } else {
+                format!("MimeType={};\n", m)
+            }
+        })
+        .unwrap_or_default();
 
     let content = format!(
         r#"[Desktop Entry]
-Type=Application
+Type={shortcut_type}
 Name={name}
 Exec={exec}
 {icon_line}
-Categories={category};
-Terminal=false
-StartupNotify=true
-"#,
+Categories={categories}
+Terminal={terminal}
+StartupNotify={startup}
+{comment_line}{mime_line}"#,
+        shortcut_type = shortcut_type,
         name = name,
         exec = exec,
         icon_line = icon_line,
-        category = category
+        categories = categories,
+        terminal = terminal,
+        startup = startup,
+        comment_line = comment_line,
+        mime_line = mime_line
     );
+
+    // Remove trailing whitespace and extra newlines
+    let content = content.trim_end().to_string() + "\n";
 
     tokio::fs::write(&desktop_file, content).await?;
 
@@ -59,9 +122,15 @@ StartupNotify=true
         desktop_file.display().to_string().green()
     ));
 
-    // Update desktop database if available
+    // Update desktop database
+    update_desktop_database(&apps_dir).await;
+
+    Ok(())
+}
+
+async fn update_desktop_database(apps_dir: &std::path::Path) {
     if let Ok(status) = tokio::process::Command::new("update-desktop-database")
-        .arg(&apps_dir)
+        .arg(apps_dir)
         .status()
         .await
     {
@@ -69,8 +138,6 @@ StartupNotify=true
             Logger::info("Updated desktop database");
         }
     }
-
-    Ok(())
 }
 
 fn slugify(s: &str) -> String {

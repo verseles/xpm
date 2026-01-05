@@ -39,13 +39,24 @@ enum Commands {
     /// Search for packages
     #[command(aliases = ["s", "query", "q"])]
     Search {
-        /// Search terms
-        #[arg(required = true)]
+        /// Search terms (not required if --all is used)
         terms: Vec<String>,
 
         /// Maximum number of results
         #[arg(short, long, default_value = "30")]
         limit: usize,
+
+        /// Search for an exact match of the package name
+        #[arg(short, long)]
+        exact: bool,
+
+        /// List all packages available
+        #[arg(short, long)]
+        all: bool,
+
+        /// Control native package manager integration (auto, only, off)
+        #[arg(short, long, default_value = "auto")]
+        native: String,
     },
 
     /// Install a package
@@ -161,21 +172,46 @@ enum Commands {
         algorithm: String,
     },
 
-    /// Create a desktop shortcut
+    /// Create or remove a desktop shortcut
     Shortcut {
         /// Name for the shortcut
         name: String,
 
-        /// Executable path or command
-        exec: String,
+        /// Executable path or command (not required for --remove)
+        #[arg(required_unless_present = "remove")]
+        exec: Option<String>,
 
         /// Icon path (optional)
         #[arg(short, long)]
         icon: Option<String>,
 
-        /// Category (optional)
+        /// Category (e.g., Utility, Development, Game)
         #[arg(short, long)]
         category: Option<String>,
+
+        /// Description/comment for the shortcut
+        #[arg(short, long)]
+        description: Option<String>,
+
+        /// Run in terminal
+        #[arg(short, long)]
+        terminal: bool,
+
+        /// Type of shortcut (Application, Link, Directory)
+        #[arg(short = 'y', long = "type", default_value = "Application")]
+        shortcut_type: String,
+
+        /// MimeTypes to associate (semicolon-separated)
+        #[arg(short, long)]
+        mime: Option<String>,
+
+        /// Enable startup notification
+        #[arg(short = 'u', long, default_value = "true")]
+        startup: bool,
+
+        /// Remove the shortcut instead of creating it
+        #[arg(short, long)]
+        remove: bool,
     },
 
     /// Show log
@@ -269,7 +305,13 @@ async fn main() -> ExitCode {
 
 async fn run(cli: Cli) -> anyhow::Result<()> {
     match cli.command {
-        Commands::Search { terms, limit } => commands::search::run(&terms, limit, cli.json).await,
+        Commands::Search {
+            terms,
+            limit,
+            exact,
+            all,
+            native,
+        } => commands::search::run(&terms, limit, exact, all, &native, cli.json).await,
         Commands::Install {
             package,
             method,
@@ -329,13 +371,33 @@ async fn run(cli: Cli) -> anyhow::Result<()> {
             exec,
             icon,
             category,
-        } => commands::shortcut::run(&name, &exec, icon.as_deref(), category.as_deref()).await,
+            description,
+            terminal,
+            shortcut_type,
+            mime,
+            startup,
+            remove,
+        } => {
+            commands::shortcut::run(
+                &name,
+                exec.as_deref(),
+                icon.as_deref(),
+                category.as_deref(),
+                description.as_deref(),
+                terminal,
+                &shortcut_type,
+                mime.as_deref(),
+                startup,
+                remove,
+            )
+            .await
+        }
         Commands::Log { count } => commands::log::run(count).await,
         Commands::Check => commands::check::run().await,
         Commands::Make { name } => commands::make::run(&name).await,
         Commands::External(args) => {
             // Treat unknown commands as search terms
-            commands::search::run(&args, 30, cli.json).await
+            commands::search::run(&args, 30, false, false, "auto", cli.json).await
         }
     }
 }

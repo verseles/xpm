@@ -9,20 +9,54 @@ use xpm_core::{
 };
 
 /// Run the search command
-pub async fn run(terms: &[String], limit: usize, json: bool) -> Result<()> {
-    if terms.is_empty() {
-        anyhow::bail!("No search terms provided");
+pub async fn run(
+    terms: &[String],
+    limit: usize,
+    exact: bool,
+    all: bool,
+    native_mode: &str,
+    json: bool,
+) -> Result<()> {
+    // Validate input
+    if terms.is_empty() && !all {
+        anyhow::bail!("No search terms provided. Use --all to list all packages.");
     }
 
     let db = Database::instance()?;
 
-    // Search XPM packages
-    let xpm_packages = db.search_packages(terms, limit)?;
+    // Search XPM packages based on mode
+    let xpm_packages = if native_mode != "only" {
+        if all {
+            db.get_packages_limited(limit)?
+        } else if exact {
+            // Exact match by name
+            let mut results = Vec::new();
+            for term in terms {
+                if let Some(pkg) = db.find_package_by_name(term)? {
+                    results.push(pkg);
+                }
+            }
+            results
+        } else {
+            db.search_packages(terms, limit)?
+        }
+    } else {
+        Vec::new()
+    };
 
-    // Search native package manager
-    let native_packages = if let Some(pm) = detect_native_pm().await {
-        let query = terms.join(" ");
-        pm.search(&query, Some(limit)).await.unwrap_or_default()
+    // Search native package manager (not when --all is used)
+    let native_packages = if native_mode != "off" && !all {
+        if let Some(pm) = detect_native_pm().await {
+            // Only search native if we have few XPM results or native mode is "only"
+            if native_mode == "only" || xpm_packages.len() < 6 {
+                let query = terms.join(" ");
+                pm.search(&query, Some(limit)).await.unwrap_or_default()
+            } else {
+                Vec::new()
+            }
+        } else {
+            Vec::new()
+        }
     } else {
         Vec::new()
     };
@@ -57,6 +91,13 @@ pub async fn run(terms: &[String], limit: usize, json: bool) -> Result<()> {
         Logger::warning("No packages found");
         return Ok(());
     }
+
+    let total = xpm_packages.len() + native_packages.len();
+    println!(
+        "{}",
+        format!("Found {} packages:", total).cyan().bold()
+    );
+    println!();
 
     // Display XPM packages first
     if !xpm_packages.is_empty() {

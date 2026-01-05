@@ -46,6 +46,20 @@ pub async fn run(package: &str) -> Result<()> {
                 Logger::warning("No removal script found, trying native package manager...");
                 try_native_remove(package).await?;
             }
+
+            // Validate removal: validation should FAIL after successful removal
+            if script.has_function("validate") {
+                let validate_script = format!(r#"source "{}" && validate"#, script_path);
+                match run_script(&validate_script, "validation").await {
+                    Ok(_) => {
+                        // Validation passed = package still exists = warning
+                        Logger::warning("Package may not have been fully removed");
+                    }
+                    Err(_) => {
+                        // Validation failed = package was removed = success
+                    }
+                }
+            }
         }
 
         // Update database
