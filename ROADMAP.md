@@ -121,15 +121,16 @@ Address behavioral differences found in deep analysis of Dart vs Rust implementa
 - [x] **7.07 Shortcut Command**
   - [x] Add advanced flags: `--terminal`, `--type`, `--mime`, `--startup`, `--remove`, `--description`
 
-### 🔵 Deferred (Requires Production)
+### 🔵 Previously Deferred - Now Complete ✅
 
-- [ ] **7.08 Auto-Update Checker** *(requires Settings + GitHub Releases)*
-  - [ ] Check for new XPM version every 4 days
-  - [ ] Display upgrade message on startup
+- [x] **7.08 Auto-Update Checker**
+  - [x] Check for new XPM version every 4 days via GitHub Releases API
+  - [x] Display upgrade message on startup
+  - [x] Cache check result using Settings system
 
-- [ ] **7.09 Auto-Refresh Repos** *(requires Settings + perf testing)*
-  - [ ] Automatically refresh repos on first run
-  - [ ] Cache refresh status for 7 days
+- [x] **7.09 Auto-Refresh Repos**
+  - [x] Automatically refresh repos on first run
+  - [x] Cache refresh status for 7 days using Settings system
 
 ---
 
@@ -143,7 +144,5 @@ Address behavioral differences found in deep analysis of Dart vs Rust implementa
 | Phase 4: Database | ✅ Complete | 100% |
 | Phase 5: Testing | ✅ Complete | 100% |
 | Phase 6: Documentation | ✅ Complete | 100% |
-| Phase 7: Parity Gaps | ✅ Complete | 100% (7/7 + 2 deferred) |
+| Phase 7: Parity Gaps | ✅ Complete | 100% (9/9) |
 | **Overall** | ✅ **COMPLETE** | **100%** |
-
-> Note: Tasks 7.08 and 7.09 are deferred until production testing validates the approach.

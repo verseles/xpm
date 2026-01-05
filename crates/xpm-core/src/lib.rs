@@ -15,6 +15,7 @@ pub use db::{Database, Package, Repo, Setting};
 pub use native_pm::{NativePackage, NativePackageManager};
 pub use os::{get_architecture, get_os_info, Architecture, Executable, OsInfo, OsType, XpmDirs};
 pub use utils::logger::Logger;
+pub use utils::startup::StartupChecks;
 
 /// XPM version from Cargo.toml
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

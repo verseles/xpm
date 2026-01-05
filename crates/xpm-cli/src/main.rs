@@ -7,7 +7,7 @@ mod commands;
 use clap::{Parser, Subcommand};
 use std::process::ExitCode;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-use xpm_core::{utils::logger::Logger, VERSION};
+use xpm_core::{utils::logger::Logger, StartupChecks, VERSION};
 
 #[derive(Parser)]
 #[command(
@@ -304,6 +304,22 @@ async fn main() -> ExitCode {
 }
 
 async fn run(cli: Cli) -> anyhow::Result<()> {
+    let dominated_by_startup = matches!(
+        cli.command,
+        Commands::Search { .. }
+            | Commands::Install { .. }
+            | Commands::Remove { .. }
+            | Commands::External(_)
+    );
+
+    if dominated_by_startup {
+        if let Err(e) = StartupChecks::run_all(cli.quiet).await {
+            if cli.verbose {
+                Logger::warning(&format!("Startup checks failed: {}", e));
+            }
+        }
+    }
+
     match cli.command {
         Commands::Search {
             terms,
