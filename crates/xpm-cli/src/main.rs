@@ -19,8 +19,12 @@ use xpm_core::{utils::logger::Logger, StartupChecks, VERSION};
 )]
 struct Cli {
     /// Enable verbose output
-    #[arg(short, long, global = true)]
+    #[arg(long, global = true)]
     verbose: bool,
+
+    /// Print version number only
+    #[arg(short = 'v')]
+    version_only: bool,
 
     /// Output in JSON format (for scripting)
     #[arg(long, global = true)]
@@ -31,7 +35,7 @@ struct Cli {
     quiet: bool,
 
     #[command(subcommand)]
-    command: Commands,
+    command: Option<Commands>,
 }
 
 #[derive(Subcommand)]
@@ -290,9 +294,19 @@ fn init_logging(verbose: bool) {
 async fn main() -> ExitCode {
     let cli = Cli::parse();
 
+    if cli.version_only {
+        println!("{}", VERSION);
+        return ExitCode::SUCCESS;
+    }
+
+    let Some(command) = cli.command else {
+        Cli::parse_from(["xpm", "--help"]);
+        return ExitCode::SUCCESS;
+    };
+
     init_logging(cli.verbose);
 
-    let result = run(cli).await;
+    let result = run(cli.verbose, cli.quiet, cli.json, command).await;
 
     match result {
         Ok(()) => ExitCode::SUCCESS,
@@ -303,9 +317,9 @@ async fn main() -> ExitCode {
     }
 }
 
-async fn run(cli: Cli) -> anyhow::Result<()> {
+async fn run(verbose: bool, quiet: bool, json: bool, command: Commands) -> anyhow::Result<()> {
     let dominated_by_startup = matches!(
-        cli.command,
+        command,
         Commands::Search { .. }
             | Commands::Install { .. }
             | Commands::Remove { .. }
@@ -313,21 +327,21 @@ async fn run(cli: Cli) -> anyhow::Result<()> {
     );
 
     if dominated_by_startup {
-        if let Err(e) = StartupChecks::run_all(cli.quiet).await {
-            if cli.verbose {
+        if let Err(e) = StartupChecks::run_all(quiet).await {
+            if verbose {
                 Logger::warning(&format!("Startup checks failed: {}", e));
             }
         }
     }
 
-    match cli.command {
+    match command {
         Commands::Search {
             terms,
             limit,
             exact,
             all,
             native,
-        } => commands::search::run(&terms, limit, exact, all, &native, cli.json).await,
+        } => commands::search::run(&terms, limit, exact, all, &native, json).await,
         Commands::Install {
             package,
             method,
@@ -413,7 +427,7 @@ async fn run(cli: Cli) -> anyhow::Result<()> {
         Commands::Make { name } => commands::make::run(&name).await,
         Commands::External(args) => {
             // Treat unknown commands as search terms
-            commands::search::run(&args, 30, false, false, "auto", cli.json).await
+            commands::search::run(&args, 30, false, false, "auto", json).await
         }
     }
 }
