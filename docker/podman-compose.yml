@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  ubuntu:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.ubuntu
+    container_name: xpm-ubuntu
+    command: ["bash", "-c", "xpm --version && xpm refresh && xpm search micro"]
+
+  arch:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.arch
+    container_name: xpm-arch
+    command: ["bash", "-c", "xpm --version && xpm refresh && xpm search micro"]
+
+  fedora:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.fedora
+    container_name: xpm-fedora
+    command: ["bash", "-c", "xpm --version && xpm refresh && xpm search micro"]
+
+  opensuse:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.opensuse
+    container_name: xpm-opensuse
+    command: ["bash", "-c", "xpm --version && xpm refresh && xpm search micro"]
+
+  clearlinux:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.clearlinux
+    container_name: xpm-clearlinux
+    command: ["bash", "-c", "xpm --version && xpm refresh && xpm search micro"]
+
+  homebrew:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.homebrew
+    container_name: xpm-homebrew
+    command: ["bash", "-c", "xpm --version && xpm refresh && xpm search micro"]

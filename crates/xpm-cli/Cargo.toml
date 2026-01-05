@@ -1,0 +1,47 @@
+[package]
+name = "xpm-cli"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+description.workspace = true
+readme = "../../README.md"
+
+[[bin]]
+name = "xpm"
+path = "src/main.rs"
+
+[dependencies]
+# Core library
+xpm-core = { workspace = true }
+
+# Async
+tokio = { workspace = true }
+futures = { workspace = true }
+
+# CLI
+clap = { workspace = true }
+
+# Terminal
+owo-colors = { workspace = true }
+indicatif = { workspace = true }
+console = { workspace = true }
+
+# Utilities
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+serde_json = { workspace = true }
+reqwest = { workspace = true }
+dirs = { workspace = true }
+
+# Logging
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util", "macros"] }
+tempfile = "3"
+assert_cmd = "2"
+predicates = "3"
