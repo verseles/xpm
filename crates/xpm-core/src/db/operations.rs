@@ -316,12 +316,9 @@ impl Database {
             rw.remove(existing)?;
         }
 
-        // Insert new setting
-        let setting = Setting {
-            id: 0,
-            key: key_lower.clone(),
-            value: value_json.clone(),
-            expires_at,
+        let setting = match expires_at {
+            Some(exp) => Setting::with_expiry(key_lower.clone(), value_json.clone(), exp),
+            None => Setting::new(key_lower.clone(), value_json.clone()),
         };
         rw.insert(setting)?;
         rw.commit()?;

@@ -166,23 +166,32 @@ pub struct Setting {
 impl Setting {
     /// Create a new setting
     pub fn new(key: impl Into<String>, value: impl Into<String>) -> Self {
+        let key_lower = key.into().to_lowercase();
         Self {
-            id: 0,
-            key: key.into().to_lowercase(),
+            id: Self::generate_id(&key_lower),
+            key: key_lower,
             value: value.into(),
             expires_at: None,
         }
     }
 
-    /// Create a setting with expiration
+    fn generate_id(key: &str) -> u64 {
+        use std::collections::hash_map::DefaultHasher;
+        use std::hash::{Hash, Hasher};
+        let mut hasher = DefaultHasher::new();
+        key.hash(&mut hasher);
+        hasher.finish()
+    }
+
     pub fn with_expiry(
         key: impl Into<String>,
         value: impl Into<String>,
         expires_at: DateTime<Utc>,
     ) -> Self {
+        let key_lower = key.into().to_lowercase();
         Self {
-            id: 0,
-            key: key.into().to_lowercase(),
+            id: Self::generate_id(&key_lower),
+            key: key_lower,
             value: value.into(),
             expires_at: Some(expires_at),
         }
