@@ -48,6 +48,12 @@ For other systems, XPM provides script-based installation through the [xpm-popul
 
 ## Installation
 
+### Faster with curl
+
+```bash
+curl -fsSL install.cat/verseles/xpm
+```
+
 ### From Source
 
 ```bash
