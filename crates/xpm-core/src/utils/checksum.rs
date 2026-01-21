@@ -59,11 +59,36 @@ impl Checksum {
         let mut file =
             File::open(path).with_context(|| format!("Failed to open file: {}", path.display()))?;
 
-        let mut buffer = Vec::new();
-        file.read_to_end(&mut buffer)
-            .with_context(|| format!("Failed to read file: {}", path.display()))?;
+        match algorithm {
+            ChecksumAlgorithm::Md5 => Self::compute_digest::<md5::Md5>(&mut file),
+            ChecksumAlgorithm::Sha1 => Self::compute_digest::<sha1::Sha1>(&mut file),
+            ChecksumAlgorithm::Sha224 => Self::compute_digest::<sha2::Sha224>(&mut file),
+            ChecksumAlgorithm::Sha256 => Self::compute_digest::<sha2::Sha256>(&mut file),
+            ChecksumAlgorithm::Sha384 => Self::compute_digest::<sha2::Sha384>(&mut file),
+            ChecksumAlgorithm::Sha512 => Self::compute_digest::<sha2::Sha512>(&mut file),
+            ChecksumAlgorithm::Sha512_224 => Self::compute_digest::<sha2::Sha512_224>(&mut file),
+            ChecksumAlgorithm::Sha512_256 => Self::compute_digest::<sha2::Sha512_256>(&mut file),
+        }
+    }
 
-        Ok(Self::hash_bytes(&buffer, algorithm))
+    /// Compute digest from a reader
+    fn compute_digest<D: Digest>(reader: &mut impl Read) -> Result<String> {
+        let mut hasher = D::new();
+        let mut buffer = [0; 8192];
+        loop {
+            let count = reader.read(&mut buffer).context("Failed to read file")?;
+            if count == 0 {
+                break;
+            }
+            hasher.update(&buffer[..count]);
+        }
+        let hash = hasher.finalize();
+        let mut result = String::new();
+        for byte in hash {
+            use std::fmt::Write;
+            write!(&mut result, "{:02x}", byte).unwrap();
+        }
+        Ok(result)
     }
 
     /// Calculate checksum of bytes
@@ -240,6 +265,21 @@ mod tests {
 
         let hash = Checksum::calculate_async(file.path(), ChecksumAlgorithm::Sha256).await?;
         assert!(!hash.is_empty());
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_large_file_checksum() -> Result<()> {
+        let mut file = NamedTempFile::new()?;
+        // Write 20KB of data (larger than 8KB buffer)
+        let data = vec![b'a'; 1024 * 20];
+        file.write_all(&data)?;
+
+        let hash = Checksum::calculate(file.path(), ChecksumAlgorithm::Sha256)?;
+        let expected = Checksum::hash_bytes(&data, ChecksumAlgorithm::Sha256);
+
+        assert_eq!(hash, expected);
 
         Ok(())
     }
