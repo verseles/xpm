@@ -107,14 +107,14 @@ impl Database {
     /// Search packages by term (searches name, desc, title)
     pub fn search_packages(&self, terms: &[String], limit: usize) -> Result<Vec<Package>> {
         let r = self.db.r_transaction()?;
-        let all_packages: Vec<Package> =
-            r.scan().primary()?.all()?.filter_map(|p| p.ok()).collect();
-
         let terms_lower: Vec<String> = terms.iter().map(|t| t.to_lowercase()).collect();
 
-        let mut results: Vec<Package> = all_packages
-            .into_iter()
-            .filter(|pkg| {
+        let mut results: Vec<Package> = r
+            .scan()
+            .primary()?
+            .all()?
+            .filter_map(|p| p.ok())
+            .filter(|pkg: &Package| {
                 terms_lower.iter().any(|term| {
                     pkg.name.to_lowercase().contains(term)
                         || pkg
@@ -398,5 +398,50 @@ mod tests {
     fn test_models_defined() {
         // Just verify models can be accessed
         let _ = &*MODELS;
+    }
+
+    #[test]
+    fn test_search_packages() -> Result<()> {
+        let db_instance = create_test_db()?;
+        let db = Database {
+            db: db_instance,
+            settings_cache: RwLock::new(HashMap::new()),
+        };
+
+        // Insert some packages
+        let p1 = Package {
+            name: "vim".to_string(),
+            desc: Some("Vi Improved".to_string()),
+            ..Package::new("vim")
+        };
+        db.upsert_package(p1)?;
+
+        let p2 = Package {
+            name: "neovim".to_string(),
+            desc: Some("Hyperextensible Vim-based text editor".to_string()),
+            ..Package::new("neovim")
+        };
+        db.upsert_package(p2)?;
+
+        let p3 = Package {
+            name: "emacs".to_string(),
+            desc: Some("GNU Emacs text editor".to_string()),
+            ..Package::new("emacs")
+        };
+        db.upsert_package(p3)?;
+
+        // Search for "vim"
+        let results = db.search_packages(&["vim".to_string()], 10)?;
+        assert_eq!(results.len(), 2);
+        assert_eq!(results[0].name, "neovim");
+        assert_eq!(results[1].name, "vim");
+
+        // Search for "text editor"
+        let results = db.search_packages(&["text".to_string(), "editor".to_string()], 10)?;
+        assert_eq!(results.len(), 2); // neovim and emacs
+        assert!(results.iter().any(|p| p.name == "neovim"));
+        assert!(results.iter().any(|p| p.name == "emacs"));
+
+        Ok(())
     }
 }
