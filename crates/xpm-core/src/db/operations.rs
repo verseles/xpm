@@ -140,12 +140,12 @@ impl Database {
     /// Get installed packages
     pub fn get_installed_packages(&self) -> Result<Vec<Package>> {
         let r = self.db.r_transaction()?;
-        let all_packages: Vec<Package> =
-            r.scan().primary()?.all()?.filter_map(|p| p.ok()).collect();
-
-        let installed: Vec<Package> = all_packages
-            .into_iter()
-            .filter(|pkg| pkg.is_installed())
+        let installed: Vec<Package> = r
+            .scan()
+            .primary()?
+            .all()?
+            .filter_map(|p| p.ok())
+            .filter(|pkg: &Package| pkg.is_installed())
             .collect();
 
         Ok(installed)
@@ -179,15 +179,18 @@ impl Database {
     /// Delete packages that are not installed
     pub fn delete_uninstalled_packages(&self) -> Result<usize> {
         let rw = self.db.rw_transaction()?;
-        let all_packages: Vec<Package> =
-            rw.scan().primary()?.all()?.filter_map(|p| p.ok()).collect();
+        let uninstalled_packages: Vec<Package> = rw
+            .scan()
+            .primary()?
+            .all()?
+            .filter_map(|p| p.ok())
+            .filter(|pkg: &Package| !pkg.is_installed())
+            .collect();
 
         let mut deleted = 0;
-        for pkg in all_packages {
-            if !pkg.is_installed() {
-                rw.remove(pkg)?;
-                deleted += 1;
-            }
+        for pkg in uninstalled_packages {
+            rw.remove(pkg)?;
+            deleted += 1;
         }
 
         rw.commit()?;
@@ -357,20 +360,23 @@ impl Database {
     /// Delete all expired settings
     pub fn delete_expired_settings(&self) -> Result<usize> {
         let rw = self.db.rw_transaction()?;
-        let all_settings: Vec<Setting> =
-            rw.scan().primary()?.all()?.filter_map(|p| p.ok()).collect();
+        let expired_settings: Vec<Setting> = rw
+            .scan()
+            .primary()?
+            .all()?
+            .filter_map(|p| p.ok())
+            .filter(|s: &Setting| s.is_expired())
+            .collect();
 
         let mut deleted = 0;
-        for setting in all_settings {
-            if setting.is_expired() {
-                // Remove from cache
-                {
-                    let mut cache = self.settings_cache.write();
-                    cache.remove(&setting.key);
-                }
-                rw.remove(setting)?;
-                deleted += 1;
+        for setting in expired_settings {
+            // Remove from cache
+            {
+                let mut cache = self.settings_cache.write();
+                cache.remove(&setting.key);
             }
+            rw.remove(setting)?;
+            deleted += 1;
         }
 
         rw.commit()?;
