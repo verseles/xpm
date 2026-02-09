@@ -185,8 +185,9 @@ impl PacmanPackageManager {
         packages
     }
 
-    /// Sort packages: official repos first (by name), then AUR (by popularity)
-    fn sort_packages(&self, packages: &mut Vec<NativePackage>) {
+    /// Filter and sort packages
+    /// Prioritizes official packages over AUR packages if limit is applied
+    fn filter_and_sort_packages(&self, packages: &mut Vec<NativePackage>, limit: Option<usize>) {
         let mut official: Vec<_> = packages.iter().filter(|p| !p.is_aur()).cloned().collect();
         let mut aur: Vec<_> = packages.iter().filter(|p| p.is_aur()).cloned().collect();
 
@@ -200,8 +201,28 @@ impl PacmanPackageManager {
             a_pop.cmp(&b_pop)
         });
 
+        // Apply limits if requested
+        if let Some(limit) = limit {
+            // If official packages exceed limit, truncate them
+            if official.len() > limit {
+                official.truncate(limit);
+                aur.clear(); // No space for AUR
+            } else {
+                // If we have space for AUR packages, take the most popular ones
+                let remaining_slots = limit - official.len();
+                if aur.len() > remaining_slots {
+                    // AUR is sorted by popularity ascending.
+                    // We want the most popular ones, which are at the end.
+                    // So we take the last `remaining_slots` elements.
+                    let start_index = aur.len() - remaining_slots;
+                    aur = aur.split_off(start_index);
+                }
+            }
+        }
+
         // Combine: AUR first, then official
-        // This way when displayed, user sees official first, then AUR at the end
+        // This way when displayed, user sees official first (at bottom/end of list),
+        // then AUR above them.
         packages.clear();
         packages.extend(aur);
         packages.extend(official);
@@ -222,26 +243,8 @@ impl NativePackageManager for PacmanPackageManager {
         let output = self.run_helper(&["-Ss", "--noconfirm", query]).await?;
         let mut packages = self.parse_search_output(&output);
 
-        // Sort: AUR by popularity, official by name
-        self.sort_packages(&mut packages);
-
-        // Limit official packages to not overwhelm
-        let official_limit = 7;
-        let mut official_count = 0;
-        packages.retain(|p| {
-            if p.is_aur() {
-                true
-            } else {
-                official_count += 1;
-                official_count <= official_limit
-            }
-        });
-
-        if let Some(limit) = limit {
-            if limit > 50 {
-                packages.truncate(limit);
-            }
-        }
+        // Sort and limit: prioritize official packages, then most popular AUR
+        self.filter_and_sort_packages(&mut packages, limit);
 
         Ok(packages)
     }
@@ -343,7 +346,7 @@ core/base 3-1 [installed]
     }
 
     #[test]
-    fn test_sort_packages() {
+    fn test_filter_and_sort_packages() {
         let pm = create_test_pm();
 
         let mut packages = vec![
@@ -357,7 +360,8 @@ core/base 3-1 [installed]
                 .with_popularity(500),
         ];
 
-        pm.sort_packages(&mut packages);
+        // No limit
+        pm.filter_and_sort_packages(&mut packages, None);
 
         // AUR should come first (sorted by popularity ascending)
         assert!(packages[0].is_aur());
@@ -370,6 +374,58 @@ core/base 3-1 [installed]
         assert_eq!(packages[2].name, "abc");
         assert!(!packages[3].is_aur());
         assert_eq!(packages[3].name, "zed");
+    }
+
+    #[test]
+    fn test_filter_and_sort_packages_with_limit() {
+        let pm = create_test_pm();
+
+        let mut packages = vec![
+            NativePackage::new("off1").with_repo("core"),
+            NativePackage::new("off2").with_repo("extra"),
+            NativePackage::new("aur1")
+                .with_repo("aur")
+                .with_popularity(10),
+            NativePackage::new("aur2")
+                .with_repo("aur")
+                .with_popularity(20),
+            NativePackage::new("aur3")
+                .with_repo("aur")
+                .with_popularity(30),
+        ];
+
+        // Limit = 3. Should keep 2 official + 1 best AUR (aur3)
+        pm.filter_and_sort_packages(&mut packages, Some(3));
+
+        assert_eq!(packages.len(), 3);
+        // AUR first
+        assert!(packages[0].is_aur());
+        assert_eq!(packages[0].name, "aur3"); // Most popular AUR
+
+        // Then official
+        assert!(!packages[1].is_aur());
+        assert_eq!(packages[1].name, "off1");
+        assert!(!packages[2].is_aur());
+        assert_eq!(packages[2].name, "off2");
+    }
+
+    #[test]
+    fn test_filter_and_sort_packages_limit_only_official() {
+        let pm = create_test_pm();
+
+        let mut packages = vec![
+            NativePackage::new("off1").with_repo("core"),
+            NativePackage::new("off2").with_repo("extra"),
+            NativePackage::new("off3").with_repo("extra"),
+            NativePackage::new("aur1").with_repo("aur"),
+        ];
+
+        // Limit = 2. Should keep 2 official, 0 AUR.
+        pm.filter_and_sort_packages(&mut packages, Some(2));
+
+        assert_eq!(packages.len(), 2);
+        assert_eq!(packages[0].name, "off1");
+        assert_eq!(packages[1].name, "off2");
     }
 
     #[test]
