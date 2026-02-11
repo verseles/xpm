@@ -1,68 +1,48 @@
-# XPM - Dart to Rust Migration Roadmap
+# XPM - Roadmap
 
-> **Status**: ✅ **COMPLETE** - Migration finished, all features implemented.
+> **Status**: Integration Testing Phase
 >
-> **Migration Note**: The original Dart implementation has been preserved in the `old_dart` branch for reference.
->
-> See [MIGRATION_GAPS.md](./MIGRATION_GAPS.md) for detailed analysis of Dart vs Rust differences.
+> **Note**: Dart→Rust migration completed in v0.87.0. Now validating across distributions.
 
-## Phase 1: Feature Parity (Script Environment) ✅
-- [x] **1.01 Critical: Environment Variables**
-- [x] **1.02 High: Architecture Mapping**
+## Phase 9: Integration Testing via Podman
 
-## Phase 2: Native Package Managers ✅
-- [x] **2.01 Critical: Missing Managers**
-- [x] **2.02 High: Method Fallback**
+Validate xpm works correctly on each supported distribution.
 
-## Phase 3: CLI & Command Polish ✅
-- [x] **3.01 High: CLI Flags**
-- [x] **3.02 Medium: Implement Stubs**
+### 9.01 Rebuild Container Images
+- [ ] **9.01.1** Clean old cached images (`podman image prune -a`)
+- [ ] **9.01.2** Rebuild Ubuntu image (`make docker-ubuntu`)
+- [ ] **9.01.3** Rebuild Arch image (`make docker-arch`)
+- [ ] **9.01.4** Rebuild Fedora image (`make docker-fedora`)
+- [ ] **9.01.5** Rebuild openSUSE image (`make docker-opensuse`)
+- [ ] **9.01.6** Rebuild Clear Linux image (`make docker-clearlinux`)
+- [ ] **9.01.7** Rebuild Homebrew image (`make docker-homebrew`)
 
-## Phase 4: Database Optimization ✅
-- [x] **4.01 High: Secondary Indexes**
+### 9.02 Test Basic Commands
+- [ ] **9.02.1** Ubuntu: `xpm --version`, `xpm check`, `xpm refresh`
+- [ ] **9.02.2** Arch: `xpm --version`, `xpm check`, `xpm refresh`
+- [ ] **9.02.3** Fedora: `xpm --version`, `xpm check`, `xpm refresh`
+- [ ] **9.02.4** openSUSE: `xpm --version`, `xpm check`, `xpm refresh`
+- [ ] **9.02.5** Clear Linux: `xpm --version`, `xpm check`, `xpm refresh`
+- [ ] **9.02.6** Homebrew: `xpm --version`, `xpm check`, `xpm refresh`
 
-## Phase 5: Testing & Infrastructure ✅
-- [x] **5.01 Critical: Test Suite**
-- [x] **5.02 High: Docker Infrastructure**
+### 9.03 Test Search (Native PM Integration)
+- [ ] **9.03.1** Ubuntu: `xpm search neovim` (APT integration)
+- [ ] **9.03.2** Arch: `xpm search neovim` (Pacman + AUR integration)
+- [ ] **9.03.3** Fedora: `xpm search neovim` (DNF integration)
+- [ ] **9.03.4** openSUSE: `xpm search neovim` (Zypper integration)
 
-## Phase 6: Documentation & Cleanup ✅
-- [x] **6.01 Cleanup**
-- [x] **6.02 CI/CD**
-
-## Phase 7: Parity Gaps ✅
-- [x] **7.01 Settings System**
-- [x] **7.02 Update Command Injection**
-- [x] **7.03 Git Auto-Installation**
-- [x] **7.04 Native Package Tracking**
-- [x] **7.05 Search Enhancements**
-- [x] **7.06 UX Polish**
-- [x] **7.07 Shortcut Command**
-- [x] **7.08 Auto-Update Checker**
-- [x] **7.09 Auto-Refresh Repos**
-
-## Phase 8: UX Refinement & AUR Fixes ✅
-Address terminal reading patterns and AUR data accuracy.
-
-- [x] **8.01 Invert Search Section Order**
-  - [x] Move AUR to the top
-  - [x] Move Native (Official) to the middle
-  - [x] Move XPM to the bottom (closest to prompt)
-- [x] **8.02 Invert Item Sorting**
-  - [x] Sort AUR by votes **ascending** (most voted at bottom)
-  - [x] Invert Native and XPM results (most relevant at bottom)
-  - [x] Add relevance scoring for XPM packages
-  - [x] Add `results_pre_sorted()` trait method for PM-specific behavior
-- [x] **8.03 Fix AUR Popularity Mapping**
-  - [x] Change regex to capture **Votes** (Group 1) instead of Score (Group 2)
-  - [x] Update display to show integer votes (e.g., ⭐ 123)
+### 9.04 Test Install/Remove (if applicable)
+- [ ] **9.04.1** Ubuntu: Install and remove a package
+- [ ] **9.04.2** Arch: Install and remove a package
+- [ ] **9.04.3** Fedora: Install and remove a package
 
 ---
 
-## Migration Progress
+## Progress
 
-| Phase | Status | Completion |
-|-------|--------|------------|
-| Phase 1-6 | ✅ Complete | 100% |
-| Phase 7: Parity Gaps | ✅ Complete | 100% |
-| Phase 8: UX & AUR Fixes | ✅ Complete | 100% |
-| **Overall** | ✅ **Complete** | **100%** |
+| Task | Status | Notes |
+|------|--------|-------|
+| 9.01 Rebuild Images | pending | Blocked by disk space (resolved) |
+| 9.02 Basic Commands | pending | |
+| 9.03 Search Tests | pending | |
+| 9.04 Install/Remove | pending | |

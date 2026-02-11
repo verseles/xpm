@@ -346,7 +346,9 @@ install_{method} "$xSUDO"
 }
 
 async fn run_script(script: &str, name: &str) -> Result<()> {
-    let spinner = ProgressBar::new_spinner();
+    use std::sync::Arc;
+
+    let spinner = Arc::new(ProgressBar::new_spinner());
     spinner.set_style(
         ProgressStyle::default_spinner()
             .template("{spinner:.cyan} {msg}")
@@ -362,15 +364,38 @@ async fn run_script(script: &str, name: &str) -> Result<()> {
         .stderr(Stdio::piped())
         .spawn()?;
 
-    // Stream stdout
-    if let Some(stdout) = child.stdout.take() {
-        let reader = BufReader::new(stdout);
-        let mut lines = reader.lines();
+    let stdout = child.stdout.take();
+    let stderr = child.stderr.take();
 
-        while let Ok(Some(line)) = lines.next_line().await {
-            spinner.set_message(line);
+    // Spawn task to read stdout
+    let spinner_stdout = Arc::clone(&spinner);
+    let stdout_task = tokio::spawn(async move {
+        if let Some(stdout) = stdout {
+            let reader = BufReader::new(stdout);
+            let mut lines = reader.lines();
+
+            while let Ok(Some(line)) = lines.next_line().await {
+                spinner_stdout.set_message(line);
+            }
         }
-    }
+    });
+
+    // Spawn task to read stderr
+    let spinner_stderr = Arc::clone(&spinner);
+    let stderr_task = tokio::spawn(async move {
+        if let Some(stderr) = stderr {
+            let reader = BufReader::new(stderr);
+            let mut lines = reader.lines();
+
+            while let Ok(Some(line)) = lines.next_line().await {
+                // Display stderr in yellow to differentiate from stdout
+                spinner_stderr.set_message(format!("{}", line.yellow()));
+            }
+        }
+    });
+
+    // Wait for both streams to complete
+    let _ = tokio::try_join!(stdout_task, stderr_task)?;
 
     let status = child.wait().await?;
     spinner.finish_and_clear();

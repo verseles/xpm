@@ -3,7 +3,7 @@ resolver = "2"
 members = ["crates/xpm-core", "crates/xpm-cli"]
 
 [workspace.package]
-version = "0.87.0"
+version = "0.88.0"
 authors = ["Verseles <contact@verseles.com>"]
 edition = "2021"
 license = "BSD-4-Clause"
