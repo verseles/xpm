@@ -134,12 +134,23 @@ pub struct Repo {
 impl Repo {
     /// Create a new repository
     pub fn new(url: impl Into<String>) -> Self {
+        let url_str = url.into();
         Self {
-            id: 0,
-            url: url.into(),
+            id: Self::generate_id(&url_str),
+            url: url_str,
             local_path: None,
             last_sync: None,
         }
+    }
+
+    fn generate_id(url: &str) -> u64 {
+        use sha2::{Digest, Sha256};
+        let mut hasher = Sha256::new();
+        hasher.update(url.as_bytes());
+        let result = hasher.finalize();
+        // Take first 8 bytes and convert to u64
+        let bytes: [u8; 8] = result[0..8].try_into().expect("slice with incorrect length");
+        u64::from_le_bytes(bytes)
     }
 }
 
@@ -238,5 +249,21 @@ mod tests {
         let expired =
             Setting::with_expiry("test", "value", Utc::now() - chrono::Duration::hours(1));
         assert!(expired.is_expired());
+    }
+
+    #[test]
+    fn test_repo_id_stability() {
+        let url = "https://example.com/repo";
+        let repo = Repo::new(url);
+
+        // SHA256("https://example.com/repo") starts with:
+        // 01 a2 cc 06 7e a6 a9 5d ...
+        // In Little Endian, this forms the u64:
+        // 0x5da9a67e06cca201
+        assert_eq!(repo.id, 0x5da9a67e06cca201);
+
+        // Also verify different URL gives different ID
+        let repo2 = Repo::new("https://example.com/other");
+        assert_ne!(repo.id, repo2.id);
     }
 }

@@ -228,9 +228,7 @@ impl Database {
         } else {
             rw.insert(repo.clone())?;
             rw.commit()?;
-            let r = self.db.r_transaction()?;
-            let inserted: Option<Repo> = r.get().secondary(RepoKey::url, repo.url.clone())?;
-            Ok(inserted.unwrap_or(repo))
+            Ok(repo)
         }
     }
 
@@ -447,6 +445,29 @@ mod tests {
         assert_eq!(results.len(), 2); // neovim and emacs
         assert!(results.iter().any(|p| p.name == "neovim"));
         assert!(results.iter().any(|p| p.name == "emacs"));
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_repo_creation() -> Result<()> {
+        let db_instance = create_test_db()?;
+        let db = Database {
+            db: db_instance,
+            settings_cache: RwLock::new(HashMap::new()),
+        };
+
+        let r1 = Repo::new("https://repo1.com");
+        db.upsert_repo(r1)?;
+
+        let r2 = Repo::new("https://repo2.com");
+        db.upsert_repo(r2)?;
+
+        let repos = db.get_all_repos()?;
+        assert_eq!(repos.len(), 2);
+
+        // Verify IDs are different
+        assert_ne!(repos[0].id, repos[1].id);
 
         Ok(())
     }
