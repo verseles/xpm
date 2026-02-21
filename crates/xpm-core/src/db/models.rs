@@ -4,6 +4,18 @@ use chrono::{DateTime, Utc};
 use native_db::*;
 use native_model::{native_model, Model};
 use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
+use std::convert::TryInto;
+
+/// Generate a stable ID from a string using SHA256
+pub fn generate_stable_id(input: &str) -> u64 {
+    let mut hasher = Sha256::new();
+    hasher.update(input);
+    let result = hasher.finalize();
+    // Use the first 8 bytes for u64
+    let bytes: [u8; 8] = result[0..8].try_into().unwrap_or_default();
+    u64::from_be_bytes(bytes)
+}
 
 /// Package model representing a package in the XPM database
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -91,11 +103,7 @@ impl Package {
     }
 
     fn generate_id(name: &str) -> u64 {
-        use std::collections::hash_map::DefaultHasher;
-        use std::hash::{Hash, Hasher};
-        let mut hasher = DefaultHasher::new();
-        name.hash(&mut hasher);
-        hasher.finish()
+        generate_stable_id(name)
     }
 
     /// Check if package supports a specific architecture
@@ -134,9 +142,11 @@ pub struct Repo {
 impl Repo {
     /// Create a new repository
     pub fn new(url: impl Into<String>) -> Self {
+        let url_str = url.into();
+        let id = generate_stable_id(&url_str);
         Self {
-            id: 0,
-            url: url.into(),
+            id,
+            url: url_str,
             local_path: None,
             last_sync: None,
         }
@@ -176,11 +186,7 @@ impl Setting {
     }
 
     fn generate_id(key: &str) -> u64 {
-        use std::collections::hash_map::DefaultHasher;
-        use std::hash::{Hash, Hasher};
-        let mut hasher = DefaultHasher::new();
-        key.hash(&mut hasher);
-        hasher.finish()
+        generate_stable_id(key)
     }
 
     pub fn with_expiry(
@@ -238,5 +244,33 @@ mod tests {
         let expired =
             Setting::with_expiry("test", "value", Utc::now() - chrono::Duration::hours(1));
         assert!(expired.is_expired());
+    }
+
+    #[test]
+    fn test_stable_id_generation() {
+        let id1 = generate_stable_id("test-package");
+        let id2 = generate_stable_id("test-package");
+        let id3 = generate_stable_id("other-package");
+
+        assert_eq!(id1, id2);
+        assert_ne!(id1, id3);
+
+        // Ensure it's not using DefaultHasher
+        // (This specific value depends on SHA256 of "test-package" which is constant)
+        // echo -n "test-package" | sha256sum
+        // a46c30a560c2b4f542e9fc7141ac40a3c52e9941216b90bab17237c82ce6306e
+        // First 8 bytes: a4 6c 30 a5 60 c2 b4 f5
+        // In u64 (big endian): 0xa46c30a560c2b4f5
+        // = 11847898206556042485
+        assert_eq!(id1, 0xa46c30a560c2b4f5);
+    }
+
+    #[test]
+    fn test_repo_id_generation() {
+        let repo = Repo::new("https://example.com");
+        assert_ne!(repo.id, 0);
+
+        let repo2 = Repo::new("https://example.com");
+        assert_eq!(repo.id, repo2.id);
     }
 }
