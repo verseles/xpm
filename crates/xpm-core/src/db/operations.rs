@@ -168,11 +168,7 @@ impl Database {
         } else {
             rw.insert(package.clone())?;
             rw.commit()?;
-            // Get the inserted package with ID
-            let r = self.db.r_transaction()?;
-            let inserted: Option<Package> =
-                r.get().secondary(PackageKey::name, package.name.clone())?;
-            Ok(inserted.unwrap_or(package))
+            Ok(package)
         }
     }
 
@@ -228,9 +224,7 @@ impl Database {
         } else {
             rw.insert(repo.clone())?;
             rw.commit()?;
-            let r = self.db.r_transaction()?;
-            let inserted: Option<Repo> = r.get().secondary(RepoKey::url, repo.url.clone())?;
-            Ok(inserted.unwrap_or(repo))
+            Ok(repo)
         }
     }
 
@@ -447,6 +441,28 @@ mod tests {
         assert_eq!(results.len(), 2); // neovim and emacs
         assert!(results.iter().any(|p| p.name == "neovim"));
         assert!(results.iter().any(|p| p.name == "emacs"));
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_upsert_package_returns_correct_id() -> Result<()> {
+        let db_instance = create_test_db()?;
+        let db = Database {
+            db: db_instance,
+            settings_cache: RwLock::new(HashMap::new()),
+        };
+
+        let pkg = Package::new("test-pkg");
+        let expected_id = pkg.id;
+
+        let inserted = db.upsert_package(pkg.clone())?;
+        assert_eq!(inserted.id, expected_id);
+
+        // Verify it's in the DB with the same ID
+        let r = db.db.r_transaction()?;
+        let from_db: Package = r.get().primary(expected_id)?.unwrap();
+        assert_eq!(from_db.id, expected_id);
 
         Ok(())
     }
