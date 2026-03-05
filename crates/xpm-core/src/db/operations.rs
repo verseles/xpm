@@ -396,7 +396,7 @@ mod tests {
         // Leak the temp_dir to keep it alive
         std::mem::forget(temp_dir);
 
-        let db = Builder::new().create(&*MODELS, &db_path)?;
+        let db = Builder::new().create(&MODELS, &db_path)?;
         Ok(db)
     }
 
