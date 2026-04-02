@@ -168,11 +168,10 @@ impl Database {
         } else {
             rw.insert(package.clone())?;
             rw.commit()?;
-            // Get the inserted package with ID
-            let r = self.db.r_transaction()?;
-            let inserted: Option<Package> =
-                r.get().secondary(PackageKey::name, package.name.clone())?;
-            Ok(inserted.unwrap_or(package))
+            // Return the package directly to avoid an extra read transaction.
+            // This is safe because package IDs are deterministically generated (SHA256)
+            // before insertion, and native_db does not alter primary keys.
+            Ok(package)
         }
     }
 
@@ -228,9 +227,10 @@ impl Database {
         } else {
             rw.insert(repo.clone())?;
             rw.commit()?;
-            let r = self.db.r_transaction()?;
-            let inserted: Option<Repo> = r.get().secondary(RepoKey::url, repo.url.clone())?;
-            Ok(inserted.unwrap_or(repo))
+            // Return the repo directly to avoid an extra read transaction.
+            // This is safe because repo IDs are deterministically generated (SHA256)
+            // before insertion, and native_db does not alter primary keys.
+            Ok(repo)
         }
     }
 
