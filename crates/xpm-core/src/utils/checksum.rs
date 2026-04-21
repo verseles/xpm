@@ -56,8 +56,7 @@ pub struct Checksum;
 impl Checksum {
     /// Calculate checksum of a file
     pub fn calculate(path: &Path, algorithm: ChecksumAlgorithm) -> Result<String> {
-        let mut file =
-            File::open(path).with_context(|| format!("Failed to open file: {}", path.display()))?;
+        let mut file = File::open(path).with_context(|| format!("Failed to open file: {}", path.display()))?;
 
         match algorithm {
             ChecksumAlgorithm::Md5 => Self::compute_digest::<md5::Md5>(&mut file),
