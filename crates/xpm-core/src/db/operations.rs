@@ -129,11 +129,14 @@ impl Database {
                             .unwrap_or(false)
                 })
             })
-            .take(limit)
             .collect();
 
         // Sort by name
         results.sort_by(|a, b| a.name.cmp(&b.name));
+
+        // Apply limit after sorting
+        results.truncate(limit);
+
         Ok(results)
     }
 
@@ -447,6 +450,21 @@ mod tests {
         assert_eq!(results.len(), 2); // neovim and emacs
         assert!(results.iter().any(|p| p.name == "neovim"));
         assert!(results.iter().any(|p| p.name == "emacs"));
+
+        // Add a fourth package to test sorting before limit
+        let p4 = Package {
+            name: "avim".to_string(),
+            desc: Some("Another vim text editor".to_string()),
+            ..Package::new("avim")
+        };
+        db.upsert_package(p4)?;
+
+        // Search for "text editor" with limit 2
+        // Should return "avim" and "emacs" (alphabetically first 2 out of 3)
+        let results = db.search_packages(&["text".to_string(), "editor".to_string()], 2)?;
+        assert_eq!(results.len(), 2);
+        assert_eq!(results[0].name, "avim");
+        assert_eq!(results[1].name, "emacs");
 
         Ok(())
     }
