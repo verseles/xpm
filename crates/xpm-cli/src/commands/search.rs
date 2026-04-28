@@ -126,7 +126,7 @@ pub async fn run(
     let mut aur: Vec<_> = native_packages.iter().filter(|p| p.is_aur()).collect();
 
     // Sort AUR by votes ascending (most voted at bottom, near prompt)
-    aur.sort_by(|a, b| a.popularity.cmp(&b.popularity));
+    aur.sort_by_key(|a| a.popularity);
 
     // Invert official if not pre-sorted
     if !pm_pre_sorted && !official.is_empty() {
