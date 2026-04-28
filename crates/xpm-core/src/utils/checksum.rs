@@ -74,7 +74,8 @@ impl Checksum {
     /// Compute digest from a reader
     fn compute_digest<D: Digest>(reader: &mut impl Read) -> Result<String> {
         let mut hasher = D::new();
-        let mut buffer = [0; 8192];
+        // Use a 128KB buffer for better read performance with large files
+        let mut buffer = vec![0; 128 * 1024];
         loop {
             let count = reader.read(&mut buffer).context("Failed to read file")?;
             if count == 0 {
@@ -272,8 +273,8 @@ mod tests {
     #[test]
     fn test_large_file_checksum() -> Result<()> {
         let mut file = NamedTempFile::new()?;
-        // Write 20KB of data (larger than 8KB buffer)
-        let data = vec![b'a'; 1024 * 20];
+        // Write 200KB of data (larger than 128KB buffer)
+        let data = vec![b'a'; 1024 * 200];
         file.write_all(&data)?;
 
         let hash = Checksum::calculate(file.path(), ChecksumAlgorithm::Sha256)?;
