@@ -111,10 +111,10 @@ pub async fn run() -> Result<()> {
     println!("{}", "Database".bold());
     match Database::instance() {
         Ok(db) => {
-            let packages_count = db.count_packages().unwrap_or(0);
+            let packages = db.get_all_packages().unwrap_or_default();
             let installed = db.get_installed_packages().unwrap_or_default();
             println!("  Status: {}", "OK".green());
-            println!("  Total packages: {}", packages_count.to_string().cyan());
+            println!("  Total packages: {}", packages.len().to_string().cyan());
             println!("  Installed: {}", installed.len().to_string().green());
         }
         Err(e) => println!("  Status: {} ({})", "Error".red(), e),
