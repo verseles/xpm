@@ -77,6 +77,13 @@ impl Database {
 
     // ==================== Package Operations ====================
 
+    /// Count all packages
+    pub fn count_packages(&self) -> Result<usize> {
+        let r = self.db.r_transaction()?;
+        let count = r.scan().primary::<Package>()?.all()?.count();
+        Ok(count)
+    }
+
     /// Get all packages
     pub fn get_all_packages(&self) -> Result<Vec<Package>> {
         let r = self.db.r_transaction()?;
@@ -466,6 +473,28 @@ mod tests {
         assert_eq!(results[0].name, "avim");
         assert_eq!(results[1].name, "emacs");
 
+        Ok(())
+    }
+
+    #[test]
+    fn test_count_packages() -> Result<()> {
+        let db_instance = create_test_db()?;
+        let db = Database {
+            db: db_instance,
+            settings_cache: RwLock::new(HashMap::new()),
+        };
+
+        db.upsert_package(Package {
+            name: "vim".to_string(),
+            ..Package::new("vim")
+        })?;
+        db.upsert_package(Package {
+            name: "neovim".to_string(),
+            ..Package::new("neovim")
+        })?;
+
+        let count = db.count_packages()?;
+        assert_eq!(count, 2);
         Ok(())
     }
 }
