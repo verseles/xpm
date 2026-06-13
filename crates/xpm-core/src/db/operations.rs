@@ -104,10 +104,14 @@ impl Database {
         Ok(pkg)
     }
 
-    /// Search packages by term (searches name, desc, title)
+    /// Search packages matching every term in name, description, or title.
     pub fn search_packages(&self, terms: &[String], limit: usize) -> Result<Vec<Package>> {
-        let r = self.db.r_transaction()?;
         let terms_lower: Vec<String> = terms.iter().map(|t| t.to_lowercase()).collect();
+        if terms_lower.is_empty() {
+            return Ok(Vec::new());
+        }
+
+        let r = self.db.r_transaction()?;
 
         let mut results: Vec<Package> = r
             .scan()
@@ -488,6 +492,10 @@ mod tests {
         assert!(results.iter().any(|p| p.name == "neovim"));
         assert!(results.iter().any(|p| p.name == "emacs"));
         assert!(results.iter().any(|p| p.name == "avim"));
+
+        // Empty search terms keep the previous public API behavior: no matches.
+        let results = db.search_packages(&[], 10)?;
+        assert!(results.is_empty());
 
         Ok(())
     }
