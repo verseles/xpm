@@ -104,10 +104,14 @@ impl Database {
         Ok(pkg)
     }
 
-    /// Search packages by term (searches name, desc, title)
+    /// Search packages matching every term in name, description, or title.
     pub fn search_packages(&self, terms: &[String], limit: usize) -> Result<Vec<Package>> {
-        let r = self.db.r_transaction()?;
         let terms_lower: Vec<String> = terms.iter().map(|t| t.to_lowercase()).collect();
+        if terms_lower.is_empty() {
+            return Ok(Vec::new());
+        }
+
+        let r = self.db.r_transaction()?;
 
         let mut results: Vec<Package> = r
             .scan()
@@ -115,7 +119,7 @@ impl Database {
             .all()?
             .filter_map(|p| p.ok())
             .filter(|pkg: &Package| {
-                terms_lower.iter().any(|term| {
+                terms_lower.iter().all(|term| {
                     pkg.name.to_lowercase().contains(term)
                         || pkg
                             .desc
@@ -465,6 +469,33 @@ mod tests {
         assert_eq!(results.len(), 2);
         assert_eq!(results[0].name, "avim");
         assert_eq!(results[1].name, "emacs");
+
+        // Test AND logic for multi-term search
+        let p5 = Package {
+            name: "testpkg".to_string(),
+            desc: Some("This is a text processing tool".to_string()),
+            ..Package::new("testpkg")
+        };
+        db.upsert_package(p5)?;
+
+        let p6 = Package {
+            name: "editorpkg".to_string(),
+            desc: Some("This is an image editor".to_string()),
+            ..Package::new("editorpkg")
+        };
+        db.upsert_package(p6)?;
+
+        // Search for "text editor" should NOT return testpkg or editorpkg because they don't match BOTH terms
+        // It should only return neovim, emacs, and avim (which match both "text" and "editor")
+        let results = db.search_packages(&["text".to_string(), "editor".to_string()], 10)?;
+        assert_eq!(results.len(), 3);
+        assert!(results.iter().any(|p| p.name == "neovim"));
+        assert!(results.iter().any(|p| p.name == "emacs"));
+        assert!(results.iter().any(|p| p.name == "avim"));
+
+        // Empty search terms keep the previous public API behavior: no matches.
+        let results = db.search_packages(&[], 10)?;
+        assert!(results.is_empty());
 
         Ok(())
     }
