@@ -80,7 +80,11 @@ impl Database {
     /// Get all packages
     pub fn get_all_packages(&self) -> Result<Vec<Package>> {
         let r = self.db.r_transaction()?;
-        let packages: Vec<Package> = r.scan().primary()?.all()?.filter_map(|p| p.ok()).collect();
+        let packages: Vec<Package> = r
+            .scan()
+            .primary()?
+            .all()?
+            .collect::<std::result::Result<Vec<_>, _>>()?;
         Ok(packages)
     }
 
@@ -91,9 +95,8 @@ impl Database {
             .scan()
             .primary()?
             .all()?
-            .filter_map(|p| p.ok())
             .take(limit)
-            .collect();
+            .collect::<std::result::Result<Vec<_>, _>>()?;
         Ok(packages)
     }
 
@@ -117,7 +120,8 @@ impl Database {
             .scan()
             .primary()?
             .all()?
-            .filter_map(|p| p.ok())
+            .collect::<std::result::Result<Vec<_>, _>>()?
+            .into_iter()
             .filter(|pkg: &Package| {
                 terms_lower.iter().all(|term| {
                     pkg.name.to_lowercase().contains(term)
@@ -151,7 +155,8 @@ impl Database {
             .scan()
             .primary()?
             .all()?
-            .filter_map(|p| p.ok())
+            .collect::<std::result::Result<Vec<_>, _>>()?
+            .into_iter()
             .filter(|pkg: &Package| pkg.is_installed())
             .collect();
 
@@ -189,7 +194,8 @@ impl Database {
             .scan()
             .primary()?
             .all()?
-            .filter_map(|p| p.ok())
+            .collect::<std::result::Result<Vec<_>, _>>()?
+            .into_iter()
             .filter(|pkg: &Package| !pkg.is_installed())
             .collect();
 
@@ -208,7 +214,11 @@ impl Database {
     /// Get all repositories
     pub fn get_all_repos(&self) -> Result<Vec<Repo>> {
         let r = self.db.r_transaction()?;
-        let repos: Vec<Repo> = r.scan().primary()?.all()?.filter_map(|p| p.ok()).collect();
+        let repos: Vec<Repo> = r
+            .scan()
+            .primary()?
+            .all()?
+            .collect::<std::result::Result<Vec<_>, _>>()?;
         Ok(repos)
     }
 
@@ -371,7 +381,8 @@ impl Database {
             .scan()
             .primary()?
             .all()?
-            .filter_map(|p| p.ok())
+            .collect::<std::result::Result<Vec<_>, _>>()?
+            .into_iter()
             .filter(|s: &Setting| s.is_expired())
             .collect();
 
