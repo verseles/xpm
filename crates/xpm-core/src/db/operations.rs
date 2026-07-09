@@ -80,7 +80,11 @@ impl Database {
     /// Get all packages
     pub fn get_all_packages(&self) -> Result<Vec<Package>> {
         let r = self.db.r_transaction()?;
-        let packages: Vec<Package> = r.scan().primary()?.all()?.filter_map(|p| p.ok()).collect();
+        let packages: Vec<Package> = r
+            .scan()
+            .primary()?
+            .all()?
+            .collect::<std::result::Result<Vec<_>, _>>()?;
         Ok(packages)
     }
 
@@ -91,9 +95,8 @@ impl Database {
             .scan()
             .primary()?
             .all()?
-            .filter_map(|p| p.ok())
             .take(limit)
-            .collect();
+            .collect::<std::result::Result<Vec<_>, _>>()?;
         Ok(packages)
     }
 
@@ -113,27 +116,25 @@ impl Database {
 
         let r = self.db.r_transaction()?;
 
-        let mut results: Vec<Package> = r
-            .scan()
-            .primary()?
-            .all()?
-            .filter_map(|p| p.ok())
-            .filter(|pkg: &Package| {
-                terms_lower.iter().all(|term| {
-                    pkg.name.to_lowercase().contains(term)
-                        || pkg
-                            .desc
-                            .as_ref()
-                            .map(|d| d.to_lowercase().contains(term))
-                            .unwrap_or(false)
-                        || pkg
-                            .title
-                            .as_ref()
-                            .map(|t| t.to_lowercase().contains(term))
-                            .unwrap_or(false)
-                })
-            })
-            .collect();
+        let mut results = Vec::new();
+        for p_res in r.scan().primary()?.all()? {
+            let pkg: Package = p_res?;
+            if terms_lower.iter().all(|term| {
+                pkg.name.to_lowercase().contains(term)
+                    || pkg
+                        .desc
+                        .as_ref()
+                        .map(|d| d.to_lowercase().contains(term))
+                        .unwrap_or(false)
+                    || pkg
+                        .title
+                        .as_ref()
+                        .map(|t| t.to_lowercase().contains(term))
+                        .unwrap_or(false)
+            }) {
+                results.push(pkg);
+            }
+        }
 
         // Sort by name
         results.sort_by(|a, b| a.name.cmp(&b.name));
@@ -147,13 +148,13 @@ impl Database {
     /// Get installed packages
     pub fn get_installed_packages(&self) -> Result<Vec<Package>> {
         let r = self.db.r_transaction()?;
-        let installed: Vec<Package> = r
-            .scan()
-            .primary()?
-            .all()?
-            .filter_map(|p| p.ok())
-            .filter(|pkg: &Package| pkg.is_installed())
-            .collect();
+        let mut installed = Vec::new();
+        for p_res in r.scan().primary()?.all()? {
+            let pkg: Package = p_res?;
+            if pkg.is_installed() {
+                installed.push(pkg);
+            }
+        }
 
         Ok(installed)
     }
@@ -185,13 +186,13 @@ impl Database {
     /// Delete packages that are not installed
     pub fn delete_uninstalled_packages(&self) -> Result<usize> {
         let rw = self.db.rw_transaction()?;
-        let uninstalled_packages: Vec<Package> = rw
-            .scan()
-            .primary()?
-            .all()?
-            .filter_map(|p| p.ok())
-            .filter(|pkg: &Package| !pkg.is_installed())
-            .collect();
+        let mut uninstalled_packages = Vec::new();
+        for p_res in rw.scan().primary()?.all()? {
+            let pkg: Package = p_res?;
+            if !pkg.is_installed() {
+                uninstalled_packages.push(pkg);
+            }
+        }
 
         let mut deleted = 0;
         for pkg in uninstalled_packages {
@@ -208,7 +209,11 @@ impl Database {
     /// Get all repositories
     pub fn get_all_repos(&self) -> Result<Vec<Repo>> {
         let r = self.db.r_transaction()?;
-        let repos: Vec<Repo> = r.scan().primary()?.all()?.filter_map(|p| p.ok()).collect();
+        let repos: Vec<Repo> = r
+            .scan()
+            .primary()?
+            .all()?
+            .collect::<std::result::Result<Vec<_>, _>>()?;
         Ok(repos)
     }
 
@@ -367,13 +372,13 @@ impl Database {
     /// Delete all expired settings
     pub fn delete_expired_settings(&self) -> Result<usize> {
         let rw = self.db.rw_transaction()?;
-        let expired_settings: Vec<Setting> = rw
-            .scan()
-            .primary()?
-            .all()?
-            .filter_map(|p| p.ok())
-            .filter(|s: &Setting| s.is_expired())
-            .collect();
+        let mut expired_settings = Vec::new();
+        for s_res in rw.scan().primary()?.all()? {
+            let s: Setting = s_res?;
+            if s.is_expired() {
+                expired_settings.push(s);
+            }
+        }
 
         let mut deleted = 0;
         for setting in expired_settings {
